@@ -11,8 +11,9 @@ config_version=5
 [application]
 
 config/name="Scaletris"
-run/main_scene="res://node_3d.tscn"
+run/main_scene="res://welcome.tscn"
 config/features=PackedStringArray("4.1", "Mobile")
+boot_splash/image="res://lbl-nuts-and-bolts.png"
 config/icon="res://icon.svg"
 
 [input]
