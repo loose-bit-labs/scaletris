@@ -50,10 +50,8 @@ func move(force):
 	body.apply_central_force(force)
 
 func _on_rigid_body_3d_body_entered(body_):
-	print("this never seems to fire...")
 	main.on_collision(self, body_)
 
-# this doesn't seem to work either
 func _on_rigid_body_3d_body_shape_entered(body_rid, body_, body_shape_index, local_shape_index):
-	print("never happens!", body_rid, body_, body_shape_index, local_shape_index)
+	#print("finally...", body_rid, body_, body_shape_index, local_shape_index)
 	pass # Replace with function body.

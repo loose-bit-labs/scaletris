@@ -11,6 +11,8 @@ albedo_color = Color(0.282353, 0.411765, 0.737255, 1)
 script = ExtResource("1_3u4cw")
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
+max_contacts_reported = 1
+contact_monitor = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
 shape = SubResource("BoxShape3D_2w4y5")
