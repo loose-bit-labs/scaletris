@@ -4,6 +4,7 @@ extends Node3D
 @onready var body : RigidBody3D = $RigidBody3D
 @onready var box : CSGBox3D = $RigidBody3D/CollisionShape3D/Box
 var shape : BoxShape3D = null
+var main = null
 
 var size = 1
 #var current_scale : float = .8 #1.
@@ -23,7 +24,8 @@ func _ready():
 func _process(_delta):
 	pass
 
-func configure(position_:Vector3, spin:Vector3, gravity:float, material:StandardMaterial3D):
+func configure(main_, position_:Vector3, spin:Vector3, gravity:float, material:StandardMaterial3D):
+	self.main = main_
 	position = position_
 	body.angular_velocity = spin
 	body.gravity_scale = gravity
@@ -46,3 +48,12 @@ func set_size(size_:int, max_size:int):
 
 func move(force):
 	body.apply_central_force(force)
+
+func _on_rigid_body_3d_body_entered(body_):
+	print("this never seems to fire...")
+	main.on_collision(self, body_)
+
+# this doesn't seem to work either
+func _on_rigid_body_3d_body_shape_entered(body_rid, body_, body_shape_index, local_shape_index):
+	print("never happens!", body_rid, body_, body_shape_index, local_shape_index)
+	pass # Replace with function body.

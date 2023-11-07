@@ -3,7 +3,7 @@ extends Node3D
 var block_scene = preload("res://block.tscn")
 
 # FIXME: this should be based on level difficulty
-var gravity = .2
+var gravity = .25
 var move_force = 100
 var size_steps = 4
 
@@ -12,10 +12,12 @@ var started = false
 var block_map = {}
 var save_size = -1
 @onready var images = _load_images("res://images")
+@onready var fxAudio = $fxAudio
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	started = true
+	_create_new_box()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -42,9 +44,9 @@ func _move(force:Vector3):
 	if current_block:
 		current_block.move(force * move_force)
 
-func _size(scale:int):
+func _size(size:int):
 	if current_block:
-		current_block.update_size(scale, size_steps)
+		current_block.update_size(size, size_steps)
 
 func _create_new_box():
 	var block = block_scene.instantiate()
@@ -53,7 +55,7 @@ func _create_new_box():
 	var index = result[1]
 	_add_block(block, index)
 	
-	block.configure(_random_position(), _random_spin(), gravity, material)
+	block.configure(self, _random_position(), _random_spin(), gravity, material)
 	return block
 
 func _add_block(block, index):
@@ -63,13 +65,18 @@ func _add_block(block, index):
 	block.set_size(size, size_steps)
 	block.index = index
 	if index in block_map:
+		if block_map[index].size():
+			save_size = -1
+		else:
+			save_size = size
 		block_map[index].append(block)
-		save_size = -1
 	else:
 		block_map[index] = [block]
 		save_size = size
-	#block_map
-	pass
+
+func on_collision(block,body):
+	print("colliders gunna collide! ", block, " and ", body)
+	fxAudio.play_tonk() 
 
 func _you_have_fallen_and_you_cant_get_up():
 	if save_size > -.33:
@@ -86,6 +93,7 @@ func _check_match():
 				_matched(other, current_block)
 
 # TODO: some sound / animation / something amazing
+# TODO: need to wake up sleeping blocks to prevent stuff hanging out in mid air!
 func _matched(a,b):
 	remove_child(a)
 	remove_child(b)
@@ -123,9 +131,11 @@ func _load_images(path):
 			print("Found directory: " + file)
 		else:
 			if file.ends_with(".png") or file.ends_with(".jpg"):
-				var image = Image.load_from_file(path+"/"+file)
+				var rez = path + "/" + file
+				var image = Image.load_from_file(rez)
+				#var image = load(rez) # doesn't work...
 				var texture = ImageTexture.create_from_image(image)
 				_images.append(texture)
-				print("Found image:",  file)
+				print("Found image: ", rez)
 		file = dir.get_next()
 	return _images

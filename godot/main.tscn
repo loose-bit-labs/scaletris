@@ -1,6 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://c14i1wtlh6cqy"]
+[gd_scene load_steps=13 format=3 uid="uid://c14i1wtlh6cqy"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_f834v"]
+[ext_resource type="Script" path="res://mainAudio.gd" id="3_d7c1v"]
+[ext_resource type="Script" path="res://fxAudio.gd" id="3_mt5kj"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_m4gtk"]
 size = Vector3(8.56139, 0.009, 0.61365)
@@ -93,3 +95,13 @@ shape = SubResource("BoxShape3D_unf7i")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0.744769)
+
+[node name="mainAudio" type="AudioStreamPlayer3D" parent="."]
+volume_db = -15.51
+script = ExtResource("3_d7c1v")
+
+[node name="fxAudio" type="AudioStreamPlayer3D" parent="."]
+volume_db = -22.22
+script = ExtResource("3_mt5kj")
+
+[connection signal="finished" from="mainAudio" to="mainAudio" method="_on_finished"]
