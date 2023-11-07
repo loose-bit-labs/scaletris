@@ -76,7 +76,8 @@ func _add_block(block, index):
 
 func on_collision(block,body):
 	print("colliders gunna collide! ", block, " and ", body)
-	fxAudio.play_tonk() 
+	# FIXME: this is too much atm...
+	#fxAudio.play_tonk() 
 
 func _you_have_fallen_and_you_cant_get_up():
 	if save_size > -.33:
