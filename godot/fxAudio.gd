@@ -1,13 +1,32 @@
 extends AudioStreamPlayer3D
 
-@onready var  tonk = load("res://audio/fx/tonk.mp3")
+const DEFAULT_VOLUME = -22.22
+const CLIP = "clip"
+const VOLUME = "volume"
+
+const BELL1 = "bell1"
+const BELL2 = "bell2"
+const BELL3 = "bell3"
+const TONK = "tonk"
+
+@onready var fx = {
+	BELL1: {CLIP:load("res://audio/fx/COWBELL1.WAV"), },
+	BELL2: {CLIP:load("res://audio/fx/1378_COWBELL2.mp3"), VOLUME:3.3}, 
+	BELL3: {CLIP:load("res://audio/fx/79154_COWBELL.mp3")},
+	TONK:  {CLIP:load("res://audio/fx/tonk.mp3")},
+}
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
 
 func play_tonk():
-	self.stream = tonk
+	play_fx(TONK)
+
+func play_fx(fx_name):
+	var f = fx[fx_name]
+	self.stream = f[CLIP]
+	volume_db = DEFAULT_VOLUME if not VOLUME in f else f[VOLUME]
 	self.play()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -24,8 +24,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	# FIXME: this isn't perfect... if you move it then it won't sleep :-/
-	if current_block && current_block.body.sleeping:
+	if current_block && current_block.sleeping:
 		_you_have_fallen_and_you_cant_get_up() 
 
 func _input(event):
@@ -101,8 +100,6 @@ func _add_block(block, index):
 func on_collision(block,body):
 	if body.name == "frontwall" || body.name == "backwall":
 		return
-	print("colliders gunna collide! ", block, " and ", body.name)
-	# FIXME: still not quite there...
 	fxAudio.play_tonk() 
 
 func _you_have_fallen_and_you_cant_get_up():
@@ -120,13 +117,15 @@ func _check_match():
 				_matched(other, current_block)
 
 # TODO: some sound / animation / something amazing
-# TODO: need to wake up sleeping blocks to prevent stuff hanging out in mid air!
 func _matched(a,b):
+	fxAudio.play_fx(fxAudio.BELL2)
 	remove_child(a)
 	remove_child(b)
 	var blocks = block_map[current_block.index]
 	blocks.erase(a)
 	blocks.erase(b)
+	for block in _get_blocks():
+		block.wakeUp()	
 
 func _random_material():
 	var index = randi_range(0, tiles.size() - 1)
@@ -141,6 +140,13 @@ func _random_spin():
 
 func _rand():
 	return randf_range(-1,+1)
+
+func _get_blocks():
+	var blocks = []
+	for kid in get_children():
+		if "Block" == kid.name:
+			blocks.append(kid)
+	return blocks
 
 func _image_to_material(image):
 	var TEXTURE_ALBEDO = 0 # idk this is supposed to be a TextureParam enum but I can't seem to get the magic right

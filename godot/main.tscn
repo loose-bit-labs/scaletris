@@ -97,7 +97,7 @@ shape = SubResource("BoxShape3D_unf7i")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0.744769)
 
 [node name="mainAudio" type="AudioStreamPlayer3D" parent="."]
-volume_db = -15.51
+volume_db = -17.71
 script = ExtResource("3_d7c1v")
 
 [node name="fxAudio" type="AudioStreamPlayer3D" parent="."]

@@ -1,7 +1,6 @@
 extends Node3D
 
 var main_scene = "res://main.tscn"
-var welcome_song = preload("res://audio/music/whip-110235.mp3")
 
 @onready var lul : Node3D = $Lul
 

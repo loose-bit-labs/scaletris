@@ -23,3 +23,4 @@ material = SubResource("StandardMaterial3D_6lwq3")
 
 [connection signal="body_entered" from="RigidBody3D" to="." method="_on_rigid_body_3d_body_entered"]
 [connection signal="body_shape_entered" from="RigidBody3D" to="." method="_on_rigid_body_3d_body_shape_entered"]
+[connection signal="sleeping_state_changed" from="RigidBody3D" to="." method="_on_rigid_body_3d_sleeping_state_changed"]
