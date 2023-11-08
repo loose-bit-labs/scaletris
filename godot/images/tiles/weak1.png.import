@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cs16dv3033cuy"
-path="res://.godot/imported/icons.svg-e1971afad9af029f3c4da20e9cd271cf.ctex"
+uid="uid://b12mggqea6mrw"
+path="res://.godot/imported/weak1.png-e83a202499b531448079af792706efea.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/icons.svg"
-dest_files=["res://.godot/imported/icons.svg-e1971afad9af029f3c4da20e9cd271cf.ctex"]
+source_file="res://images/tiles/weak1.png"
+dest_files=["res://.godot/imported/weak1.png-e83a202499b531448079af792706efea.ctex"]
 
 [params]
 
@@ -32,6 +32,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

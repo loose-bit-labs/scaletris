@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ccltaf8ltyg6"
-path="res://.godot/imported/weak3.png-50f761202b5e9c3c56e7cf8ca5040641.ctex"
+path="res://.godot/imported/weak3.png-636c835b0f1e612a78c3c5bf08482cfe.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/weak3.png"
-dest_files=["res://.godot/imported/weak3.png-50f761202b5e9c3c56e7cf8ca5040641.ctex"]
+source_file="res://images/tiles/weak3.png"
+dest_files=["res://.godot/imported/weak3.png-636c835b0f1e612a78c3c5bf08482cfe.ctex"]
 
 [params]
 

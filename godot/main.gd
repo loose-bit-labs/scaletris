@@ -11,8 +11,11 @@ var current_block = null
 var started = false
 var block_map = {}
 var save_size = -1
-@onready var images = _load_images("res://images")
+@onready var tiles = _load_tiles("res://images/tiles")
 @onready var fxAudio = $fxAudio
+
+var should_watch_mouse = false
+var mouse_button_at = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -39,6 +42,27 @@ func _input(event):
 	if event.is_action_pressed("ui_accept") && !started:
 		_create_new_box()
 		started = true
+	if event is InputEventMouseButton:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_WHEEL_DOWN):
+			_size(-1)
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_WHEEL_UP):
+			_size(+1)
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			should_watch_mouse = event.pressed
+			mouse_button_at = event.position
+	if event is InputEventMouseMotion && should_watch_mouse:
+		var x = event.position[0]
+		var y = event.position[1]
+		var xdiff = x - mouse_button_at[0]
+		var ydiff = y - mouse_button_at[1]
+		var threshold = 50 # FIXME: magic number goes where?!
+		if abs(xdiff)>threshold:
+			_move(Vector3(-1 if xdiff<0 else +1, 0, 0))
+			mouse_button_at[0] = x
+		# dunno if this is a good idea or not 
+		if abs(ydiff)>threshold:
+			_move(Vector3(0, .5 * (+1 if ydiff<0 else -1), 0))
+			mouse_button_at[1] = y
 
 func _move(force:Vector3):
 	if current_block:
@@ -105,12 +129,9 @@ func _matched(a,b):
 	blocks.erase(b)
 
 func _random_material():
-	var index = randi_range(0, images.size() - 1)
-	var image = images[index]
-	var TEXTURE_ALBEDO = 0 # idk this is supposed to be a TextureParam enum but I can't seem to get the magic right
-	var new_material = StandardMaterial3D.new()
-	new_material.set_texture(TEXTURE_ALBEDO, image)
-	return [new_material, index]
+	var index = randi_range(0, tiles.size() - 1)
+	var material = tiles[index]
+	return [material, index]
 
 func _random_position():
 	return Vector3( 4 *_rand() - 1, 6 ,0*_rand())
@@ -121,12 +142,19 @@ func _random_spin():
 func _rand():
 	return randf_range(-1,+1)
 
+func _image_to_material(image):
+	var TEXTURE_ALBEDO = 0 # idk this is supposed to be a TextureParam enum but I can't seem to get the magic right
+	var new_material = StandardMaterial3D.new()
+	var texture = ImageTexture.create_from_image(image)
+	new_material.set_texture(TEXTURE_ALBEDO, texture)
+	return new_material
+
 # FIXME: long term this won't work, see the debugger crying about it
-func _load_images(path):
-	var _images = []
+func _load_tiles(path):
+	var _tiles = []
 	var dir = DirAccess.open(path)
 	if not dir:
-		return _images
+		return _tiles
 	dir.list_dir_begin()
 	var file = dir.get_next()
 	while file != "":
@@ -136,9 +164,7 @@ func _load_images(path):
 			if file.ends_with(".png") or file.ends_with(".jpg"):
 				var rez = path + "/" + file
 				var image = Image.load_from_file(rez)
-				#var image = load(rez) # doesn't work...
-				var texture = ImageTexture.create_from_image(image)
-				_images.append(texture)
+				_tiles.append(_image_to_material(image))
 				print("Found image: ", rez)
 		file = dir.get_next()
-	return _images
+	return _tiles

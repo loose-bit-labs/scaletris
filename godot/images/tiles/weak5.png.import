@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b12mggqea6mrw"
-path="res://.godot/imported/weak1.png-d0c246b9fc8ace7f2de6b51a8dfd372b.ctex"
+uid="uid://cyrxkoaxun8dp"
+path="res://.godot/imported/weak5.png-275580b5b5c81b07129f7500c4fad62d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/weak1.png"
-dest_files=["res://.godot/imported/weak1.png-d0c246b9fc8ace7f2de6b51a8dfd372b.ctex"]
+source_file="res://images/tiles/weak5.png"
+dest_files=["res://.godot/imported/weak5.png-275580b5b5c81b07129f7500c4fad62d.ctex"]
 
 [params]
 
