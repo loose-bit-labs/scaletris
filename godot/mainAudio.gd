@@ -1,12 +1,7 @@
 extends AudioStreamPlayer3D
 
 var clips = [
-	"res://audio/music/song-tmp6kstc4yb.mp3", 
-	"res://audio/music/song-tmpdpnknm55.mp3", 
-	"res://audio/music/song-tmpf2sju_yo.mp3", 
-	"res://audio/music/song-tmph_t2f50p.mp3", 
-	"res://audio/music/song-tmpl9u3pz_7.mp3", 
-	"res://audio/music/song-tmpoy_ch7d7.mp3"
+	"res://audio/music/whip-110235.mp3"
 ]
 var index : int = 33
 

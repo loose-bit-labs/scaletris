@@ -1,7 +1,7 @@
 extends Node3D
 
 var main_scene = "res://main.tscn"
-var welcome_song = preload("res://audio/music/song-tmp0t1rmrfi.mp3")
+var welcome_song = preload("res://audio/music/whip-110235.mp3")
 
 @onready var lul : Node3D = $Lul
 
@@ -19,5 +19,5 @@ func rand():
 	return randf() - randf()
 
 func _input(event):
-	if event.is_action_pressed("ui_accept"):
+	if event is InputEventMouseButton or event.is_action_pressed("ui_accept"):
 		get_tree().change_scene_to_file(main_scene)
