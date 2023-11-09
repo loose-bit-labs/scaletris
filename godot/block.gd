@@ -7,7 +7,7 @@ var shape : BoxShape3D = null
 var main = null
 
 var size = 1
-var index = -1
+var entity = {}
 
 # TODO: needs tuning!
 # sleeping or mostly sleeping
@@ -33,12 +33,13 @@ func _process(delta):
 	if !sleeping:
 		_am_i_getting_sleepy(delta)
 
-func configure(main_, position_:Vector3, spin:Vector3, gravity:float, material:StandardMaterial3D):
+func configure(main_, position_:Vector3, spin:Vector3, gravity:float, entity_):
 	self.main = main_
 	position = position_
 	body.angular_velocity = spin
 	body.gravity_scale = gravity
-	box.set_material(material) 
+	entity = entity_
+	box.set_material(entity["material"]) 
 
 func update_size(size_change:int, max_size:int):
 	set_size(clamp(size + size_change, 0, max_size), max_size)

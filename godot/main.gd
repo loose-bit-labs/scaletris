@@ -11,7 +11,8 @@ var current_block = null
 var started = false
 var block_map = {}
 var save_size = -1
-@onready var tiles = _load_tiles("res://images/mr-tiles")
+
+@onready var fof = preload("res://fof.gd").new()
 @onready var fxAudio = $fxAudio
 
 var should_watch_mouse = false
@@ -73,31 +74,30 @@ func _size(size:int):
 
 func _create_new_box():
 	var block = block_scene.instantiate()
-	var result = _random_material()
-	var material = result[0]
-	var index = result[1]
-	_add_block(block, index)
+	var entity = fof.random_entity()
+	#var result = _random_material()
+	_add_block(block, entity)
 	
-	block.configure(self, _random_position(), _random_spin(), gravity, material)
+	block.configure(self, _random_position(), _random_spin(), gravity, entity)
 	return block
 
-func _add_block(block, index):
+func _add_block(block, entity):
+	var entity_name = entity[fof.NAME]
 	add_child(block)
 	current_block = block
 	var size = randi_range(1, size_steps)
 	block.set_size(size, size_steps)
-	block.index = index
-	if index in block_map:
-		if block_map[index].size():
+	if entity_name in block_map:
+		if block_map[entity_name].size():
 			save_size = -1
 		else:
 			save_size = size
-		block_map[index].append(block)
+		block_map[entity_name].append(block)
 	else:
-		block_map[index] = [block]
+		block_map[entity_name] = [block]
 		save_size = size
 
-func on_collision(block,body):
+func on_collision(_block,body):
 	if body.name == "frontwall" || body.name == "backwall":
 		return
 	fxAudio.play_tonk() 
@@ -109,28 +109,39 @@ func _you_have_fallen_and_you_cant_get_up():
 	_create_new_box()
 	
 func _check_match():
-	var blocks = block_map[current_block.index]
+	var entity_name = current_block.entity[fof.NAME]
+	var blocks = block_map[entity_name]
+	var missed = []
+	var matched = []
 	for other in blocks:
 		if other != current_block:
 			#print("CHECK: ", current_block.size, " vs ", other.size)
 			if other.size == current_block.size:
-				_matched(other, current_block)
+				matched.append(other)
+			else:
+				missed.append(other)
+	if matched.size():
+		_matched(current_block, matched, blocks)
+	else:
+		if missed.size():
+			_missed(current_block, missed, blocks)
 
-# TODO: some sound / animation / something amazing
-func _matched(a,b):
+# TODO: play the right tone for win / gain
+# TODO: give out the reward
+func _matched(primary, others, blocks):
+	print("matched ", primary.entity, " and ", others.size(), " others")
 	fxAudio.play_fx(fxAudio.BELL2)
-	remove_child(a)
-	remove_child(b)
-	var blocks = block_map[current_block.index]
-	blocks.erase(a)
-	blocks.erase(b)
+	remove_child(primary)
+	blocks.erase(primary)
+	for other in others:
+		remove_child(other)
+		blocks.erase(other)
 	for block in _get_blocks():
-		block.wakeUp()	
+		block.wakeUp()
 
-func _random_material():
-	var index = randi_range(0, tiles.size() - 1)
-	var material = tiles[index]
-	return [material, index]
+# TODO: handle the consequences
+func _missed(primary, others, _blocks):
+	print("missed ", primary.entity, " and ", others.size(), " others")
 
 func _random_position():
 	return Vector3( 4 *_rand() - 1, 6 ,0*_rand())
@@ -147,30 +158,3 @@ func _get_blocks():
 		if "Block" == kid.name:
 			blocks.append(kid)
 	return blocks
-
-func _image_to_material(image):
-	var TEXTURE_ALBEDO = 0 # idk this is supposed to be a TextureParam enum but I can't seem to get the magic right
-	var new_material = StandardMaterial3D.new()
-	var texture = ImageTexture.create_from_image(image)
-	new_material.set_texture(TEXTURE_ALBEDO, texture)
-	return new_material
-
-# FIXME: long term this won't work, see the debugger crying about it
-func _load_tiles(path):
-	var _tiles = []
-	var dir = DirAccess.open(path)
-	if not dir:
-		return _tiles
-	dir.list_dir_begin()
-	var file = dir.get_next()
-	while file != "":
-		if dir.current_is_dir():
-			print("Found directory: " + file)
-		else:
-			if file.ends_with(".png") or file.ends_with(".jpg"):
-				var rez = path + "/" + file
-				var image = Image.load_from_file(rez)
-				_tiles.append(_image_to_material(image))
-				print("Found image: ", rez)
-		file = dir.get_next()
-	return _tiles
