@@ -11,7 +11,7 @@ var current_block = null
 var started = false
 var block_map = {}
 var save_size = -1
-@onready var tiles = _load_tiles("res://images/tiles")
+@onready var tiles = _load_tiles("res://images/mr-tiles")
 @onready var fxAudio = $fxAudio
 
 var should_watch_mouse = false
