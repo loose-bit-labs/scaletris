@@ -6,7 +6,7 @@ extends Node3D
 var shape : BoxShape3D = null
 var main = null
 
-var size = 1
+var size = -1
 var entity = {}
 
 # TODO: needs tuning!
@@ -20,13 +20,13 @@ const sleepyThreshold = 3.3
 const SCALE_MINIMUM = .8
 const SCALE_MAXIMUM = 2
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# don't share the collision shape!
 	collision.shape = BoxShape3D.new()
 	collision.shape.size = Vector3(.5,.5,.5)
 	shape = collision.shape
+	add_to_group("blocks")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -41,13 +41,25 @@ func configure(main_, position_:Vector3, spin:Vector3, gravity:float, entity_):
 	entity = entity_
 	box.set_material(entity["material"]) 
 
-func update_size(size_change:int, max_size:int):
-	set_size(clamp(size + size_change, 0, max_size), max_size)
+func _max_size():
+	return entity["level"]
+
+func update_size(size_change:int):
+	#var max_size = 1 + entity["level"]
+	#_set_size(clamp(size + size_change, 0, max_size), max_size)
+	set_size(size+size_change)
 	
-func set_size(size_:int, max_size:int):
-	size = size_
+func random_size():
+	return set_size(randi_range(0, _max_size()))
+
+func set_size(size_:int):
+	var b4 = size
+	var max_size = _max_size()
+	size = clamp(size_, 0, max_size)
+	if b4 == size:
+		return size
 	var scale_ = SCALE_MINIMUM + (SCALE_MAXIMUM - SCALE_MINIMUM) / max_size * size
-	#print("size: ", size, " of ", max_size, " -> ", scale )
+	#print("set> size to ", size, ", wanted ", size_, " but max is ", max_size, "so scale is ", scale)
 	body.mass = scale_
 	# the box that collides
 	shape.size.x = .5 * scale_
@@ -55,12 +67,14 @@ func set_size(size_:int, max_size:int):
 	# the box you see
 	box.scale.x = scale_
 	box.scale.y = scale_
-
+	
+	return size
+	
 func move(force):
 	body.apply_central_force(force)
 
 func wakeUp():
-	if sleeping:
+	if sleeping and false:
 		print("But I was having such a wonderful dream :-(")
 	sleeping = false
 	# FIXME: none of these work at all :-/

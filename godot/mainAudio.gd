@@ -6,7 +6,8 @@ var clips = [
 var index : int = 33
 
 func _ready():
-	_play_next()
+	pass
+	#_play_next()
 
 func  _process(_delta):
 	# TODO: these two bits of info are enough to fade in / out on track start...
@@ -22,4 +23,5 @@ func _play_next():
 	play()
 
 func _on_finished():
-	_play_next()
+	#_play_next()
+	play()

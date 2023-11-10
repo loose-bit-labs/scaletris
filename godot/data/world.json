@@ -1,0 +1,113 @@
+{
+	"levels":[
+		{
+			"name": "village",
+			"required":4,
+			"speed":0.33,
+			"force":100,
+			"chance": {
+				"crow":1,
+				"squirrel frog scorpion bat":4
+			},
+			"boss": "spider",
+			"music":"at-the-side-of-an-rpg-village-121718.mp3"
+		},
+		{
+			"name": "woods",
+			"required":6,
+			"speed":0.70,
+			"force":80,
+			"chance": {
+				"eagle":1, 
+				"archer_r archer_w lancer_l":1,
+				"bat ":4,
+				"wolf":8,
+				"lion":2,
+				"sabertooth behemoth":1
+			},
+			"boss":"lion",
+			"music":"secret-garden-mystically-chill-out-music-7489.mp3"
+		},
+		{
+			"name": "cave",
+			"required":8,
+			"speed":0.90,
+			"force":80,
+			"chance": {
+				"crossbowman_s short_swordsman_p swordsman_r":1,
+				"goblin_axe goblin_spear goblin_sword orc_archer orc_sword":8
+			},
+			"boss": "octopus",
+			"music":"dark-mystery-trailer-taking-our-time-131566.mp3"
+		},
+		{
+			"name": "lair",
+			"required":12,
+			"speed":1.1,
+			"force":70,
+			"chance": {
+				"great_axeman_r great_swordsman_g":2,
+				"pikeman_c knight_o":1,
+				"dragon dragon_flying firedrake":12
+			},
+			"boss": "dragon_transform",
+			"music": "boss-fight-143121.mp3"
+		},
+		{
+			"name": "pit",
+			"required":16,
+			"speed":1.5,
+			"force":60,
+			"chance": {
+				"pikeman_c knight_o":1,
+				"imp":12,
+				"balrog demon":8
+			},
+			"boss":"demon_flying",
+			"music":"horror-trailer-170637.mp3"
+		}
+	] ,
+	"bestiary": {
+		"friends": {
+				"bird":              { "level":1 },
+				"crow":              { "level":2 }, "eagle":             { "level":2 },
+				"archer_r":          { "level":3 }, "archer_w":          { "level":3 },
+				"lancer_l":          { "level":3 },
+				"raider_b":          { "level":4 }, "assassin_m":        { "level":4 },
+				"crossbowman_s":     { "level":4 }, "short_swordsman_p": { "level":4 },
+				"swordsman_r":       { "level":5 }, "great_axeman_r":    { "level":5 },
+				"great_swordsman_g": { "level":5 },
+				"pikeman_c":         { "level":6 }, "knight_o":          { "level":6 }
+		},
+		"foes": {
+			"bat":              { "level":1 }, "scorpion":         { "level":1 },
+			"serpent":          { "level":1 }, "spider":           { "level":1 },
+			"squirrel":         { "level":1 }, "frog":             { "level":1 }, 
+
+			"wolf":             { "level":2 }, "lion":             { "level":2 },
+			"sabertooth":       { "level":2 }, "behemoth":         { "level":2 },
+
+			"ghost":            { "level":3 }, "griffon":          { "level":3 },
+			"imp":              { "level":3 },
+
+			"goblin_axe":       { "level":4 }, "goblin_spear":     { "level":4 },
+			"goblin_sword":     { "level":4 },
+
+			"lizardman":        { "level":5 }, "minotaur":         { "level":5 },
+			"orc_archer":       { "level":5 }, "orc_sword":        { "level":5 },
+
+			"giant":            { "level":6 }, "octopus":          { "level":6 },
+			"swamphaunt":       { "level":6 },
+
+			"dragon":           { "level":7 }, "dragon_flying":    { "level":7 },
+			"dragon_transform": { "level":7 }, "firedrake":        { "level":7 },
+
+			"balrog":           { "level":8 }, "demon":            { "level":8 },
+			"demon_flying":     { "level":8 }
+		},
+		"shelters": { "house": { "level":1 }, "inn": { "level":2 } },
+		"weapons":  { "frostgiant_axe": { "level":4 } },
+		"armor":    { "warhorse":       { "level":5 } },
+		"potions":   {}
+	}
+}

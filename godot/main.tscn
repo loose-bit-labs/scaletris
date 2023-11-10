@@ -57,9 +57,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.24821)
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 3.56871, -1.50837)
 shape = SubResource("BoxShape3D_ax87v")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Board/backwall/CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.310525)
-size = Vector3(8.8953, 0.009, 6.56808)
+[node name="BackBlox" type="CSGBox3D" parent="Board/backwall/CollisionShape3D"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0.045929)
+size = Vector3(7.31251, 0.009, 8.92905)
 material = SubResource("StandardMaterial3D_6fqkn")
 
 [node name="leftwall" type="StaticBody3D" parent="Board"]
@@ -97,7 +97,7 @@ shape = SubResource("BoxShape3D_unf7i")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0.744769)
 
 [node name="mainAudio" type="AudioStreamPlayer3D" parent="."]
-volume_db = -17.71
+volume_db = -8.8
 script = ExtResource("3_d7c1v")
 
 [node name="fxAudio" type="AudioStreamPlayer3D" parent="."]

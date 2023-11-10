@@ -8,12 +8,18 @@ const BELL1 = "bell1"
 const BELL2 = "bell2"
 const BELL3 = "bell3"
 const TONK = "tonk"
+const CLASH = "clash"
+const CLASH2 = "clash2"
+const OUCH = "ouch"
 
 @onready var fx = {
 	BELL1: {CLIP:load("res://audio/fx/COWBELL1.WAV"), },
 	BELL2: {CLIP:load("res://audio/fx/1378_COWBELL2.mp3"), VOLUME:3.3}, 
 	BELL3: {CLIP:load("res://audio/fx/79154_COWBELL.mp3")},
 	TONK:  {CLIP:load("res://audio/fx/tonk.mp3")},
+	CLASH: {CLIP:load("res://audio/fx/clash.mp3")},
+	CLASH2: {CLIP:load("res://audio/fx/clash2.mp3"),VOLUME:13.31},
+	OUCH: {CLIP:load("res://audio/fx/ouch.mp3"), VOLUME:13.31 },
 }
 
 # Called when the node enters the scene tree for the first time.
