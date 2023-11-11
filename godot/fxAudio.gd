@@ -12,6 +12,8 @@ const CLASH = "clash"
 const CLASH2 = "clash2"
 const OUCH = "ouch"
 
+@export var muted = false
+
 @onready var fx = {
 	BELL1: {CLIP:load("res://audio/fx/COWBELL1.WAV"), },
 	BELL2: {CLIP:load("res://audio/fx/1378_COWBELL2.mp3"), VOLUME:3.3}, 
@@ -30,6 +32,8 @@ func play_tonk():
 	play_fx(TONK)
 
 func play_fx(fx_name):
+	if muted: 
+		return
 	var f = fx[fx_name]
 	self.stream = f[CLIP]
 	volume_db = DEFAULT_VOLUME if not VOLUME in f else f[VOLUME]

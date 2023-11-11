@@ -16,6 +16,10 @@ config/features=PackedStringArray("4.1", "Mobile")
 boot_splash/image="res://lbl-nuts-and-bolts.png"
 config/icon="res://icon.svg"
 
+[autoload]
+
+Fof="*res://fof.gd"
+
 [input]
 
 left={

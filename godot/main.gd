@@ -2,22 +2,31 @@ extends Node3D
 
 var block_scene = preload("res://block.tscn")
 
-# FIXME: this should be based on level difficulty
+@onready var fxAudio = $fxAudio
+@onready var mainAudio = $mainAudio
+@onready var backBox = $Board/backwall/CollisionShape3D/Box
+@onready var floorBox = $Board/floor/CollisionShape3D/Box
+@onready var leftBox = $Board/leftwall/CollisionShape3D/Box
+@onready var rightBox = $Board/rightwall/CollisionShape3D/Box
+@onready var boxes = [backBox, floorBox, leftBox, rightBox]
+
+# note: these are set by level difficulty
 var gravity = .25
 var move_force = 100
 var size_steps_not = 4
 
+var kills = 0
 var current_level = 0
+var level = {}
+var experience = 0
+var health = 10
 
 var current_block = null
 var started = false
 var block_map = {}
 var save_size = -1
 
-@onready var fof = preload("res://fof.gd").new()
-@onready var fxAudio = $fxAudio
-@onready var mainAudio = $mainAudio
-@onready var backBox = $Board/backwall/CollisionShape3D/BackBlox
+@export var muted = false
 
 var should_watch_mouse = false
 var mouse_button_at = null
@@ -25,37 +34,34 @@ var mouse_button_at = null
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	started = true
+	_update_audio()
 	_load_level(0)
 
 func _load_level(level_index:int=0):
 	current_level = level_index
+	kills = 0
 	block_map = {}
 	for b in _get_blocks():
 		remove_child(b)
-	var level = fof.get_level(current_level)
+	level = Fof.get_level(current_level)
 	gravity = level.speed
 	move_force = level.force
-	mainAudio.stream = level[fof.MUSIC]
+	mainAudio.stream = level[Fof.MUSIC]
 	mainAudio.play()
-	backBox.set_material(level.material)
+	# TODO: make this nicer / make sense / fix uvs
+	for box in boxes:
+		box.set_material(level.material)
+	
 	_create_new_box()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	if current_block && current_block.sleeping:
 		_you_have_fallen_and_you_cant_get_up() 
 
+# TODO: clean this up ... it's disgusting
 func _input(event):
-	if event is InputEventKey and event.keycode == KEY_1:
-		_load_level(0) # village
-	if event is InputEventKey and event.keycode == KEY_2:
-		_load_level(2) # woods
-	if event is InputEventKey and event.keycode == KEY_3:
-		_load_level(3) # cave
-	if event is InputEventKey and event.keycode == KEY_4:
-		_load_level(4) # lair
-	if event is InputEventKey and event.keycode == KEY_5:
-		_load_level(5) # pit
+	if event is InputEventKey and event.pressed:
+		_key_pressed(event.keycode) # temporary hack...
 	if event.is_action_pressed("left"):
 		_move(Vector3(-1, 0, 0))
 	if event.is_action_pressed("right"):
@@ -88,6 +94,22 @@ func _input(event):
 			_move(Vector3(0, .5 * (+1 if ydiff<0 else -1), 0))
 			mouse_button_at[1] = y
 
+func _key_pressed(code:int):
+	if code == KEY_1: _load_level(0) # village
+	if code == KEY_2: _load_level(1) # woods
+	if code == KEY_3: _load_level(2) # cave
+	if code == KEY_4: _load_level(3) # lair
+	if code == KEY_5: _load_level(4) # pit
+	if code == KEY_M: _toggle_mute()
+
+func _toggle_mute():
+	muted = !muted
+	_update_audio()
+
+func _update_audio():
+	mainAudio.set_mute(muted)
+	fxAudio.muted = muted	
+
 func _move(force:Vector3):
 	if current_block:
 		current_block.move(force * move_force)
@@ -98,17 +120,21 @@ func _size(size_change:int):
 
 func _create_new_box():
 	var block = block_scene.instantiate()
-	var entity = fof.entity_for_level(current_level)
+	var entity = Fof.entity_for_level(current_level, block_map)
 	block.entity = entity
 	_add_block(block, entity)
 	block.configure(self, _random_position(), _random_spin(), gravity, entity)
 	return block
 
 func _add_block(block, entity):
-	var entity_name = entity[fof.NAME]
+	var entity_name = entity[Fof.NAME]
 	add_child(block)
 	current_block = block
-	var size = block.random_size()
+	
+	var sizes = []
+	if entity_name in block_map:
+		sizes = block_map[entity_name].map(func(b): return b.size)
+	var size = block.random_size(sizes)
 	if entity_name in block_map:
 		if block_map[entity_name].size():
 			save_size = -1
@@ -131,14 +157,12 @@ func _you_have_fallen_and_you_cant_get_up():
 	_create_new_box()
 	
 func _check_match():
-
-	var entity_name = current_block.entity[fof.NAME]
+	var entity_name = current_block.entity[Fof.NAME]
 	var blocks = block_map[entity_name]
 	var missed = []
 	var matched = []
 	for other in blocks:
 		if other != current_block:
-			#print("CHECK: ", current_block.size, " vs ", other.size)
 			if other.size == current_block.size:
 				matched.append(other)
 			else:
@@ -150,17 +174,42 @@ func _check_match():
 			_missed(current_block, missed, blocks)
 
 # TODO: play the right tone for win / gain
-# TODO: give out the reward
-func _matched(primary, others, blocks):
+
+func _matched(primary, others, _blocks):
 	print("matched ", primary.entity, " and ", others.size(), " others")
-	fxAudio.play_fx(fxAudio.CLASH)
-	remove_child(primary)
-	blocks.erase(primary)
+	match primary.entity.type:
+		"foes":   _killed(primary, others.size()+1)
+		"friend": _helped(primary, others.size()+1)
+	_remove_block(primary)
 	for other in others:
-		remove_child(other)
-		blocks.erase(other)
+		_remove_block(other)
 	for block in _get_blocks():
 		block.wakeUp()
+
+# TODO: give out the reward
+# TODO: play per monster sound?
+func _killed(block, count):
+	fxAudio.play_fx(fxAudio.CLASH)
+	kills = kills + 1
+	experience += block.entity.level * count * 17
+	print(kills, " of ",level.required, " kills, and experience is ", experience )
+	if kills >= level.required:
+		print("VICTORIOUS!")
+		_load_level(current_level + 1 )
+
+# TODO: remove a baddy
+# TODO: play per helper sound?
+func _helped(entity, count):
+	fxAudio.play_fx(fxAudio.BELL3)
+	print("you got help from ", count, " ", entity.name, "!")
+
+# TODO: animate this
+func _remove_block(block):
+	remove_child(block)
+	if block.entity.name in block_map:
+		block_map[block.entity.name].erase(block)
+	else:
+		print("ERROR: could not find ", block.entity.name, " in ", block_map)
 
 # TODO: handle the consequences
 func _missed(primary, others, _blocks):

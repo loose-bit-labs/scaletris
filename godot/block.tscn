@@ -9,6 +9,8 @@ albedo_color = Color(0.282353, 0.411765, 0.737255, 1)
 
 [node name="Block" type="Node3D" groups=["blocks"]]
 script = ExtResource("1_3u4cw")
+maxSleepiness = 0.4
+sleepyThreshold = 0.5
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
 max_contacts_reported = 1

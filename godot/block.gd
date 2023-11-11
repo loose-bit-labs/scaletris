@@ -13,9 +13,9 @@ var entity = {}
 # sleeping or mostly sleeping
 var sleeping = false
 var lastY = 88
-var sleepyCount = 0
-const maxSleepiness = 3
-const sleepyThreshold = 3.3
+var sleepyTime = 0
+@export var maxSleepiness   : float = .12
+@export var sleepyThreshold : float = 3.3
 
 const SCALE_MINIMUM = .8
 const SCALE_MAXIMUM = 2
@@ -49,8 +49,22 @@ func update_size(size_change:int):
 	#_set_size(clamp(size + size_change, 0, max_size), max_size)
 	set_size(size+size_change)
 	
-func random_size():
-	return set_size(randi_range(0, _max_size()))
+# try to avoid picking a size that matches something already on the floor
+# this is a lot of work in gdscript since it's array lack explicity sizing
+# and fill can't take a lambda
+func random_size(sized:Array):
+	var possible = []
+	var lame = {}
+	for s in sized:
+		lame[s] = true
+	var maxs = _max_size()
+	for t in range(0, maxs + 1):
+		if not t in lame:
+			possible.append(t)
+	var r = randi_range(0, maxs) if !possible.size() else possible.pick_random()
+	#print("SZ:", sized, " vs ", possible, " from 0 to ", _max_size(), " gives us ", r)
+	return set_size(r)
+	#return set_size(randi_range(0, _max_size()))
 
 func set_size(size_:int):
 	var b4 = size
@@ -86,25 +100,31 @@ func wakeUp():
 func _am_i_getting_sleepy(delta):
 	var debug = false
 	var ydiff = abs(body.position.y - lastY) / delta
+	if 0 == ydiff:
+		return # gross...
+	if debug:
+		print(entity.name, " is falling ", ydiff, ", threshold is ", sleepyThreshold, ", time is ", sleepyTime, ", max is ", maxSleepiness, ", delta is ", delta)
 	lastY = body.position.y
 	if ydiff < sleepyThreshold:
-		sleepyCount = sleepyCount + delta
+		sleepyTime = sleepyTime + delta
 		if debug:
-			print("getting sleepy...", ydiff, " so ", sleepyCount, " cuz ", delta)
-		if sleepyCount > maxSleepiness:
+			print("getting sleepy...", ydiff, " so ", sleepyTime, " cuz ", delta)
+		if sleepyTime > maxSleepiness:
 			if debug:
 				print("SNORING AIN'T BORING!")
 			sleeping = true
 	else:
-		if debug && sleepyCount > 0:
+		if debug && sleepyTime > 0:
 			print("I'm WIDE AWAKE!!! cuz", ydiff, " vs ", abs(body.position.y - lastY), " in ", delta)
-		sleepyCount = 0
+		sleepyTime = 0
 
 func _on_rigid_body_3d_body_entered(body_):
 	main.on_collision(self, body_)
 
 func _on_rigid_body_3d_body_shape_entered(_body_rid, _body, _body_shape_index, _local_shape_index):
 	#print("finally...", body_rid, body_, body_shape_index, local_shape_index)
+	#print("FALL ", _body.name)
+	#sleeping = true
 	pass # Replace with function body.
 
 

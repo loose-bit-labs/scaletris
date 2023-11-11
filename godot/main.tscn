@@ -1,36 +1,39 @@
-[gd_scene load_steps=13 format=3 uid="uid://c14i1wtlh6cqy"]
+[gd_scene load_steps=14 format=3 uid="uid://c14i1wtlh6cqy"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_f834v"]
 [ext_resource type="Script" path="res://mainAudio.gd" id="3_d7c1v"]
 [ext_resource type="Script" path="res://fxAudio.gd" id="3_mt5kj"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_m4gtk"]
-size = Vector3(8.56139, 0.009, 0.61365)
+size = Vector3(10.2324, 0.560706, 0.61365)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_do3kx"]
 albedo_color = Color(0.670588, 0.498039, 0.6, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ax87v"]
-size = Vector3(9.08008, 0.0600619, 7.20045)
+size = Vector3(9.08008, 0.621308, 7.20045)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6fqkn"]
 albedo_color = Color(0.882353, 0.843137, 0.847059, 1)
 albedo_texture_msdf = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_tn0uu"]
-size = Vector3(0.534779, 0.065727, 6.59311)
+size = Vector3(1.48787, 0.960608, 8.35415)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iyodj"]
 albedo_color = Color(0.54902, 0.184314, 0.25098, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_j4fwc"]
-size = Vector3(0.802176, 0.0713098, 6.6192)
+size = Vector3(0.681809, 1.03728, 8.43425)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ntdjv"]
 albedo_color = Color(0.376471, 0.658824, 0.894118, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_unf7i"]
-size = Vector3(8.93834, 0.0607421, 7.29175)
+size = Vector3(8.93834, 0.69025, 7.29175)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kgfai"]
+albedo_color = Color(0.631373, 0.505882, 0.517647, 1)
 
 [node name="Arena" type="Node3D"]
 script = ExtResource("1_f834v")
@@ -44,9 +47,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01915, 0, 0)
 [node name="floor" type="StaticBody3D" parent="Board"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.325793, 0)
 shape = SubResource("BoxShape3D_m4gtk")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Board/floor/CollisionShape3D"]
+[node name="Box" type="CSGBox3D" parent="Board/floor/CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.355178, 0)
 size = Vector3(8.86351, 0.009, 0.572545)
 material = SubResource("StandardMaterial3D_do3kx")
 
@@ -54,23 +59,23 @@ material = SubResource("StandardMaterial3D_do3kx")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.24821)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/backwall"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 3.56871, -1.50837)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 3.56871, -1.84793)
 shape = SubResource("BoxShape3D_ax87v")
 
-[node name="BackBlox" type="CSGBox3D" parent="Board/backwall/CollisionShape3D"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0.045929)
-size = Vector3(7.31251, 0.009, 8.92905)
+[node name="Box" type="CSGBox3D" parent="Board/backwall/CollisionShape3D"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.26033, 0.045929)
+size = Vector3(7.31251, 0.009, 17.8561)
 material = SubResource("StandardMaterial3D_6fqkn")
 
 [node name="leftwall" type="StaticBody3D" parent="Board"]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -3.42378, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/leftwall"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -2.16138e-08, 3.27628, -1.0139)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.71312e-10, 3.27628, -1.51229)
 shape = SubResource("BoxShape3D_tn0uu")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Board/leftwall/CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, -8.35188e-23, 0, -8.35188e-23, 1, -0.00650926, 0, 0)
+[node name="Box" type="CSGBox3D" parent="Board/leftwall/CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, -8.35188e-23, 0, -8.35188e-23, 1, -0.00650928, 0.542951, 0)
 size = Vector3(0.542889, 0.009, 6.57527)
 material = SubResource("StandardMaterial3D_iyodj")
 
@@ -78,11 +83,11 @@ material = SubResource("StandardMaterial3D_iyodj")
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.986862, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/rightwall"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -8.48979e-08, 3.25917, -3.45061)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -1.08452e-07, 3.25917, -3.98946)
 shape = SubResource("BoxShape3D_j4fwc")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Board/rightwall/CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, -8.35188e-23, 0, -8.35188e-23, 1, 0.00442435, 0, 0)
+[node name="Box" type="CSGBox3D" parent="Board/rightwall/CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, -8.35188e-23, 0, -8.35188e-23, 1, 0.00442438, 0.553636, 0)
 size = Vector3(0.563724, 0.009, 6.69989)
 material = SubResource("StandardMaterial3D_ntdjv")
 
@@ -90,11 +95,18 @@ material = SubResource("StandardMaterial3D_ntdjv")
 transform = Transform3D(-0.999984, 0, -0.00563729, 0, 1, 0, 0.00563729, 0, -0.999984, 0, 0, 0.115766)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/frontwall"]
-transform = Transform3D(1, 4.65661e-10, 0, 0, -4.37114e-08, -1, -4.65661e-10, 1, -4.37114e-08, -0.00698644, 3.56971, -0.269063)
+transform = Transform3D(1, 4.65661e-10, 0, 0, -4.37114e-08, -1, -4.65661e-10, 1, -4.37114e-08, -0.00556719, 3.56971, -0.52077)
 shape = SubResource("BoxShape3D_unf7i")
 
+[node name="CSGBox3D" type="CSGBox3D" parent="Board"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.59144, 3.47473, 0)
+size = Vector3(2.30956, 7.35988, 0.563815)
+material = SubResource("StandardMaterial3D_kgfai")
+
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0.744769)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.337688, 3.97205, 2.77457)
+light_energy = 3.0
+light_size = 0.33
 
 [node name="mainAudio" type="AudioStreamPlayer3D" parent="."]
 volume_db = -8.8

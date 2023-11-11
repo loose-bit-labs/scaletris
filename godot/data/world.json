@@ -7,7 +7,7 @@
 			"force":100,
 			"chance": {
 				"crow":1,
-				"squirrel frog scorpion bat":4
+				"squirrel frog scorpion bat serpent spider":4
 			},
 			"boss": "spider",
 			"music":"at-the-side-of-an-rpg-village-121718.mp3"

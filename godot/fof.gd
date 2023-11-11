@@ -55,7 +55,7 @@ func _load_bestiary(b):
 			lookup[name_] = entity # TODO: check collisions
 	return lookup
 
-# TODO: load the "name" of level for the music and fx
+# TODO: load the "name" of level for the fx
 func _load_levels(levels):
 	for level in levels:
 		var chance = level[CHANCE]
@@ -68,19 +68,38 @@ func get_level(level:int = 0):
 	level = level if level < world[LEVELS].size() else world[LEVELS].size() - 1
 	return world[LEVELS][level]
 
-func entity_for_level(level_index:int = 0):
-	var entity_name = entity_name_for_level(level_index)
-	return bestiary[entity_name]
+func _map_count(entity_name, block_map:Dictionary):
+	return 0 if entity_name not in block_map else block_map[entity_name].size()
 
-func entity_name_for_level(level_index:int = 0):
-	var level = get_level(level_index)
-	var picker = level[PICKER]
+func _forbidden_entities(block_map:Dictionary):
+	var no_go = {}
+	for entity_name in block_map:
+		if block_map[entity_name].size() >= 2:
+			no_go[entity_name] = true
+	return no_go
+
+func entity_for_level(level_index, block_map = {}):
+	var thou_shalt_not = _forbidden_entities(block_map)
+	var picker = get_level(level_index)[PICKER]
+	var filtered = picker.filter(func(e): return not e[0] in thou_shalt_not)
+	if 0 == filtered.size():
+		return null
+	var previous_sum = picker.reduce(func(accum, e): return accum + e[1], 0)
+	var current_sum = filtered.reduce(func(accum, e): return accum + e[1], 0)
+	var scale = previous_sum / current_sum
+	for e in filtered:
+		e[1] *= scale
+	filtered[filtered.size()-1][1] = 88
 	var r = randf()
-	for entry in picker:
+	for entry in filtered:
 		if entry[1] >= r:
-			return entry[0]
-	return picker[-1][0]
-	#return random_entity()
+			return entity_by_name(entry[0])
+	return entity_by_name(filtered[filtered.size()-1][0])
+
+func entity_by_name(entity_name:String):
+	if not entity_name in bestiary:
+		print("ERROR: no beasty matches ", entity_name)
+	return bestiary[entity_name]
 
 ##########################################################
 
@@ -138,7 +157,6 @@ func _entity_probability(chance):
 		var v = p[1]
 		p[1] += so_far
 		so_far += v
-
 	return probably
 
 func _ep_weak_sauce(e,sum):
