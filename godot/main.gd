@@ -4,11 +4,29 @@ var block_scene = preload("res://block.tscn")
 
 @onready var fxAudio = $fxAudio
 @onready var mainAudio = $mainAudio
-@onready var backBox = $Board/backwall/CollisionShape3D/Box
-@onready var floorBox = $Board/floor/CollisionShape3D/Box
-@onready var leftBox = $Board/leftwall/CollisionShape3D/Box
-@onready var rightBox = $Board/rightwall/CollisionShape3D/Box
-@onready var boxes = [backBox, floorBox, leftBox, rightBox]
+
+@onready var backBox =  $Board/backwall/Box
+@onready var floorBox = $Board/floor/Box
+@onready var leftBox =  $Board/leftwall/Box
+@onready var rightBox = $Board/rightwall/bottomBox/Box
+@onready var topBox = $Board/rightwall/topBox/Box
+@onready var right_wall = $Board/rightwall
+@onready var hide_bonus = $Board/Info/walls/hideBonus
+@onready var boxes = [backBox, floorBox, leftBox, rightBox, topBox, hide_bonus]
+
+@onready var label_level = $Board/Info/Level/Value
+@onready var label_kills = $Board/Info/Kills/Value
+@onready var label_required = $Board/Info/Required/Value
+@onready var label_health = $Board/Info/Health/Value
+@onready var label_max_health = $Board/Info/MaxHealth/Value
+@onready var label_score = $Board/Info/Score/Value
+@onready var label_bonus = $Board/Info/Bonus/Value
+
+@onready var show_bonus = $Board/Info/Bonus
+
+
+@onready var u_win = $Informatica/Win
+@onready var u_lose = $Informatica/Lose
 
 # note: these are set by level difficulty
 var gravity = .25
@@ -18,9 +36,15 @@ var size_steps_not = 4
 var kills = 0
 var current_level = 0
 var level = {}
-var experience = 0
-var health = 10
+var score = 0
+var bonus_count = 0
+var possible_count = 0
+var missed_count = 0
+var is_bonus_level = false
+var loading = false
+var game_over = false
 
+# state variables 
 var current_block = null
 var started = false
 var block_map = {}
@@ -31,19 +55,29 @@ var save_size = -1
 var should_watch_mouse = false
 var mouse_button_at = null
 
-# Called when the node enters the scene tree for the first time.
+###################################################################################################
+
 func _ready():
 	started = true
 	_update_audio()
 	_load_level(0)
 
 func _load_level(level_index:int=0):
+	if level_index >= Fof.world.levels.size():
+		game_over = true
+		u_win.show()
+		return
+	
+	loading = true
 	current_level = level_index
-	kills = 0
-	block_map = {}
-	for b in _get_blocks():
-		remove_child(b)
 	level = Fof.get_level(current_level)
+	kills = 0
+	possible_count = level.chance.size()
+	kills = 0
+	missed_count = 0
+	bonus_count = 0
+	block_map = {}
+	_remove_blocks()
 	gravity = level.speed
 	move_force = level.force
 	mainAudio.stream = level[Fof.MUSIC]
@@ -51,12 +85,37 @@ func _load_level(level_index:int=0):
 	# TODO: make this nicer / make sense / fix uvs
 	for box in boxes:
 		box.set_material(level.material)
-	
+	_update_status()
+	if Fof.BONUS in level:
+		show_bonus.show()
+		hide_bonus.hide()
+		right_wall.position.y = 7 + level.bonus.gap
+	else:
+		show_bonus.hide()
+		hide_bonus.show()
+		right_wall.position.y = 7
 	_create_new_box()
+	loading = false
+
+###################################################################################################
 
 func _process(_delta):
-	if current_block && current_block.sleeping:
+	if !game_over and !loading and current_block && current_block.sleeping:
 		_you_have_fallen_and_you_cant_get_up() 
+
+func _update_status():
+	#score
+	#possible_count
+	#missed_count
+	label_level.text = level.name
+	label_kills.text = str(kills)
+	label_required.text = str(level.required)
+	label_health.text = str(possible_count - missed_count)
+	label_max_health.text = str(possible_count)
+	label_score = str(score)
+	label_bonus = str(bonus_count)
+	
+###################################################################################################
 
 # TODO: clean this up ... it's disgusting
 func _input(event):
@@ -100,15 +159,20 @@ func _key_pressed(code:int):
 	if code == KEY_3: _load_level(2) # cave
 	if code == KEY_4: _load_level(3) # lair
 	if code == KEY_5: _load_level(4) # pit
-	if code == KEY_M: _toggle_mute()
+	if code == KEY_9: _load_level(9) # win
+	if code == KEY_M: toggle_mute()
 
-func _toggle_mute():
+###################################################################################################
+
+func toggle_mute():
 	muted = !muted
 	_update_audio()
 
 func _update_audio():
 	mainAudio.set_mute(muted)
-	fxAudio.muted = muted	
+	fxAudio.muted = muted
+
+###################################################################################################
 
 func _move(force:Vector3):
 	if current_block:
@@ -121,6 +185,11 @@ func _size(size_change:int):
 func _create_new_box():
 	var block = block_scene.instantiate()
 	var entity = Fof.entity_for_level(current_level, block_map)
+	if null == entity:
+		u_lose.show()
+		print("U LOST I GUESS....")
+		game_over = true
+		return
 	block.entity = entity
 	_add_block(block, entity)
 	block.configure(self, _random_position(), _random_spin(), gravity, entity)
@@ -130,6 +199,11 @@ func _add_block(block, entity):
 	var entity_name = entity[Fof.NAME]
 	add_child(block)
 	current_block = block
+	
+	if Fof.BONUS == entity.type:
+		block.set_size(0)
+		save_size = -1
+		return
 	
 	var sizes = []
 	if entity_name in block_map:
@@ -145,17 +219,17 @@ func _add_block(block, entity):
 		block_map[entity_name] = [block]
 		save_size = size
 
-func on_collision(_block,body):
-	if body.name == "frontwall" || body.name == "backwall":
-		return
-	fxAudio.play_tonk() 
+###################################################################################################		
 
 func _you_have_fallen_and_you_cant_get_up():
 	if save_size > -.33:
 		current_block.set_size(save_size)
-	_check_match()
+	if Fof.BONUS != current_block.entity.type:
+		_check_match()
 	_create_new_box()
-	
+
+###################################################################################################
+
 func _check_match():
 	var entity_name = current_block.entity[Fof.NAME]
 	var blocks = block_map[entity_name]
@@ -173,48 +247,58 @@ func _check_match():
 		if missed.size():
 			_missed(current_block, missed, blocks)
 
-# TODO: play the right tone for win / gain
+###################################################################################################
 
+# TODO: play the right tone for win / gain
 func _matched(primary, others, _blocks):
 	print("matched ", primary.entity, " and ", others.size(), " others")
 	match primary.entity.type:
-		"foes":   _killed(primary, others.size()+1)
-		"friend": _helped(primary, others.size()+1)
+		Fof.FOES:    _killed(primary, others.size()+1)
+		Fof.FRIENDS: _helped(primary, others.size()+1)
 	_remove_block(primary)
 	for other in others:
 		_remove_block(other)
 	for block in _get_blocks():
 		block.wakeUp()
 
-# TODO: give out the reward
 # TODO: play per monster sound?
 func _killed(block, count):
 	fxAudio.play_fx(fxAudio.CLASH)
 	kills = kills + 1
-	experience += block.entity.level * count * 17
-	print(kills, " of ",level.required, " kills, and experience is ", experience )
+	score += block.entity.level * count * 17
+	print(kills, " of ",level.required, " kills, and experience is ", score )
 	if kills >= level.required:
 		print("VICTORIOUS!")
 		_load_level(current_level + 1 )
-
-# TODO: remove a baddy
-# TODO: play per helper sound?
-func _helped(entity, count):
-	fxAudio.play_fx(fxAudio.BELL3)
-	print("you got help from ", count, " ", entity.name, "!")
-
-# TODO: animate this
-func _remove_block(block):
-	remove_child(block)
-	if block.entity.name in block_map:
-		block_map[block.entity.name].erase(block)
 	else:
-		print("ERROR: could not find ", block.entity.name, " in ", block_map)
+		_update_status()
+
+# TODO: play per helper sound?
+func _helped(block, count):
+	fxAudio.play_fx(fxAudio.BELL3) #TODO: better sound
+	var picks = []
+	for entity_name in block_map:
+		var other = Fof.entity_by_name(entity_name)
+		if other and other.type == Fof.FOES:
+			picks.append_array(block_map[entity_name])
+	var picked = null if !picks.size() else picks.pick_random()
+	if picked:
+		_killed(picked,1)
+		_remove_block(picked)
+		print("you got help from ", count, " ", block.entity.name, "! they killed ", picked.entity.name, "!")
+	else:
+		print(block.entity.name, " wanted to help, but you are too good!")
+
+###################################################################################################
 
 # TODO: handle the consequences
 func _missed(primary, others, _blocks):
 	print("missed ", primary.entity, " and ", others.size(), " others")
 	fxAudio.play_fx(fxAudio.OUCH)
+	missed_count = missed_count + 1
+	_update_status()
+
+###################################################################################################
 
 func _random_position():
 	return Vector3( 4 *_rand() - 1, 6 ,0*_rand())
@@ -225,5 +309,52 @@ func _random_spin():
 func _rand():
 	return randf_range(-1,+1)
 
+###################################################################################################
+
+func on_collision(_block,body):
+	if body.name == "frontwall" || body.name == "backwall":
+		return
+	fxAudio.play_tonk() 
+
 func _get_blocks():
 	return get_tree().get_nodes_in_group("blocks")
+
+func _remove_block(block):
+	if not block:
+		return
+	block.remove()
+	if block.entity.name in block_map:
+		block_map[block.entity.name].erase(block)
+	else:
+		print("ERROR: _remove_block could not find ", block.entity.name, " in ", block_map)
+
+func _remove_blocks():
+	for b in _get_blocks():
+		remove_child(b)
+
+###################################################################################################
+
+func _on_bonus_area_body_entered(body):
+	_bonuse_area(body, true)
+
+func _on_bonus_area_body_shape_exited(_body_rid, body, _body_shape_index, _local_shape_index):
+	_bonuse_area(body, false)
+
+func _bonuse_area(body, entered:bool):
+	var block = body.get_parent()
+	if not Fof.ENTITY in block:
+		print("suck it ", block, " from ", body)
+		return
+	# FIXME: do the score stuff after it's asleep.. just tagt it here..
+	if Fof.BONUS == block.entity.type:
+		print("nice fat bonus!")
+		if entered:
+			bonus_count = bonus_count + 1
+		else:
+			bonus_count = bonus_count - 1
+		_update_status()
+	else:
+		print("oops got ", block.entity.type, " enter:", entered)
+
+
+###################################################################################################

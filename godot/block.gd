@@ -2,7 +2,9 @@ extends Node3D
 
 @onready var collision : CollisionShape3D = $RigidBody3D/CollisionShape3D
 @onready var body : RigidBody3D = $RigidBody3D
-@onready var box : CSGBox3D = $RigidBody3D/CollisionShape3D/Box
+@onready var box : CSGBox3D = $RigidBody3D/Box
+@onready var animationPlayer = $AnimationPlayer
+
 var shape : BoxShape3D = null
 var main = null
 
@@ -17,8 +19,11 @@ var sleepyTime = 0
 @export var maxSleepiness   : float = .12
 @export var sleepyThreshold : float = 3.3
 
-const SCALE_MINIMUM = .8
-const SCALE_MAXIMUM = 2
+@export var glow_color = Color.WHITE
+@export var glow_intensity = .3
+
+@export var SCALE_MINIMUM = 1.5
+@export var SCALE_MAXIMUM = 3
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -39,20 +44,22 @@ func configure(main_, position_:Vector3, spin:Vector3, gravity:float, entity_):
 	body.angular_velocity = spin
 	body.gravity_scale = gravity
 	entity = entity_
-	box.set_material(entity["material"]) 
+	box.set_material(entity[Fof.MATERIAL])
 
 func _max_size():
-	return entity["level"]
+	return entity[Fof.LEVEL]
 
 func update_size(size_change:int):
-	#var max_size = 1 + entity["level"]
-	#_set_size(clamp(size + size_change, 0, max_size), max_size)
+	if Fof.BONUS == entity.type:
+		return
 	set_size(size+size_change)
 	
 # try to avoid picking a size that matches something already on the floor
 # this is a lot of work in gdscript since it's array lack explicity sizing
 # and fill can't take a lambda
 func random_size(sized:Array):
+	if Fof.BONUS == entity.type:
+		return set_size(0)
 	var possible = []
 	var lame = {}
 	for s in sized:
@@ -118,15 +125,22 @@ func _am_i_getting_sleepy(delta):
 			print("I'm WIDE AWAKE!!! cuz", ydiff, " vs ", abs(body.position.y - lastY), " in ", delta)
 		sleepyTime = 0
 
+func remove():
+	if not true:
+		return main.remove_child(self)
+	#print("removing ", entity.name)
+	box.set_material(entity[Fof.MATERIAL_COPY])
+	Fof.glow(box.material, glow_color, .3)
+	animationPlayer.play("remove") # TODO: make this less lame
+
 func _on_rigid_body_3d_body_entered(body_):
 	main.on_collision(self, body_)
 
 func _on_rigid_body_3d_body_shape_entered(_body_rid, _body, _body_shape_index, _local_shape_index):
-	#print("finally...", body_rid, body_, body_shape_index, local_shape_index)
+	#print("bump...", body_rid, body_, body_shape_index, local_shape_index)
 	#print("FALL ", _body.name)
 	#sleeping = true
 	pass # Replace with function body.
-
 
 func _on_rigid_body_3d_sleeping_state_changed():
 	if body.sleeping:

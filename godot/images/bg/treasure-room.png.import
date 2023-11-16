@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://8chcedcgvwuy"
-path.s3tc="res://.godot/imported/serpent.png-105b1e2ad7de93d7dfd83931831aa61a.s3tc.ctex"
+uid="uid://consbeyof5ukg"
+path.s3tc="res://.godot/imported/treasure-room.png-4b87b03d1a0f0607704723d0b1463c50.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://images/mr-tiles/serpent.png"
-dest_files=["res://.godot/imported/serpent.png-105b1e2ad7de93d7dfd83931831aa61a.s3tc.ctex"]
+source_file="res://images/bg/treasure-room.png"
+dest_files=["res://.godot/imported/treasure-room.png-4b87b03d1a0f0607704723d0b1463c50.s3tc.ctex"]
 
 [params]
 

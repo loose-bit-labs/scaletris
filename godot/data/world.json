@@ -1,4 +1,9 @@
 {
+	"game": {
+		"level_override":false,
+		"glow": true,
+		"scale": {"minimum":1.5, "maximum": 2.2}
+	},
 	"levels":[
 		{
 			"name": "village",
@@ -10,7 +15,26 @@
 				"squirrel frog scorpion bat serpent spider":4
 			},
 			"boss": "spider",
-			"music":"at-the-side-of-an-rpg-village-121718.mp3"
+			"music":"at-the-side-of-an-rpg-village-121718.mp3",
+			"bonus":{
+				"item":"coin_bag",
+				"count": 5,
+				"chance": 0.8,
+				"gap":-4.5
+			}
+		},
+		{
+			"name": "treasure-room",
+			"required":4,
+			"speed":0.33,
+			"force":100,
+			"chance": {
+				"frostgiant_axe":1
+			},
+			"music":"at-the-side-of-an-rpg-village-121718.mp3",
+			"bonusLevel": {
+				"time":3.00
+			}
 		},
 		{
 			"name": "woods",
@@ -107,7 +131,8 @@
 		},
 		"shelters": { "house": { "level":1 }, "inn": { "level":2 } },
 		"weapons":  { "frostgiant_axe": { "level":4 } },
-		"armor":    { "warhorse":       { "level":5 } },
+		"armor":    { "warhorse":  { "level":5 } },
+		"loot":     { "coin_bag":  { "level":2, "value":10 } },
 		"potions":   {}
 	}
 }

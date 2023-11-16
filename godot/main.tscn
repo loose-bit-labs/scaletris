@@ -1,39 +1,92 @@
-[gd_scene load_steps=14 format=3 uid="uid://c14i1wtlh6cqy"]
+[gd_scene load_steps=33 format=3 uid="uid://c14i1wtlh6cqy"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_f834v"]
+[ext_resource type="Texture2D" uid="uid://cxj76fnp1evfn" path="res://images/bg/village.png" id="2_0no1k"]
 [ext_resource type="Script" path="res://mainAudio.gd" id="3_d7c1v"]
 [ext_resource type="Script" path="res://fxAudio.gd" id="3_mt5kj"]
+[ext_resource type="Texture2D" uid="uid://consbeyof5ukg" path="res://images/bg/treasure-room.png" id="3_n4n7o"]
+[ext_resource type="Script" path="res://paused.gd" id="4_t7pre"]
+[ext_resource type="Texture2D" uid="uid://bkt0ed631cr3n" path="res://images/bg/work_bench.png" id="4_whk3h"]
+[ext_resource type="Script" path="res://gameOver.gd" id="5_510jg"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_m4gtk"]
-size = Vector3(10.2324, 0.560706, 0.61365)
+size = Vector3(12.623, 0.560706, 0.61365)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_do3kx"]
-albedo_color = Color(0.670588, 0.498039, 0.6, 1)
+albedo_texture = ExtResource("2_0no1k")
+uv1_scale = Vector3(1, -1, -1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ax87v"]
-size = Vector3(9.08008, 0.621308, 7.20045)
+size = Vector3(12.8672, 0.621308, 19.341)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6fqkn"]
 albedo_color = Color(0.882353, 0.843137, 0.847059, 1)
-albedo_texture_msdf = true
+albedo_texture = ExtResource("2_0no1k")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_tn0uu"]
-size = Vector3(1.48787, 0.960608, 8.35415)
+size = Vector3(1.48787, 0.277463, 21.2837)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iyodj"]
-albedo_color = Color(0.54902, 0.184314, 0.25098, 1)
+albedo_texture = ExtResource("2_0no1k")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_j4fwc"]
-size = Vector3(0.681809, 1.03728, 8.43425)
+size = Vector3(0.681809, 0.265513, 6.36558)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ntdjv"]
-albedo_color = Color(0.376471, 0.658824, 0.894118, 1)
+albedo_texture = ExtResource("3_n4n7o")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8qp2v"]
+size = Vector3(1, 23.8441, 0.247384)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_unf7i"]
-size = Vector3(8.93834, 0.69025, 7.29175)
+size = Vector3(13.4204, 0.69025, 8.08)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p7kat"]
+albedo_texture = ExtResource("4_whk3h")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kgfai"]
-albedo_color = Color(0.631373, 0.505882, 0.517647, 1)
+albedo_color = Color(0.360784, 0.356863, 0.352941, 1)
+albedo_texture = ExtResource("4_whk3h")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g0yv4"]
+albedo_texture = ExtResource("2_0no1k")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_16atg"]
+albedo_texture = ExtResource("3_n4n7o")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mot7i"]
+size = Vector3(1.82003, 4.49202, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7bhq1"]
+size = Vector3(1, 6.88859, 0.303008)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vxkqw"]
+size = Vector3(1, 24.2295, 0.236255)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_alflm"]
+size = Vector3(0.254354, 1.55366, 1)
+
+[sub_resource type="Environment" id="Environment_l5wru"]
+background_mode = 2
+glow_intensity = 0.95
+glow_hdr_threshold = 0.98
+
+[sub_resource type="Animation" id="Animation_6jj5w"]
+resource_name = "remove_block"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_pcy84"]
+_data = {
+"remove_block": SubResource("Animation_6jj5w")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sn4my"]
+transparency = 1
+albedo_color = Color(0, 0, 0, 0.431373)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qbs3o"]
+albedo_color = Color(0.807843, 0, 0.207843, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7b402"]
 
 [node name="Arena" type="Node3D"]
 script = ExtResource("1_f834v")
@@ -47,66 +100,186 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01915, 0, 0)
 [node name="floor" type="StaticBody3D" parent="Board"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/floor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.325793, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.675726, -0.325793, 0)
 shape = SubResource("BoxShape3D_m4gtk")
 
-[node name="Box" type="CSGBox3D" parent="Board/floor/CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.355178, 0)
-size = Vector3(8.86351, 0.009, 0.572545)
+[node name="Box" type="CSGBox3D" parent="Board/floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.37795, 0.029385, 0)
+size = Vector3(11.849, 0.009, 0.572545)
 material = SubResource("StandardMaterial3D_do3kx")
 
 [node name="backwall" type="StaticBody3D" parent="Board"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.24821)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/backwall"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 3.56871, -1.84793)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.29224, 8.97455, -1.84793)
 shape = SubResource("BoxShape3D_ax87v")
 
-[node name="Box" type="CSGBox3D" parent="Board/backwall/CollisionShape3D"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.26033, 0.045929)
-size = Vector3(7.31251, 0.009, 17.8561)
+[node name="Box" type="CSGBox3D" parent="Board/backwall"]
+transform = Transform3D(-4.37114e-08, 0, 1, 1, -4.37114e-08, 4.37114e-08, 4.37114e-08, 1, 1.91069e-15, -0.114996, 3.26866, -1.5876)
+size = Vector3(6.63554, 0.009, 9.17775)
 material = SubResource("StandardMaterial3D_6fqkn")
 
 [node name="leftwall" type="StaticBody3D" parent="Board"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -3.42378, 0, 0)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -4.77961, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/leftwall"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.71312e-10, 3.27628, -1.51229)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -6.59211e-08, 10.6826, -0.000273228)
 shape = SubResource("BoxShape3D_tn0uu")
 
-[node name="Box" type="CSGBox3D" parent="Board/leftwall/CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, -8.35188e-23, 0, -8.35188e-23, 1, -0.00650928, 0.542951, 0)
-size = Vector3(0.542889, 0.009, 6.57527)
+[node name="Box" type="CSGBox3D" parent="Board/leftwall"]
+transform = Transform3D(0.00631809, 7.59749e-08, -0.99998, -0.99998, -7.54964e-08, -0.00631809, 7.59749e-08, -1, -7.54964e-08, 0, 3.242, 0)
+size = Vector3(6.49269, 0.459531, 0.623739)
 material = SubResource("StandardMaterial3D_iyodj")
 
 [node name="rightwall" type="StaticBody3D" parent="Board"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.986862, 0, 0)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 4.466, 7, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Board/rightwall"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -1.08452e-07, 3.25917, -3.98946)
+[node name="bottomBox" type="CollisionShape3D" parent="Board/rightwall"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -3.76981, 0)
 shape = SubResource("BoxShape3D_j4fwc")
 
-[node name="Box" type="CSGBox3D" parent="Board/rightwall/CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, -8.35188e-23, 0, -8.35188e-23, 1, 0.00442438, 0.553636, 0)
-size = Vector3(0.563724, 0.009, 6.69989)
+[node name="Box" type="CSGBox3D" parent="Board/rightwall/bottomBox"]
+transform = Transform3D(1, 0, 0, 0, 1, -8.35188e-23, 0, -8.35188e-23, 1, 0, 0, 0)
+size = Vector3(0.537812, 0.181988, 6.38228)
+material = SubResource("StandardMaterial3D_ntdjv")
+
+[node name="topBox" type="CollisionShape3D" parent="Board/rightwall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.4558, 0)
+shape = SubResource("BoxShape3D_8qp2v")
+
+[node name="Box" type="CSGBox3D" parent="Board/rightwall/topBox"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -8.71256, 0)
+size = Vector3(0.537812, 0.181988, 6.38228)
 material = SubResource("StandardMaterial3D_ntdjv")
 
 [node name="frontwall" type="StaticBody3D" parent="Board"]
 transform = Transform3D(-0.999984, 0, -0.00563729, 0, 1, 0, 0.00563729, 0, -0.999984, 0, 0, 0.115766)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/frontwall"]
-transform = Transform3D(1, 4.65661e-10, 0, 0, -4.37114e-08, -1, -4.65661e-10, 1, -4.37114e-08, -0.00556719, 3.56971, -0.52077)
+transform = Transform3D(1, 4.65661e-10, 0, 0, -4.37114e-08, -1, -4.65661e-10, 1, -4.37114e-08, -1.47603, 3.36524, -0.52906)
 shape = SubResource("BoxShape3D_unf7i")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Board"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.59144, 3.47473, 0)
-size = Vector3(2.30956, 7.35988, 0.563815)
+[node name="Info" type="CSGBox3D" parent="Board"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.52887, 5.60916, 0)
+material_override = SubResource("StandardMaterial3D_p7kat")
+size = Vector3(1.93605, 1.85865, 0.531075)
 material = SubResource("StandardMaterial3D_kgfai")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.337688, 3.97205, 2.77457)
-light_energy = 3.0
-light_size = 0.33
+[node name="Level" type="Label3D" parent="Board/Info"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.441998, 0.328725, 0.298942)
+text = "LEVEL"
+
+[node name="Value" type="Label3D" parent="Board/Info/Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.582415, 0, 0)
+text = "0
+"
+
+[node name="Kills" type="Label3D" parent="Board/Info"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.449732, 0.0844998, 0.298942)
+text = "MATCHED
+"
+
+[node name="Value" type="Label3D" parent="Board/Info/Kills"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.597885, 0, 0)
+text = "0
+"
+
+[node name="Required" type="Label3D" parent="Board/Info"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.358553, 0.0844998, 0.298942)
+text = "OF"
+
+[node name="Value" type="Label3D" parent="Board/Info/Required"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.286629, 0, 0)
+text = "0
+"
+
+[node name="Health" type="Label3D" parent="Board/Info"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.445866, -0.143681, 0.298942)
+text = "AVAILABLE"
+
+[node name="Value" type="Label3D" parent="Board/Info/Health"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.597885, 0, 0)
+text = "0
+"
+
+[node name="MaxHealth" type="Label3D" parent="Board/Info"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.358553, -0.143681, 0.298942)
+text = "OF"
+
+[node name="Value" type="Label3D" parent="Board/Info/MaxHealth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.286629, 0, 0)
+text = "0
+"
+
+[node name="Score" type="Label3D" parent="Board/Info"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.312405, -0.367374, 0.293211)
+text = "SCORE
+"
+
+[node name="Value" type="Label3D" parent="Board/Info/Score"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.460117, 0, 0)
+text = "0
+"
+
+[node name="Bonus" type="Label3D" parent="Board/Info"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.528087, -0.576935, 0.310448)
+text = "Bonus        OF    3"
+horizontal_alignment = 0
+
+[node name="Value" type="Label3D" parent="Board/Info/Bonus"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.677222, 0, 0)
+text = "0
+"
+
+[node name="walls" type="Node3D" parent="Board/Info"]
+
+[node name="hideBonus" type="CSGBox3D" parent="Board/Info/walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.16958, 0)
+visible = false
+size = Vector3(1.92269, 4.96627, 0.545165)
+material = SubResource("StandardMaterial3D_g0yv4")
+
+[node name="backBonus" type="CSGBox3D" parent="Board/Info/walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0475044, -3.18285, -0.23666)
+size = Vector3(2.19163, 4.89986, 0.002)
+material = SubResource("StandardMaterial3D_16atg")
+
+[node name="bonus_area" type="Area3D" parent="Board/Info/walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.139648, -3.06178, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Board/Info/walls/bonus_area"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.157982, -0.301603, 0)
+shape = SubResource("BoxShape3D_mot7i")
+
+[node name="farrightwall" type="StaticBody3D" parent="Board"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 6.65673, 3.1561, 0)
+
+[node name="Box" type="CSGBox3D" parent="Board/farrightwall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.004, 0, 0)
+size = Vector3(0.537812, 6.34213, 0.332784)
+material = SubResource("StandardMaterial3D_ntdjv")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Board/farrightwall"]
+shape = SubResource("BoxShape3D_7bhq1")
+
+[node name="bonuswall" type="StaticBody3D" parent="Board"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.206, 8.8, 0)
+
+[node name="Box" type="CSGBox3D" parent="Board/bonuswall"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 3.242, 0)
+size = Vector3(0.720938, 0.270671, 6.57527)
+material = SubResource("StandardMaterial3D_iyodj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Board/bonuswall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.0302, 0)
+shape = SubResource("BoxShape3D_vxkqw")
+
+[node name="StaticBosdy3D" type="StaticBody3D" parent="Board"]
+
+[node name="extraCollision" type="CollisionShape3D" parent="Board/StaticBosdy3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.46597, 6.93397, 0)
+shape = SubResource("BoxShape3D_alflm")
 
 [node name="mainAudio" type="AudioStreamPlayer3D" parent="."]
 volume_db = -8.8
@@ -116,4 +289,119 @@ script = ExtResource("3_d7c1v")
 volume_db = -22.22
 script = ExtResource("3_mt5kj")
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_l5wru")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.783794, 4.18024, 4.2072)
+light_intensity_lumens = 222.0
+omni_range = 8.56609
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_pcy84")
+}
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6089, 3.28297, 0)
+light_intensity_lumens = 100.0
+omni_range = 2.50582
+
+[node name="Informatica" type="Node3D" parent="."]
+
+[node name="Paused" type="CSGBox3D" parent="Informatica"]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.667956, 3.14299, 1.26077)
+visible = false
+size = Vector3(6.13871, 4.61145, 0.19972)
+material = SubResource("StandardMaterial3D_sn4my")
+script = ExtResource("4_t7pre")
+
+[node name="Title" type="Label3D" parent="Informatica/Paused"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.82713, 0.154547)
+text = "PAUSED"
+font_size = 128
+
+[node name="LabelMuted" type="Label3D" parent="Informatica/Paused"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0286331, 1.20761, 0)
+text = "(m)uted"
+
+[node name="MutedBox" type="CSGBox3D" parent="Informatica/Paused/LabelMuted"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.550558, -0.0304446, 0.110711)
+size = Vector3(0.18, 0.18, 0.0126728)
+material = SubResource("StandardMaterial3D_qbs3o")
+
+[node name="UnmutedBox" type="CSGBox3D" parent="Informatica/Paused/LabelMuted"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.550558, -0.0304446, 0.110711)
+visible = false
+size = Vector3(0.18, 0.18, 0.0126728)
+material = SubResource("StandardMaterial3D_7b402")
+
+[node name="Explanation" type="Label3D" parent="Informatica/Paused"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32748, -0.506396, 0)
+text = "Goal:  Scale matching blocks to collect them and advance levels
+
+Legend:
+- MATCHED shows how many pairs have been collected. 
+- AVAILABLE shows how many kinds of blocks can still fall.
+                        Don't let it get to zero!
+Controls:
+- Scale Blocks:  mouse wheel or up/down arrows
+- Move Blocks: click and drag or left/right arrows
+
+Some blocks are friendly! Matching them will clear an unmatched
+hostile block"
+horizontal_alignment = 0
+
+[node name="Win" type="CSGBox3D" parent="Informatica"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.667956, 3.14299, 1.26077)
+visible = false
+size = Vector3(6.13871, 4.61145, 0.19972)
+material = SubResource("StandardMaterial3D_sn4my")
+script = ExtResource("5_510jg")
+
+[node name="Title" type="Label3D" parent="Informatica/Win"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.42208, 0.154547)
+text = "YOU WON!"
+font_size = 128
+
+[node name="Explanation" type="Label3D" parent="Informatica/Win"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.118121, -0.506396, 0)
+text = "WOW! That was amazing!
+
+You were doing so well and then it's like you just leveled up!
+
+Like way, way, up! Like totally all the way up!
+
+Congrats!
+
+Hit the any key or click the mouse to try again."
+
+[node name="Lose" type="CSGBox3D" parent="Informatica"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.667956, 3.14299, 1.26077)
+visible = false
+size = Vector3(6.13871, 4.61145, 0.19972)
+material = SubResource("StandardMaterial3D_sn4my")
+script = ExtResource("5_510jg")
+
+[node name="Title" type="Label3D" parent="Informatica/Lose"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.47118, 0.154547)
+text = "YOU LOST!"
+font_size = 128
+
+[node name="Explanation" type="Label3D" parent="Informatica/Lose"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.286929, -0.494122, 0)
+text = "We were all cheering for, because, frankly, you were doing 
+an amazing job!
+
+Then suddenly you were not doing so well...
+
+And I was all like: game over, dude!
+
+Hit the any key or click the mouse to try again."
+
+[connection signal="body_entered" from="Board/Info/walls/bonus_area" to="." method="_on_bonus_area_body_entered"]
+[connection signal="body_shape_exited" from="Board/Info/walls/bonus_area" to="." method="_on_bonus_area_body_shape_exited"]
 [connection signal="finished" from="mainAudio" to="mainAudio" method="_on_finished"]
+[connection signal="visibility_changed" from="Informatica/Win" to="Informatica/Win" method="_on_visibility_changed"]
+[connection signal="visibility_changed" from="Informatica/Lose" to="Informatica/Lose" method="_on_visibility_changed"]

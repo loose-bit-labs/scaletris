@@ -8,14 +8,31 @@ extends Node
 
 const NAME = "name"
 const MATERIAL = "material"
+const IMAGE = "image"
+const MATERIAL_COPY = "material_copy"
 const TYPE = "type"
 const FOF = "fof"
 const BESTIARY = "bestiary"
 const CHANCE = "chance"
+const LEVEL = "level"
 const LEVELS = "levels"
 const PICKER = "picker"
 const MUSIC = "music"
 const BOSS = "boss"
+const FRIENDS = "friends"
+const FOES = "foes"
+const SCALE = "scale"
+const MINIMUM = "minimum"
+const MAXIMUM = "maximum"
+const GAME = "game"
+const BONUS = "bonus"
+const ITEM = "item"
+const COUNT = "count"
+const GAP = "gap"
+const BONUS_LEVEL = "bonusLevel"
+const LOOT = "loot"
+const BLOCK = "Block"
+const ENTITY = "entity"
 
 #################################################################################################
 
@@ -24,7 +41,7 @@ const IMAGE_EXTENSION = ".png"
 
 const BG_ROOT = "res://images/bg/"
 
-const WORLD_FILE = "res://data/world.json"
+@export var WORLD_FILE = "res://data/world.json"
 var world
 var bestiary
 
@@ -46,12 +63,12 @@ func _load_bestiary(b):
 		var entities = b[type]
 		for name_ in entities:
 			var entity = entities[name_]
-			var resource = IMAGE_ROOT + name_ + IMAGE_EXTENSION
-			var material = _image_to_material(resource)
-			#print(name_," is a ", type, " gimme ", resource, material)
+			var image_resource = IMAGE_ROOT + name_ + IMAGE_EXTENSION
 			entity[NAME] = name_
+			entity[IMAGE] = load(image_resource)
 			entity[TYPE] = type
-			entity[MATERIAL] = material
+			entity[MATERIAL] = _image_to_material(entity[IMAGE], type)
+			entity[MATERIAL_COPY] = _image_to_material(entity[IMAGE])
 			lookup[name_] = entity # TODO: check collisions
 	return lookup
 
@@ -60,16 +77,83 @@ func _load_levels(levels):
 	for level in levels:
 		var chance = level[CHANCE]
 		level[PICKER] = _entity_probability(chance)
-		level[MATERIAL] = _image_to_material(BG_ROOT+level[NAME]+IMAGE_EXTENSION)
+		level[IMAGE] = load(BG_ROOT+level[NAME]+IMAGE_EXTENSION)
+		level[MATERIAL] = _image_to_material(level[IMAGE], LEVELS)
 		level[MUSIC] = load("res://audio/music/"+level[MUSIC])
 
-func get_level(level:int = 0):
-	level = level if level >= 0 else 0
-	level = level if level < world[LEVELS].size() else world[LEVELS].size() - 1
-	return world[LEVELS][level]
+func clamp_level_index(level_index:int = 0):
+	return clamp(level_index, 0, world[LEVELS].size() - 1)
 
-func _map_count(entity_name, block_map:Dictionary):
-	return 0 if entity_name not in block_map else block_map[entity_name].size()
+func get_level(level_index:int = 0):
+	return world[LEVELS][clamp_level_index(level_index)]
+
+func get_scale(level_index:int = 0):
+	for src in [get_level(level_index), world[GAME]]:
+		if SCALE in src:
+			return src[SCALE]
+	return {}
+
+#			"bonus":{
+#				"item":"frostgiant_axe",
+#				"count": 5,
+#				"chance": 0.1,
+#				"gap":-4.5
+#			}
+func get_bonus(level_index:int = 0):
+	var level = get_level(level_index)
+	return null if not BONUS in level else level[BONUS]
+
+func get_gap(level_index:int = 0):
+	var bonus = get_bonus(level_index)
+	return 0 if (!bonus or not GAP in bonus) else bonus[GAP]
+
+func entity_for_level(level_index:int, block_map = {}):
+	var bonus = _bonus_item_for_level(level_index, block_map)
+	if bonus:
+		return bonus
+	var thou_shalt_not = _forbidden_entities(block_map)
+	var chance = get_level(level_index)[CHANCE]
+	var picker = _entity_probability(chance, thou_shalt_not)
+	if !picker.size():
+		return null
+	var r = randf()
+	var entity_name = null
+	for entry in picker:
+		if entry[1] >= r:
+			entity_name = entry[0]
+			break
+	if !entity_name:
+		entity_name = picker[picker.size()-1][0]
+	var entity = entity_by_name(entity_name, level_index)
+	if !entity:
+		print("ERROR: entity_for_level for ", entity_name, " from ", picker )
+	return entity
+
+func _bonus_item_for_level(level_index:int, block_map = {}):
+	var bonus = get_bonus(level_index)
+	if bonus:
+		var bonus_count = 0 if not BONUS in block_map else block_map[BONUS].size()
+		var bonus_max = 5 if not COUNT in bonus else bonus[COUNT]
+		if bonus_count >= bonus_max:
+			return null
+		var bonus_chance = .1 if not CHANCE in bonus else bonus[CHANCE] - bonus_count * .01
+		var r = randf()
+		if r < bonus_chance:
+			var bonus_item = entity_by_name(bonus.item).duplicate()
+			bonus_item.type = BONUS
+			return bonus_item
+	return null
+
+func entity_by_name(entity_name:String, level_index:int = -1):
+	if not entity_name in bestiary:
+		print("ERROR: no beasty matches ", entity_name)
+		return null
+	var entity = bestiary[entity_name]
+	if world.game.level_override and level_index >= 0:
+		entity.level = level_index + 3
+	return entity
+
+##########################################################
 
 func _forbidden_entities(block_map:Dictionary):
 	var no_go = {}
@@ -78,34 +162,28 @@ func _forbidden_entities(block_map:Dictionary):
 			no_go[entity_name] = true
 	return no_go
 
-func entity_for_level(level_index, block_map = {}):
-	var thou_shalt_not = _forbidden_entities(block_map)
-	var picker = get_level(level_index)[PICKER]
-	var filtered = picker.filter(func(e): return not e[0] in thou_shalt_not)
-	if 0 == filtered.size():
-		return null
-	var previous_sum = picker.reduce(func(accum, e): return accum + e[1], 0)
-	var current_sum = filtered.reduce(func(accum, e): return accum + e[1], 0)
-	var scale = previous_sum / current_sum
-	for e in filtered:
-		e[1] *= scale
-	filtered[filtered.size()-1][1] = 88
-	var r = randf()
-	for entry in filtered:
-		if entry[1] >= r:
-			return entity_by_name(entry[0])
-	return entity_by_name(filtered[filtered.size()-1][0])
+func _image_resource_to_material(image_resource:String, type:String=""):
+	return _image_to_material(load(image_resource), type)
 
-func entity_by_name(entity_name:String):
-	if not entity_name in bestiary:
-		print("ERROR: no beasty matches ", entity_name)
-	return bestiary[entity_name]
-
-##########################################################
-
-func _image_to_material(image):
+func _image_to_material(image, type:String=""):
 	var material = StandardMaterial3D.new()
-	material.set_texture(StandardMaterial3D.TEXTURE_ALBEDO, load(image)) 
+	material.set_texture(StandardMaterial3D.TEXTURE_ALBEDO, image)
+	if world.game.glow:
+		var c = 33
+		var o = 0
+		var i = .01
+		var a = .01
+		match type:
+			FRIENDS: glow(material, Color(o,c,o,a), i)
+			FOES:    glow(material, Color(c,o,o,a), i)
+			LOOT:    glow(material, Color(c,c,o,a), i) 
+	return material
+
+func glow(material:StandardMaterial3D, color:Color, intensity:float):
+	material.emission_enabled = true
+	material.emission = color
+	material.emission_energy_multiplier = intensity
+	material.emission_intensity = intensity
 	return material
 
 # rather than have 10 keys with the same value in the json,
@@ -123,11 +201,10 @@ func _unspace(node, path="/"):
 		var nu = {}
 		for k in node:
 			var v = _unspace(node[k], path + "/" +k )
-			#print("K>",k," : ", v)
 			if k.contains(" "):
 				if debug:
 					print("OH! ", path, "! You also have spaces in '", k, "'! let's split that up!!!")
-				for subk in k.split(" "):
+				for subk in k.strip_edges(true, true).split(" "):
 					if(debug):
 						print(">>, ", path, " SAVE ", subk, " with ", v )
 					nu[subk] = v
@@ -142,14 +219,25 @@ func _unspace(node, path="/"):
 
 ##########################################################
 
-# chatGPT + fiddling
-func _entity_probability(chance):
+# input: map from entity_name to weight
+# return: sorted array where each element is an array containing
+#         the entity_name and scaled probability in increasing 
+#         cumulative likeliness
+#         eg:  {bat:1,squirrel:1} -> [ [bat,.5], [squirrel,.1]]
+#         eg:  {bat:2,squirrel:1} -> [ [squirrel,.33], [bat, 1]]
+#         then a number from [0:1] should iteratively pick based
+#         on the distribution
+func _entity_probability(chance:Dictionary, forbidden:Dictionary={}):
 	var probably = []
 	var sum = 0
-	for k in chance:
-		var v = chance[k]
-		probably.append([k,v])
-		sum = sum + v
+	for entity_name in chance:
+		if entity_name in forbidden:
+			continue
+		var weight = chance[entity_name]
+		probably.append([entity_name,weight])
+		sum = sum + weight
+	if 0 == sum:
+		return {}
 	probably = probably.map(func(e): return _ep_weak_sauce(e,sum))
 	probably.sort_custom(func(a,b): return a[1]<b[1])
 	var so_far = 0

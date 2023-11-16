@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c3m6k73bmgy0h"]
+[gd_scene load_steps=13 format=3 uid="uid://c3m6k73bmgy0h"]
 
 [ext_resource type="Script" path="res://welcome.gd" id="1_cuc1k"]
 [ext_resource type="AudioStream" uid="uid://b5vvqjq6brewx" path="res://audio/music/whip-110235.mp3" id="2_sutqe"]
@@ -29,6 +29,12 @@ albedo_color = Color(0.898039, 0.415686, 0.164706, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t18hp"]
 albedo_color = Color(0.901961, 0.556863, 0.74902, 1)
+
+[sub_resource type="Environment" id="Environment_nmikw"]
+background_mode = 2
+background_intensity = 1.0
+ambient_light_source = 3
+ambient_light_color = Color(0.541176, 0.705882, 0.866667, 1)
 
 [node name="Node3D" type="Node3D"]
 script = ExtResource("1_cuc1k")
@@ -158,16 +164,20 @@ transform = Transform3D(0.00904067, -0.999959, 0, 0.999959, 0.00904067, 0, 0, 0,
 size = Vector3(0.125854, 0.364326, 0.0973317)
 material = SubResource("StandardMaterial3D_upxee")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.564039)
-light_energy = 0.33
-omni_range = 1.84005
-
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 size = Vector3(4.97573, 2.65867, 0.109421)
 material = SubResource("StandardMaterial3D_t18hp")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.20451)
 stream = ExtResource("2_sutqe")
 volume_db = -22.84
 autoplay = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_nmikw")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.74797)
+light_intensity_lumens = 55.0
+omni_range = 3.71106
