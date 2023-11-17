@@ -19,21 +19,22 @@
 			"bonus":{
 				"item":"coin_bag",
 				"count": 5,
-				"chance": 0.8,
+				"chance": 0.2,
 				"gap":-4.5
 			}
 		},
 		{
 			"name": "treasure-room",
-			"required":4,
-			"speed":0.33,
+			"required":8,
+			"speed":0.88,
 			"force":100,
 			"chance": {
-				"frostgiant_axe":1
+				"crow":1,
+				"squirrel frog scorpion bat serpent spider":4
 			},
 			"music":"at-the-side-of-an-rpg-village-121718.mp3",
 			"bonusLevel": {
-				"time":3.00
+				"timer":180
 			}
 		},
 		{

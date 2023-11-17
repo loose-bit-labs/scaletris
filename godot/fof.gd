@@ -93,12 +93,6 @@ func get_scale(level_index:int = 0):
 			return src[SCALE]
 	return {}
 
-#			"bonus":{
-#				"item":"frostgiant_axe",
-#				"count": 5,
-#				"chance": 0.1,
-#				"gap":-4.5
-#			}
 func get_bonus(level_index:int = 0):
 	var level = get_level(level_index)
 	return null if not BONUS in level else level[BONUS]

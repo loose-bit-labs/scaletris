@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://c14i1wtlh6cqy"]
+[gd_scene load_steps=35 format=3 uid="uid://c14i1wtlh6cqy"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_f834v"]
 [ext_resource type="Texture2D" uid="uid://cxj76fnp1evfn" path="res://images/bg/village.png" id="2_0no1k"]
@@ -63,6 +63,15 @@ size = Vector3(1, 6.88859, 0.303008)
 [sub_resource type="BoxShape3D" id="BoxShape3D_vxkqw"]
 size = Vector3(1, 24.2295, 0.236255)
 
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1g7xh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_81pqr"]
+albedo_color = Color(0.705882, 0.619608, 0.152941, 1)
+metallic = 0.57
+roughness = 0.33
+normal_scale = 2.0
+normal_texture = SubResource("NoiseTexture2D_1g7xh")
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_alflm"]
 size = Vector3(0.254354, 1.55366, 1)
 
@@ -81,7 +90,7 @@ _data = {
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sn4my"]
 transparency = 1
-albedo_color = Color(0, 0, 0, 0.431373)
+albedo_color = Color(0, 0, 0, 0.792157)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qbs3o"]
 albedo_color = Color(0.807843, 0, 0.207843, 1)
@@ -92,7 +101,7 @@ albedo_color = Color(0.807843, 0, 0.207843, 1)
 script = ExtResource("1_f834v")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00769901, 3.06059, 4.26016)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.138837, 3.06059, 4.26016)
 
 [node name="Board" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01915, 0, 0)
@@ -167,7 +176,7 @@ size = Vector3(1.93605, 1.85865, 0.531075)
 material = SubResource("StandardMaterial3D_kgfai")
 
 [node name="Level" type="Label3D" parent="Board/Info"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.441998, 0.328725, 0.298942)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.441998, 0.328725, 0.284321)
 text = "LEVEL"
 
 [node name="Value" type="Label3D" parent="Board/Info/Level"]
@@ -252,6 +261,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.139648, -3.06178, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.157982, -0.301603, 0)
 shape = SubResource("BoxShape3D_mot7i")
 
+[node name="BonusTimer" type="Label3D" parent="Board/Info"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.768434, 0.313547)
+visible = false
+text = "0:00"
+
 [node name="farrightwall" type="StaticBody3D" parent="Board"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 6.65673, 3.1561, 0)
 
@@ -264,16 +278,16 @@ material = SubResource("StandardMaterial3D_ntdjv")
 shape = SubResource("BoxShape3D_7bhq1")
 
 [node name="bonuswall" type="StaticBody3D" parent="Board"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.206, 8.8, 0)
-
-[node name="Box" type="CSGBox3D" parent="Board/bonuswall"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 3.242, 0)
-size = Vector3(0.720938, 0.270671, 6.57527)
-material = SubResource("StandardMaterial3D_iyodj")
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 8.8, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/bonuswall"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.0302, 0)
 shape = SubResource("BoxShape3D_vxkqw")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Board/bonuswall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.03973, 0)
+size = Vector3(1, 12.2876, 0.286747)
+material = SubResource("StandardMaterial3D_81pqr")
 
 [node name="StaticBosdy3D" type="StaticBody3D" parent="Board"]
 

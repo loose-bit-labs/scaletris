@@ -10,8 +10,8 @@ var main = null
 
 var size = -1
 var entity = {}
+var in_bonus_zone = false
 
-# TODO: needs tuning!
 # sleeping or mostly sleeping
 var sleeping = false
 var lastY = 88
@@ -38,6 +38,8 @@ func _process(delta):
 	if !sleeping:
 		_am_i_getting_sleepy(delta)
 
+
+
 func configure(main_, position_:Vector3, spin:Vector3, gravity:float, entity_):
 	self.main = main_
 	position = position_
@@ -57,7 +59,7 @@ func update_size(size_change:int):
 # try to avoid picking a size that matches something already on the floor
 # this is a lot of work in gdscript since it's array lack explicity sizing
 # and fill can't take a lambda
-func random_size(sized:Array):
+func random_size(sized:Array = []):
 	if Fof.BONUS == entity.type:
 		return set_size(0)
 	var possible = []
@@ -120,6 +122,7 @@ func _am_i_getting_sleepy(delta):
 			if debug:
 				print("SNORING AIN'T BORING!")
 			sleeping = true
+			main.i_was_so_tired(self)
 	else:
 		if debug && sleepyTime > 0:
 			print("I'm WIDE AWAKE!!! cuz", ydiff, " vs ", abs(body.position.y - lastY), " in ", delta)
@@ -145,3 +148,9 @@ func _on_rigid_body_3d_body_shape_entered(_body_rid, _body, _body_shape_index, _
 func _on_rigid_body_3d_sleeping_state_changed():
 	if body.sleeping:
 		sleeping = true
+
+func show_me():
+	return JSON.stringify(info())
+
+func info():
+	return {"size":size, "entity":entity.type, "sleeping":sleeping, "sleepyTime":sleepyTime, "in_bonus_zone":in_bonus_zone}
