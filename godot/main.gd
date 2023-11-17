@@ -70,8 +70,8 @@ var mouse_button_at = null
 func _ready():
 	started = true
 	_update_audio()
-	current_level = 1 #hack
-	bonus_count = 33 #hack
+	#current_level = 1 #hack
+	#bonus_count = 33 #hack
 	_load_level(current_level)
 
 func _load_level(level_index:int=0):
