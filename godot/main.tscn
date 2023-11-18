@@ -164,6 +164,7 @@ material = SubResource("StandardMaterial3D_ntdjv")
 
 [node name="frontwall" type="StaticBody3D" parent="Board"]
 transform = Transform3D(-0.999984, 0, -0.00563729, 0, 1, 0, 0.00563729, 0, -0.999984, 0, 0, 0.115766)
+visible = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/frontwall"]
 transform = Transform3D(1, 4.65661e-10, 0, 0, -4.37114e-08, -1, -4.65661e-10, 1, -4.37114e-08, -1.47603, 3.36524, -0.52906)
@@ -351,8 +352,9 @@ visible = false
 size = Vector3(0.18, 0.18, 0.0126728)
 material = SubResource("StandardMaterial3D_7b402")
 
-[node name="Explanation" type="Label3D" parent="Informatica/Paused"]
+[node name="NormalExplanation" type="Label3D" parent="Informatica/Paused"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32748, -0.506396, 0)
+visible = false
 text = "Goal:  Scale matching blocks to collect them and advance levels
 
 Legend:
@@ -366,6 +368,17 @@ Controls:
 Some blocks are friendly! Matching them will clear an unmatched
 hostile block"
 horizontal_alignment = 0
+
+[node name="BonusExplanation" type="Label3D" parent="Informatica/Paused"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0369482, 0)
+text = "Goal: click a block and scale it to match 
+its mate on the other side of the divider
+
+Once it's the same size, click its match 
+to earn bonus points before the timer
+get down to zero.
+
+Good Luck!"
 
 [node name="Win" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.667956, 3.14299, 1.26077)

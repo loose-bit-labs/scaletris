@@ -6,6 +6,8 @@ extends Node
 # 2. defining friend or foe
 # 3. results of match / mismatch
 
+@export var WORLD_FILE = "res://data/world.json"
+
 const NAME = "name"
 const MATERIAL = "material"
 const IMAGE = "image"
@@ -33,15 +35,16 @@ const BONUS_LEVEL = "bonusLevel"
 const LOOT = "loot"
 const BLOCK = "Block"
 const ENTITY = "entity"
+const REQUIRED = "required"
+const TILES = "tiles"
 
 #################################################################################################
 
-const IMAGE_ROOT = "res://images/mr-tiles/"
+const TILE_DEFAULT = "mr-tiles"
+const IMAGE_ROOT = "res://images/" #####/mr-tiles/"
 const IMAGE_EXTENSION = ".png"
 
 const BG_ROOT = "res://images/bg/"
-
-@export var WORLD_FILE = "res://data/world.json"
 var world
 var bestiary
 
@@ -59,24 +62,29 @@ func _load_world():
 
 func _load_bestiary(b):
 	var lookup = {}
+	var tiles = TILE_DEFAULT if not GAME in world or not TILES in world.game else world.game.tiles
 	for type in b:
 		var entities = b[type]
 		for name_ in entities:
 			var entity = entities[name_]
-			var image_resource = IMAGE_ROOT + name_ + IMAGE_EXTENSION
+			var image_resource = IMAGE_ROOT + tiles + "/" + name_ + IMAGE_EXTENSION
 			entity[NAME] = name_
 			entity[IMAGE] = load(image_resource)
 			entity[TYPE] = type
 			entity[MATERIAL] = _image_to_material(entity[IMAGE], type)
 			entity[MATERIAL_COPY] = _image_to_material(entity[IMAGE])
 			lookup[name_] = entity # TODO: check collisions
+			if not LEVEL in entity:
+				entity.level = 0
 	return lookup
 
 # TODO: load the "name" of level for the fx
 func _load_levels(levels):
 	for level in levels:
-		var chance = level[CHANCE]
-		level[PICKER] = _entity_probability(chance)
+		if not CHANCE in level:
+			# TODO: make sure is bonus level!
+			level.chance = {}
+		level[PICKER] = _entity_probability(level.chance)
 		level[IMAGE] = load(BG_ROOT+level[NAME]+IMAGE_EXTENSION)
 		level[MATERIAL] = _image_to_material(level[IMAGE], LEVELS)
 		level[MUSIC] = load("res://audio/music/"+level[MUSIC])
@@ -143,7 +151,7 @@ func entity_by_name(entity_name:String, level_index:int = -1):
 		print("ERROR: no beasty matches ", entity_name)
 		return null
 	var entity = bestiary[entity_name]
-	if world.game.level_override and level_index >= 0:
+	if (world.game.level_override or !entity.level )and level_index >= 0:
 		entity.level = level_index + 3
 	return entity
 

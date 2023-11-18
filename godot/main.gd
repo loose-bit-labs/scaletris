@@ -28,13 +28,14 @@ var block_scene = preload("res://block.tscn")
 
 @onready var u_win = $Informatica/Win
 @onready var u_lose = $Informatica/Lose
+@onready var explain_normal = $Informatica/Paused/NormalExplanation
+@onready var explain_bonus = $Informatica/Paused/BonusExplanation
 
 @onready var camera = $Camera3D
 
 # note: these are set by level difficulty
 var gravity = .25
 var move_force = 100
-var size_steps_not = 4
 
 var kills = 0
 var current_level = 0
@@ -59,6 +60,8 @@ var in_bonus_zone = false
 
 var bonus_index = 0
 var bonus_last = 0
+var bonus_list1 = []
+var bonus_list2 = []
 
 @export var muted = false
 
@@ -69,10 +72,11 @@ var mouse_button_at = null
 
 func _ready():
 	started = true
+	
 	_update_audio()
-	#current_level = 1 #hack
-	#bonus_count = 33 #hack
 	_load_level(current_level)
+
+###################################################################################################
 
 func _load_level(level_index:int=0):
 	if level_index >= Fof.world.levels.size():
@@ -85,20 +89,21 @@ func _load_level(level_index:int=0):
 	level = Fof.get_level(current_level)
 	
 	if _load_is_bonus():
-		_load_level(1+level_index)
+		_next_level(false)
+		loading = false
 		return
 	
-	_load_values()
+	_load_reset_values()
 	_load_blocks()
 	_load_has_bonus()
 	_load_start_level()
 	_update_status()
-	loading = false
 
 func _load_is_bonus(_level_index:int=0):
 	is_bonus_level = Fof.BONUS_LEVEL in level
 	if is_bonus_level:
 		if bonus_count < required_bonus_count:
+			print("sorry, needed ", required_bonus_count, " but you only collected ", bonus_count)
 			bonus_count = 0
 			return true
 		else:
@@ -110,7 +115,7 @@ func _load_is_bonus(_level_index:int=0):
 		bonus_wall.position.y = 8.8
 	return false
 
-func _load_values():
+func _load_reset_values():
 	possible_count = level.chance.size()
 	kills = 0
 	missed_count = 0
@@ -118,6 +123,8 @@ func _load_values():
 	gravity = level.speed
 	move_force = level.force
 	mainAudio.stream = level[Fof.MUSIC]
+	last_block = null
+	current_block = null
 	if !muted:
 		mainAudio.play()
 	_update_audio()
@@ -130,45 +137,68 @@ func _load_blocks():
 		box.set_material(level.material)
 
 func _load_has_bonus():
-	required_bonus_count = 5
+	required_bonus_count = 3
 	if Fof.BONUS in level:
 		label_bonus_count.show()
 		hide_bonus.hide()
 		right_wall.position.y = 7 + level.bonus.gap
-		required_bonus_count = level.bonus.count
+		if Fof.REQUIRED in level.bonus:
+			required_bonus_count = level.bonus.required
 	else:
 		label_bonus_count.hide()
 		hide_bonus.show()
 		right_wall.position.y = 7
 
 func _load_start_level():
+	loading = false
 	if is_bonus_level:
+		explain_normal.hide()
+		explain_bonus.show()
 		_load_bonus_level()
 	else:
+		explain_normal.show()
+		explain_bonus.hide()
 		_create_new_box()
 
 func _load_bonus_level():
 	bonus_timer = level.bonusLevel.timer
 	bonus_index = 0
 	bonus_last = 0
+	bonus_list1 = Fof.get_level(current_level-1).chance.keys()
+	bonus_list2 = Fof.get_level(current_level-1).chance.keys()
+	bonus_list1.shuffle()
+	bonus_list2.shuffle()
 
 func _drop_bonus_item():
-	var kz = level.chance.keys()
-	if bonus_index >= kz.size():
-		return
-	var entity_name = kz[bonus_index]
+	var modo = bonus_index % 2
 	bonus_index = bonus_index + 1
-	var entity = Fof.entity_by_name(entity_name)
-	var block1 = block_scene.instantiate()
-	var block2 = block_scene.instantiate()
-	add_child(block1)
-	add_child(block2)
-	var p1 = Vector3( -3 * randf() -1, 6, 0)
-	var p2 = Vector3( +2 * randf() +1, 6, 0)
-	block1.configure(self, p1, _random_spin(), gravity, entity)
-	block2.configure(self, p2, _random_spin(), gravity, entity)
-	block1.random_size()
-	block2.random_size([block1.size])
+	var list = bonus_list1 if modo else bonus_list2
+	var side = +1 if modo else - 1
+	var next = list.pop_front()
+	if !next:
+		#print("_load_bonus_level done? ", bonus_list1, " vs ",bonus_list2 )
+		bonus_index = -88
+		return
+	var entity = Fof.entity_by_name(next)
+	var block = _instantiate_block()
+	add_child(block)
+	var p = Vector3( side * 2 * randf() + side, 6, 0)
+	block.configure(self, p, _random_spin(), gravity, entity)
+	if next in block_map:
+		block.random_size([block_map[next][0].size])
+		block_map[next].append(block)
+	else:
+		block_map[next] = [block]
+		block.random_size()
+
+func _instantiate_block():
+	var block = block_scene.instantiate()
+	var scale_ = Fof.get_scale(current_level)
+	if Fof.MINIMUM in scale_:
+		block.SCALE_MINIMUM = scale_.minimum
+	if Fof.MAXIMUM in scale_:
+		block.SCALE_MAXIMUM = scale_.maximum
+	return block
 
 ###################################################################################################
 
@@ -185,29 +215,38 @@ func _process(delta):
 func _process_bonus_level(delta):
 	bonus_timer -= delta
 	bonus_last -= delta
-	if bonus_index < level.chance.keys().size() && bonus_last < 0:
+	if bonus_index >= 0 && bonus_last < 0:
 		_drop_bonus_item()
 		bonus_last = 1
 	_update_status()
 	if bonus_timer <= 0:
+		# TODO: play the sadness tune
 		print("wamp-wah!")
-		_load_level(1+current_level)
+		_next_level()
+
+func _next_level(sweet:bool = true):
+	if sweet:
+		print("TODO: play level success sound")
+	else:
+		print("TODO: play level fail sound")
+	_load_level(1 + current_level)
 
 func _update_status():
 	label_level.text = level.name
-	label_kills.text = str(kills)
-	label_required.text = str(level.required)
-	label_health.text = str(possible_count - missed_count)
-	label_max_health.text = str(possible_count)
 	label_score.text = str(score)
 	label_bonus.text = str(bonus_count)
 	if is_bonus_level:
 		_update_show_timer()
+	else:
+		label_kills.text = str(kills)
+		label_required.text = str(level.required)
+		label_health.text = str(possible_count - missed_count)
+		label_max_health.text = str(possible_count)
 
 func _update_show_timer():
 	var format_this = ""
 	if bonus_timer >= 60:
-		var minutes: int = int(bonus_timer) / 60
+		var minutes: int = int(bonus_timer / 60.)
 		var seconds: int = int(bonus_timer) % 60
 		format_this = "%d:%02d" % [minutes,seconds]
 	else:
@@ -216,7 +255,6 @@ func _update_show_timer():
 
 ###################################################################################################
 
-# TODO: clean this up ... it's disgusting
 func _input(event):
 	if event is InputEventKey and event.pressed:
 		_key_pressed(event.keycode) # temporary hack...
@@ -231,29 +269,40 @@ func _input(event):
 	if event.is_action_pressed("down"):
 		_size(-1)
 	if event is InputEventMouseButton:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_WHEEL_DOWN):
-			_size(-1)
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_WHEEL_UP):
-			_size(+1)
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			if is_bonus_level:
-				_bonus_click()
-			else:
-				should_watch_mouse = event.pressed
-				mouse_button_at = event.position
-	if event is InputEventMouseMotion && should_watch_mouse:
-		var x = event.position[0]
-		var y = event.position[1]
-		var xdiff = x - mouse_button_at[0]
-		var ydiff = y - mouse_button_at[1]
-		var threshold = 50 # FIXME: magic number goes where?!
-		if abs(xdiff)>threshold:
-			_move(Vector3(-1 if xdiff<0 else +1, 0, 0))
-			mouse_button_at[0] = x
-		# dunno if this is a good idea or not 
-		if abs(ydiff)>threshold:
-			_move(Vector3(0, .5 * (+1 if ydiff<0 else -1), 0))
-			mouse_button_at[1] = y
+		_handle_mouse_button(event)
+	if event is InputEventMouseMotion:
+		_handle_mouse_move(event)
+
+func _handle_mouse_button(event):
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_WHEEL_DOWN):
+		_size(-1)
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_WHEEL_UP):
+		_size(+1)
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		if is_bonus_level:
+			_bonus_click()
+		else:
+			should_watch_mouse = event.pressed
+			mouse_button_at = event.position
+	else:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			should_watch_mouse = event.pressed
+
+func _handle_mouse_move(event):
+	if !should_watch_mouse:
+		return
+	var x = event.position[0]
+	var y = event.position[1]
+	var xdiff = x - mouse_button_at[0]
+	var ydiff = y - mouse_button_at[1]
+	var threshold = 50 # FIXME: magic number goes where?!
+	if abs(xdiff)>threshold:
+		_move(Vector3(-1 if xdiff<0 else +1, 0, 0))
+		mouse_button_at[0] = x
+	# dunno if this is a good idea or not 
+	if abs(ydiff)>threshold:
+		_move(Vector3(0, .5 * (+1 if ydiff<0 else -1), 0))
+		mouse_button_at[1] = y
 
 func _key_pressed(code:int):
 	match code:
@@ -264,7 +313,13 @@ func _key_pressed(code:int):
 		KEY_5: _load_level(4) # pit
 		KEY_9: _load_level(9) # win
 		KEY_M: toggle_mute()
-		KEY_B: _show_blocks()
+		KEY_B: _bonus_hack()
+		KEY_Q: _show_blocks()
+		KEY_I: _tmi()
+
+func _bonus_hack():
+	bonus_count = 33
+	_load_level(1)
 
 const RAY_LENGTH = 100
 func _bonus_click():
@@ -282,30 +337,55 @@ func _bonus_click():
 	var block = result.collider.get_parent()
 	if not Fof.ENTITY in block:
 		return
-	print(block.entity.name)
+	_handle_bonus_blocks(block)
+
+func _handle_bonus_blocks(block):
 	last_block = current_block
 	current_block = block
-	if last_block and current_block:
-		if last_block.entity.name == current_block.entity.name:
-			print("nice, two ", current_block.entity.name)
-			var tmp = current_block
-			current_block = last_block
-			last_block = tmp
-		else:
-			print("sry")
-			last_block = null
+	# FIXME: this is not working
+	current_block.body.apply_central_force(Vector3(0,2.1,0))
+	#body.apply_impulse(f) #frq
+	#body.apply_central_force(f)
+	#TODO: some kinda of indicator for current
+	if not last_block:
+		return
+	
+	if last_block == current_block:
+		# TODO: clear indicator 
+		current_block = null
+		last_block = null
+		return
+	
+	if last_block.entity.name == current_block.entity.name:
+		print("nice, two ", current_block.entity.name)
+		if last_block.size == current_block.size:
+			score = score + 33
+			_remove_block(current_block)
+			_remove_block(last_block)
+			var remaining = block_map.size()
+			print("size matched ", block.entity.name, ", bonus_index is ", bonus_index, " and ", remaining )
+			if bonus_index < 0 and !remaining:
+				print("DECENT!")
+				_next_level(true)
 			current_block = null
-	#TODO: some kinda of indicator...
+			last_block = null
+		else:
+			print("size no match ", block.entity.name)
+	else:
+		pass
+		#print("no match...")
+		#current_block = last_block
 
 ###################################################################################################
 
 func toggle_mute():
 	muted = !muted
-	_update_audio()
+	return _update_audio()
 
 func _update_audio():
 	mainAudio.set_mute(muted)
 	fxAudio.muted = muted
+	return muted
 
 ###################################################################################################
 
@@ -315,18 +395,23 @@ func _move(force:Vector3):
 
 func _size(size_change:int):
 	if current_block:
-		if is_bonus_level:
-			if last_block:
-				current_block.update_size(size_change)
-		else:
-			current_block.update_size(size_change)
+		current_block.update_size(size_change)
 
+# bonus levels use _drop_bonus_item instead
 func _create_new_box():
-	var block = block_scene.instantiate()
+	if is_bonus_level:
+		# FIXME: should not happen
+		print("how did you get here?")
+		return
+	if loading:
+		# TODO: don't think this happens...
+		print("still loading...")
+		return
+	var block = _instantiate_block()
 	var entity = Fof.entity_for_level(current_level, block_map)
 	if null == entity:
+		print("U LOST I GUESS....", kills , " vs ", level.required)
 		u_lose.show()
-		print("U LOST I GUESS....")
 		game_over = true
 		return
 	block.entity = entity
@@ -414,7 +499,7 @@ func _killed(block, count):
 	print(kills, " of ",level.required, " kills, and experience is ", score )
 	if kills >= level.required:
 		print("VICTORIOUS!")
-		_load_level(current_level + 1 )
+		_next_level(true)
 	else:
 		_update_status()
 
@@ -436,7 +521,6 @@ func _helped(block, count):
 
 ###################################################################################################
 
-# TODO: handle the consequences
 func _missed(primary, others, _blocks):
 	print("missed ", primary.entity, " and ", others.size(), " others")
 	fxAudio.play_fx(fxAudio.OUCH)
@@ -470,8 +554,12 @@ func _remove_block(block):
 	block.remove()
 	if block.entity.name in block_map:
 		block_map[block.entity.name].erase(block)
+		if 0 == block_map[block.entity.name].size():
+			block_map.erase(block.entity.name)
 	else:
-		print("ERROR: _remove_block could not find ", block.entity.name, " in ", block_map)
+		# thinks this is actually ok...
+		if false:
+			print("ERROR: _remove_block could not find ", block.entity.name, " in ", block_map)
 
 func _remove_blocks():
 	for b in _get_blocks():
@@ -491,7 +579,6 @@ func _on_bonus_area_body_shape_exited(_body_rid, body, _body_shape_index, _local
 func _bonus_area(body, entered:bool):
 	var block = body.get_parent()
 	if not Fof.ENTITY in block:
-		print("nope! ", block, " from ", body)
 		return
 	block.in_bonus_zone = entered
 
@@ -517,3 +604,32 @@ func _count_bonus(show_:bool = false):
 	_update_status()
 
 ###################################################################################################
+
+func _tmi():
+	print("gravity: ", gravity)
+	print("move_force: ", move_force)
+	print("kills: ", kills)
+	print("current_level: ", current_level)
+	print("level: ", level)
+	print("score: ", score)
+	print("required_bonus_count: ", required_bonus_count)
+	print("bonus_count: ", bonus_count)
+	print("bonus_timer: ", bonus_timer)
+	print("possible_count: ", possible_count)
+	print("missed_count: ", missed_count)
+	print("is_bonus_level: ", is_bonus_level)
+	print("loading: ", loading)
+	print("game_over: ", game_over)
+	print("current_block: ", current_block)
+	print("last_block: ", last_block)
+	print("started: ", started)
+	print("block_map: ", block_map)
+	print("save_size: ", save_size)
+	print("in_bonus_zone: ", in_bonus_zone)
+	print("bonus_index: ", bonus_index)
+	print("bonus_last: ", bonus_last)
+	print("bonus_list1: ", bonus_list1)
+	print("bonus_list2: ", bonus_list2)
+	print("muted: ", muted)
+	print("should_watch_mouse: ", should_watch_mouse)
+	print("mouse_button_at: ", mouse_button_at)
