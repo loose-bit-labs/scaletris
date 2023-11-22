@@ -6,7 +6,10 @@ extends Node
 # 2. defining friend or foe
 # 3. results of match / mismatch
 
-@export var WORLD_FILE = "res://data/world.json"
+const GAME_CLASSIC = "res://data/classic.json" # todo: rename json
+const GAME_SCALETRIS = "res://data/world.json" # todo: rename json
+
+@export var WORLD_FILE = GAME_SCALETRIS
 
 const NAME = "name"
 const MATERIAL = "material"
@@ -47,18 +50,22 @@ const IMAGE_EXTENSION = ".png"
 const BG_ROOT = "res://images/bg/"
 var world
 var bestiary
+var loaded = ""
 
 #################################################################################################
 
 func _init():
-	_load_world()
+	load_world()
 
 ##########################################################
 
-func _load_world():
-	world = _unspace(JSON.parse_string(FileAccess.open(WORLD_FILE, FileAccess.READ).get_as_text()))
+func load_world(filename:String = WORLD_FILE):
+	if loaded == filename:
+		return
+	world = _unspace(JSON.parse_string(FileAccess.open(filename, FileAccess.READ).get_as_text()))
 	bestiary = _load_bestiary(world[BESTIARY])
 	_load_levels(world[LEVELS])
+	loaded = filename
 
 func _load_bestiary(b):
 	var lookup = {}
@@ -187,6 +194,20 @@ func glow(material:StandardMaterial3D, color:Color, intensity:float):
 	material.emission_energy_multiplier = intensity
 	material.emission_intensity = intensity
 	return material
+
+func camera_mouse(context:Node3D, camera:Camera3D, exclude = [], rayLength:float=1000):
+	var space_state = context.get_world_3d().direct_space_state
+	var mousepos = context.get_viewport().get_mouse_position()
+	var origin = camera.project_ray_origin(mousepos)
+	var end = origin + camera.project_ray_normal(mousepos) * rayLength
+	var query = PhysicsRayQueryParameters3D.create(origin, end)
+	query.collide_with_areas = true
+	query.exclude = exclude
+
+	var result = space_state.intersect_ray(query)
+	if !result or not "collider" in result: 
+		return null
+	return result.collider
 
 # rather than have 10 keys with the same value in the json,
 # you can just separate them with spaces: {"a b c":1} -> {a:1,b:1,c:1}

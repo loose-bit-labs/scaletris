@@ -343,8 +343,11 @@ func _bonus_click():
 	_handle_bonus_blocks(block)
 
 func _handle_bonus_blocks(block):
+	if current_block:
+		current_block.show_particles(false)
 	last_block = current_block
 	current_block = block
+	current_block.show_particles(true)
 	# FIXME: this is not working
 	current_block.body.apply_central_force(Vector3(0,2.1,0))
 	#body.apply_impulse(f) #frq

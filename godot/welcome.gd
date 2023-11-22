@@ -2,23 +2,71 @@ extends Node3D
 
 var main_scene = "res://main.tscn"
 
-@onready var lul : Node3D = $Lul
+@onready var left = $NewWelcome/LeftBox
+@onready var right = $NewWelcome/RightBox
+@onready var camera = $Camera3D
+@onready var floor_ = $NewWelcome/Floor
+@onready var player = $AnimationPlayer
 
-# Called when the node enters the scene tree for the first time.
+@onready var rightV = $NewWelcome/RightBox/RightBoxV
+@onready var rightC = $NewWelcome/RightBox/RightBoxC
+
+var selected = ""
+var options = ["classic", "quest"]
+
 func _ready():
-	pass # Replace with function body.
+	reset()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta):
-	var child = lul.get_children()[randi_range(0,lul.get_child_count()) - 1 ]
-	child.scale += .1 * Vector3(rand(),rand(),rand())
-
-func rand():
-	return randf() - randf()
+func reset():
+	left.position.x = 2.2
+	left.position.y = 5.5
+	right.position.y = 9.9
+	right.position.x = -2.2
+	rightV.scale = Vector3(.5, .5, .5)
+	rightC.scale = Vector3(.5, .5, .5)
+	right.show()
+	left.show()
 
 func _input(event):
-	if event is InputEventMouseButton or (event.is_action_pressed("ui_accept") and event.pressed):
+	if event.is_action_pressed("ui_accept"):
+		_active(selected, true)
+	if event.is_action_pressed("ui_up"):
+		_selecto(-1)
+	if event.is_action_pressed("ui_down"):
+		_selecto(+1)
+	if event is InputEventMouseMotion:
+		mousey(false)
+	if event is InputEventMouseButton and event.pressed:
+		mousey(true)
+
+func _selecto(dir:int = +1):
+	match selected:
+		"": _active("quest" if dir < 0 else "classic")
+		"quest": _active("classic")
+		"classic": _active("quest")
+
+func mousey(start:bool = false):
+	var collision = Fof.camera_mouse(self, camera, [floor_,left,right])
+	if not collision or 0 != collision.name.find("Hot_"):
+		player.stop()
+		selected = ""
+		return
+	_active(collision.name.substr(4), start)
+
+func _active(which:String = "", start:bool = false):
+	if start and "" != which:
+		if "classic" == which:
+			print("sorry not implemented... yet!!! :-D")
+			return
+		var world = Fof.GAME_CLASSIC if "classic" == which else Fof.GAME_SCALETRIS
+		print("let's go! ", which, " -> ", world)
+		Fof.load_world(world)
 		_start_game()
+	if which != selected:
+		selected = which
+		player.stop()
+		player.play("spin_" + which)
 
 func _start_game():
 	get_tree().change_scene_to_file(main_scene)
+

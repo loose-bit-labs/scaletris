@@ -5,6 +5,10 @@ extends Node3D
 @onready var box : CSGBox3D = $RigidBody3D/Box
 @onready var animationPlayer = $AnimationPlayer
 
+var particle_override = false
+@onready var particles = $RigidBody3D/GPUParticles3D
+
+
 var shape : BoxShape3D = null
 var main = null
 
@@ -31,14 +35,13 @@ func _ready():
 	collision.shape = BoxShape3D.new()
 	collision.shape.size = Vector3(.5,.5,.5)
 	shape = collision.shape
+	show_particles(true, false)
 	add_to_group("blocks")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !sleeping:
 		_am_i_getting_sleepy(delta)
-
-
 
 func configure(main_, position_:Vector3, spin:Vector3, gravity:float, entity_):
 	self.main = main_
@@ -87,11 +90,21 @@ func set_size(size_:int):
 	# the box that collides
 	shape.size.x = .5 * scale_
 	shape.size.y = .5 * scale_
+	particles.process_material.emission_box_extents.x = .5 * scale_
+	particles.process_material.emission_box_extents.y = .5 * scale_
 	# the box you see
 	box.scale.x = scale_
 	box.scale.y = scale_
-	
 	return size
+
+# the particle_override_ keeps the sleeping -> once the main has 
+# taken over particle state (selection)
+func show_particles(value:bool = true, particle_override_:bool = true):
+	if particle_override and not particle_override_:
+		return
+	if particle_override_:
+		particle_override = particle_override_
+	particles.emitting = value
 	
 func move(force):
 	body.apply_central_force(force)
@@ -122,6 +135,7 @@ func _am_i_getting_sleepy(delta):
 			if debug:
 				print("SNORING AIN'T BORING!")
 			sleeping = true
+			show_particles(false, false)
 			main.i_was_so_tired(self)
 	else:
 		if debug && sleepyTime > 0:
@@ -148,6 +162,7 @@ func _on_rigid_body_3d_body_shape_entered(_body_rid, _body, _body_shape_index, _
 func _on_rigid_body_3d_sleeping_state_changed():
 	if body.sleeping:
 		sleeping = true
+		show_particles(false, false)
 
 func show_me():
 	return JSON.stringify(info())
