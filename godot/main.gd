@@ -93,6 +93,8 @@ func _load_level(level_index:int=0):
 		loading = false
 		return
 	
+	print("loading level ", current_level)
+	
 	_load_reset_values()
 	_load_blocks()
 	_load_has_bonus()
@@ -158,7 +160,6 @@ func _load_start_level():
 	else:
 		explain_normal.show()
 		explain_bonus.hide()
-		_create_new_box()
 
 func _load_bonus_level():
 	bonus_timer = level.bonusLevel.timer
@@ -204,13 +205,16 @@ func _instantiate_block():
 
 func _process(delta):
 	if game_over or loading:
+		print("go or lo")
 		return
 	if is_bonus_level:
 		_process_bonus_level(delta)
 		return
 	_count_bonus()
-	if current_block && current_block.sleeping:
+	if  current_block && current_block.sleeping:
 		_you_have_fallen_and_you_cant_get_up()
+	if !current_block:
+		_create_new_box()
 
 func _process_bonus_level(delta):
 	bonus_timer -= delta
@@ -220,9 +224,8 @@ func _process_bonus_level(delta):
 		bonus_last = 1
 	_update_status()
 	if bonus_timer <= 0:
-		# TODO: play the sadness tune
-		print("wamp-wah!")
-		_next_level()
+		print("TODO: play the sadness tune")
+		_next_level(false)
 
 func _next_level(sweet:bool = true):
 	if sweet:
@@ -312,8 +315,8 @@ func _key_pressed(code:int):
 		KEY_4: _load_level(3) # lair
 		KEY_5: _load_level(4) # pit
 		KEY_9: _load_level(9) # win
-		KEY_M: toggle_mute()
 		KEY_B: _bonus_hack()
+		KEY_N: _next_level(true)
 		KEY_Q: _show_blocks()
 		KEY_I: _tmi()
 
@@ -454,7 +457,7 @@ func _you_have_fallen_and_you_cant_get_up():
 		current_block.set_size(save_size)
 	if Fof.BONUS != current_block.entity.type and !current_block.in_bonus_zone:
 		_check_match()
-	_create_new_box()
+	current_block = null
 
 ###################################################################################################
 
