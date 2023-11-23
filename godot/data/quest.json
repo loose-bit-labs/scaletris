@@ -115,7 +115,7 @@
 			"goblin_axe":       { "level":4 }, "goblin_spear":     { "level":4 },
 			"goblin_sword":     { "level":4 },
 
-			"lizardman_":       { "level":5 }, "minotaur":         { "level":5 },
+			"lizardman":       { "level":5 }, "minotaur":         { "level":5 },
 			"orc_archer":       { "level":5 }, "orc_sword":        { "level":5 },
 
 			"giant":            { "level":6 }, "octopus":          { "level":6 },
