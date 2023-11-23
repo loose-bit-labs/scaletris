@@ -306,7 +306,7 @@ transform = Transform3D(1, 0, 0, 0, 0.457036, -0.889448, 0, 0.889448, 0.457036, 
 size = Vector3(25.395, 0.0562761, 13.7769)
 
 [node name="Label3D" type="Label3D" parent="NewWelcome/AngledBack"]
-transform = Transform3D(1, 0, 0, 0, 0.479319, 0.87764, 0, -0.87764, 0.479319, 0, 1.95546, 1.31514)
+transform = Transform3D(1, 0, 0, 0, 0.479319, 0.87764, 0, -0.87764, 0.479319, 0, 1.87028, 1.4809)
 text = "Scaletris"
 font_size = 256
 

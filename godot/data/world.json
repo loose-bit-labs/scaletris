@@ -2,7 +2,7 @@
 	"game": {
 		"level_override":false,
 		"glow": true,
-		"scale": {"minimum":1.25, "maximum": 1.75},
+		"scale": {"minimum":1.25, "maximum": 1.8},
 		"tiles": "mr-tiles"
 	},
 	"levels":[
@@ -31,9 +31,9 @@
 			"force":100,
 			"music":"at-the-side-of-an-rpg-village-121718.mp3",
 			"bonusLevel": {
-				"timer":180
+				"timer":60
 			}
-		},
+		},		
 		{
 			"name": "woods",
 			"required":6,
@@ -45,7 +45,7 @@
 				"bat ":4,
 				"wolf":8,
 				"lion":2,
-				"sabertooth behemoth":1
+				"sabertooth behemoth ghost giant":1
 			},
 			"boss":"lion",
 			"music":"secret-garden-mystically-chill-out-music-7489.mp3"
@@ -115,7 +115,7 @@
 			"goblin_axe":       { "level":4 }, "goblin_spear":     { "level":4 },
 			"goblin_sword":     { "level":4 },
 
-			"lizardman":        { "level":5 }, "minotaur":         { "level":5 },
+			"lizardman_":       { "level":5 }, "minotaur":         { "level":5 },
 			"orc_archer":       { "level":5 }, "orc_sword":        { "level":5 },
 
 			"giant":            { "level":6 }, "octopus":          { "level":6 },

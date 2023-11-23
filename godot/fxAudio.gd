@@ -38,7 +38,3 @@ func play_fx(fx_name):
 	self.stream = f[CLIP]
 	volume_db = DEFAULT_VOLUME if not VOLUME in f else f[VOLUME]
 	self.play()
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta):
-	pass

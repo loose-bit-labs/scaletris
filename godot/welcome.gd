@@ -11,10 +11,14 @@ var main_scene = "res://main.tscn"
 @onready var rightV = $NewWelcome/RightBox/RightBoxV
 @onready var rightC = $NewWelcome/RightBox/RightBoxC
 
+@onready var music = $AudioStreamPlayer3D
+@onready var fx = $fxPlayer
+
 var selected = ""
 var options = ["classic", "quest"]
 
 func _ready():
+	_handle_mute()
 	reset()
 
 func reset():
@@ -28,6 +32,8 @@ func reset():
 	left.show()
 
 func _input(event):
+	if event.is_action_pressed("mute"):
+		_toggle_mute()
 	if event.is_action_pressed("ui_accept"):
 		_active(selected, true)
 	if event.is_action_pressed("ui_up"):
@@ -38,6 +44,16 @@ func _input(event):
 		mousey(false)
 	if event is InputEventMouseButton and event.pressed:
 		mousey(true)
+
+func _toggle_mute():
+	Fof.muted = !Fof.muted
+	_handle_mute()
+
+func _handle_mute():
+	print("TODO: ", Fof.muted)
+	music.stream_paused = Fof.muted
+	# FIXME: this probably won't work"
+	fx.stream_paused = Fof.muted 
 
 func _selecto(dir:int = +1):
 	match selected:
@@ -55,9 +71,6 @@ func mousey(start:bool = false):
 
 func _active(which:String = "", start:bool = false):
 	if start and "" != which:
-		if "classic" == which:
-			print("sorry not implemented... yet!!! :-D")
-			return
 		var world = Fof.GAME_CLASSIC if "classic" == which else Fof.GAME_SCALETRIS
 		print("let's go! ", which, " -> ", world)
 		Fof.load_world(world)

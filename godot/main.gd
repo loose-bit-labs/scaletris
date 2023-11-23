@@ -63,10 +63,12 @@ var bonus_last = 0
 var bonus_list1 = []
 var bonus_list2 = []
 
-@export var muted = false
+@export var fartedmuted = false
 
 var should_watch_mouse = false
 var mouse_button_at = null
+
+var score_bonus_cleared = 100
 
 ###################################################################################################
 
@@ -127,7 +129,7 @@ func _load_reset_values():
 	mainAudio.stream = level[Fof.MUSIC]
 	last_block = null
 	current_block = null
-	if !muted:
+	if !Fof.muted:
 		mainAudio.play()
 	_update_audio()
 
@@ -205,7 +207,6 @@ func _instantiate_block():
 
 func _process(delta):
 	if game_over or loading:
-		print("go or lo")
 		return
 	if is_bonus_level:
 		_process_bonus_level(delta)
@@ -324,23 +325,11 @@ func _bonus_hack():
 	bonus_count = 33
 	_load_level(1)
 
-const RAY_LENGTH = 100
 func _bonus_click():
-	var space_state = get_world_3d().direct_space_state
-	var mousepos = get_viewport().get_mouse_position()
-	var origin = camera.project_ray_origin(mousepos)
-	var end = origin + camera.project_ray_normal(mousepos) * RAY_LENGTH
-	var query = PhysicsRayQueryParameters3D.create(origin, end)
-	query.collide_with_areas = true
-	query.exclude = [front_wall]
-
-	var result = space_state.intersect_ray(query)
-	if !result or not "collider" in result: 
-		return
-	var block = result.collider.get_parent()
-	if not Fof.ENTITY in block:
-		return
-	_handle_bonus_blocks(block)
+	var hit = Fof.camera_mouse(self, camera, [front_wall])
+	var block = hit.get_parent()
+	if  hit and Fof.ENTITY in block:
+		_handle_bonus_blocks(block)
 
 func _handle_bonus_blocks(block):
 	if current_block:
@@ -372,7 +361,12 @@ func _handle_bonus_blocks(block):
 			print("size matched ", block.entity.name, ", bonus_index is ", bonus_index, " and ", remaining )
 			if bonus_index < 0 and !remaining:
 				print("DECENT!")
+				score = score + score_bonus_cleared * current_level
+				_update_status()
 				_next_level(true)
+				return
+			score = score + current_level * 10
+			_update_status()
 			current_block = null
 			last_block = null
 		else:
@@ -385,13 +379,13 @@ func _handle_bonus_blocks(block):
 ###################################################################################################
 
 func toggle_mute():
-	muted = !muted
+	Fof.muted = !Fof.muted
 	return _update_audio()
 
 func _update_audio():
-	mainAudio.set_mute(muted)
-	fxAudio.muted = muted
-	return muted
+	mainAudio.set_mute(Fof.muted)
+	fxAudio.muted = Fof.muted
+	return Fof.muted
 
 ###################################################################################################
 
@@ -636,6 +630,6 @@ func _tmi():
 	print("bonus_last: ", bonus_last)
 	print("bonus_list1: ", bonus_list1)
 	print("bonus_list2: ", bonus_list2)
-	print("muted: ", muted)
+	print("muted: ", Fof.muted)
 	print("should_watch_mouse: ", should_watch_mouse)
 	print("mouse_button_at: ", mouse_button_at)
