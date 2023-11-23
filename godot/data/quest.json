@@ -8,6 +8,8 @@
 	"levels":[
 		{
 			"name": "village",
+			"scale": {"minimum":1.25, "maximum": 1.8},
+			"sizes": 3,
 			"required":4,
 			"speed":0.33,
 			"force":100,
@@ -22,7 +24,8 @@
 				"count": 5,
 				"required": 3,
 				"chance": 0.2,
-				"gap":-4.5
+				"gap":1.71,
+				"usefulGapRange": "is from 4.24 to .64, 7 is no gap"
 			}
 		},
 		{

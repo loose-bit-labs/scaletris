@@ -41,6 +41,7 @@ const ENTITY = "entity"
 const REQUIRED = "required"
 const TILES = "tiles"
 const VALUE = "value"
+const SIZES = "sizes"
 
 #################################################################################################
 
@@ -154,7 +155,7 @@ func get_bonus(level_index:int = 0):
 
 func get_gap(level_index:int = 0):
 	var bonus = get_bonus(level_index)
-	return 0 if (!bonus or not GAP in bonus) else bonus[GAP]
+	return 7 if (!bonus or not GAP in bonus) else bonus[GAP]
 
 func entity_for_level(level_index:int, block_map = {}):
 	var bonus = _bonus_item_for_level(level_index, block_map)
@@ -199,7 +200,11 @@ func entity_by_name(entity_name:String, level_index:int = -1):
 		return null
 	var entity = bestiary[entity_name]
 	if (world.game.level_override or !entity.level ) and level_index >= 0:
-		entity.level = level_index + 1
+		var level = get_level(level_index)
+		if level and SIZES in level:
+			entity.level = level.sizes
+		else:
+			entity.level = level_index + 2
 	return entity
 
 ##########################################################

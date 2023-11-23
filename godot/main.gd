@@ -145,7 +145,7 @@ func _load_has_bonus():
 	if Fof.BONUS in level:
 		label_bonus_count.show()
 		hide_bonus.hide()
-		right_wall.position.y = 7 + level.bonus.gap
+		right_wall.position.y = level.bonus.gap
 		if Fof.REQUIRED in level.bonus:
 			required_bonus_count = level.bonus.required
 	else:
