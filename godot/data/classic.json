@@ -3,7 +3,7 @@
 		"level_override":true,
 		"glow": false,
 		"scale": {"minimum":1.25, "maximum": 1.8},
-		"tiles": "mr-tiles"
+		"tiles": "tiles/quest"
 	},
 	"levels":[
 		{

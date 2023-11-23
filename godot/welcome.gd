@@ -71,7 +71,7 @@ func mousey(start:bool = false):
 
 func _active(which:String = "", start:bool = false):
 	if start and "" != which:
-		var world = Fof.GAME_CLASSIC if "classic" == which else Fof.GAME_SCALETRIS
+		var world = Fof.GAME_CLASSIC if "classic" == which else Fof.GAME_QUEST
 		print("let's go! ", which, " -> ", world)
 		Fof.load_world(world)
 		_start_game()

@@ -6,10 +6,10 @@ extends Node
 # 2. defining friend or foe
 # 3. results of match / mismatch
 
-const GAME_CLASSIC = "res://data/classic.json" # TODO: create the json
-const GAME_SCALETRIS = "res://data/world.json" # TODO: rename json
+const GAME_CLASSIC = "res://data/classic.json"
+const GAME_QUEST = "res://data/quest.json"
 
-@export var WORLD_FILE = GAME_SCALETRIS
+@export var WORLD_FILE = GAME_QUEST
 
 const NAME = "name"
 const MATERIAL = "material"
@@ -45,7 +45,7 @@ const VALUE = "value"
 #################################################################################################
 
 const TILE_DEFAULT = "mr-tiles"
-const IMAGE_ROOT = "res://images/" #####/mr-tiles/"
+const IMAGE_ROOT = "res://images/"
 const IMAGE_EXTENSION = ".png"
 
 const BG_ROOT = "res://images/bg/"
