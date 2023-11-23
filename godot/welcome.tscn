@@ -43,6 +43,24 @@ emission_energy_multiplier = 0.08
 emission_intensity = 1.0
 uv1_scale = Vector3(-1, 1, 1)
 
+[sub_resource type="Animation" id="Animation_go8uc"]
+resource_name = "left_on_hit"
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../../fxPlayer")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("6_w4otv")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = true
+
 [sub_resource type="Animation" id="Animation_2xs8g"]
 resource_name = "particle_hack"
 length = 0.9
@@ -208,24 +226,6 @@ tracks/0/path = NodePath("../Picks/PickScaleQuest")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1, 1, 1, 0.707107, 0, 0, 0.707107, 2, 1, 1, 0, 0, -4.37114e-08, 3, 1, -0.707107, 0, 0, 0.707107, 4, 1, 8.74228e-08, 0, 0, 1)
-
-[sub_resource type="Animation" id="Animation_go8uc"]
-resource_name = "left_on_hit"
-tracks/0/type = "audio"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("../../fxPlayer")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"clips": [{
-"end_offset": 0.0,
-"start_offset": 0.0,
-"stream": ExtResource("6_w4otv")
-}],
-"times": PackedFloat32Array(0)
-}
-tracks/0/use_blend = true
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_d0176"]
 _data = {
