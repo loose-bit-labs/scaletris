@@ -42,6 +42,10 @@ const REQUIRED = "required"
 const TILES = "tiles"
 const VALUE = "value"
 const SIZES = "sizes"
+const LIVES = "lives"
+const TIMER = "timer"
+
+const DEFAULT_BONUS_TIMER = 90
 
 #################################################################################################
 
@@ -72,7 +76,7 @@ func load_world(filename:String = WORLD_FILE):
 		print("WARN: starting with an empty bestiary")
 		bestiary = {}
 		world[BESTIARY] = bestiary
-	_load_levels(world[LEVELS])
+	world[LEVELS] = _load_levels(world[LEVELS])
 	loaded = filename
 
 func _get_tiles():
@@ -118,24 +122,37 @@ func _load_beastie(name_:String, type:String = FOES, lookup:Dictionary = {}, b:D
 
 # TODO: load the "name" of level for the fx
 func _load_levels(levels):
-	for level in levels:
-		if not CHANCE in level:
-			# TODO: make sure is bonus level!
-			level.chance = {}
-		# handle slackness in bestiary definition
-		if BONUS in level:
-			if not level.bonus.item in bestiary:
-				#print("SLACK: load bonus ", level.bonus.item)
-				_load_beastie(level.bonus.item, LOOT, bestiary)
-				bestiary[level.bonus.item][VALUE] = 10
-		for name_ in level.chance:
-			if not name_ in bestiary:
-				#print("SLACK: load beastie ", name_)
-				_load_beastie(name_, FOES, bestiary)
+	var loaded_levels = []
+	var count = levels.size()
+	for index in range(count):
+		var level = levels[index]
+		_level_slackness(level)
 		level[PICKER] = _entity_probability(level.chance)
 		level[IMAGE] = load(BG_ROOT+level[NAME]+IMAGE_EXTENSION)
 		level[MATERIAL] = _image_to_material(level[IMAGE], LEVELS)
 		level[MUSIC] = load("res://audio/music/"+level[MUSIC])
+		loaded_levels.append(level)
+		if BONUS in level and (index == count - 1 or not BONUS_LEVEL in levels[1+index]):
+			print("iou a hacked in bonus level! after ", level.name)
+			var bonus = level.duplicate()
+			bonus[BONUS_LEVEL] = {"timer":DEFAULT_BONUS_TIMER}
+			loaded_levels.append(bonus)
+	return loaded_levels
+
+
+func _level_slackness(level):
+	if not CHANCE in level:
+		# TODO: make sure is bonus level!
+		level.chance = {}
+	if BONUS in level:
+		if not level.bonus.item in bestiary:
+			#print("SLACK: load bonus ", level.bonus.item)
+			_load_beastie(level.bonus.item, LOOT, bestiary)
+			bestiary[level.bonus.item][VALUE] = 10
+	for name_ in level.chance:
+		if not name_ in bestiary:
+			#print("SLACK: load beastie ", name_)
+			_load_beastie(name_, FOES, bestiary)
 
 func clamp_level_index(level_index:int = 0):
 	return clamp(level_index, 0, world[LEVELS].size() - 1)

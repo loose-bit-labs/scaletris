@@ -23,20 +23,11 @@
 				"item":"coin_bag",
 				"count": 5,
 				"required": 3,
-				"chance": 0.2,
+				"chance": 0.1,
 				"gap":1.71,
-				"usefulGapRange": "is from 4.24 to .64, 7 is no gap"
+				"usefulGapRange": "is from 4.24 to 0.64, 7 is no gap"
 			}
 		},
-		{
-			"name": "treasure-room",
-			"speed":0.88,
-			"force":100,
-			"music":"at-the-side-of-an-rpg-village-121718.mp3",
-			"bonusLevel": {
-				"timer":60
-			}
-		},		
 		{
 			"name": "woods",
 			"required":6,
@@ -56,7 +47,7 @@
 		{
 			"name": "cave",
 			"required":8,
-			"speed":0.90,
+			"speed":0.8,
 			"force":80,
 			"chance": {
 				"crossbowman_s short_swordsman_p swordsman_r":1,
@@ -68,7 +59,7 @@
 		{
 			"name": "lair",
 			"required":12,
-			"speed":1.1,
+			"speed":0.9,
 			"force":70,
 			"chance": {
 				"great_axeman_r great_swordsman_g":2,
@@ -81,7 +72,7 @@
 		{
 			"name": "pit",
 			"required":16,
-			"speed":1.5,
+			"speed":1.0,
 			"force":60,
 			"chance": {
 				"pikeman_c knight_o":1,

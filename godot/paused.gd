@@ -7,6 +7,7 @@ extends CSGBox3D
 func _input(event):
 	if event.is_action_pressed("pause") or event.is_action_pressed("ui_cancel"):
 		toggle()
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if event.is_action_pressed("mute"):
 		if arena.toggle_mute():
 			mutedBox.show()

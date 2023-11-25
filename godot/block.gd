@@ -168,4 +168,4 @@ func show_me():
 	return JSON.stringify(info())
 
 func info():
-	return {"size":size, "entity":entity.type, "sleeping":sleeping, "sleepyTime":sleepyTime, "in_bonus_zone":in_bonus_zone}
+	return {"size":size, "entity":entity.name, "type":entity.type, "sleeping":sleeping, "sleepyTime":sleepyTime, "in_bonus_zone":in_bonus_zone}

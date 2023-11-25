@@ -26,6 +26,9 @@ var block_scene = preload("res://block.tscn")
 @onready var label_bonus_count = $Board/Info/Bonus
 @onready var label_bonus_timer = $Board/Info/BonusTimer
 
+@onready var info_lives = $Board/Info/Lives
+@onready var label_lives = $Board/Info/Lives/Value
+
 @onready var u_win = $Informatica/Win
 @onready var u_lose = $Informatica/Lose
 @onready var explain_normal = $Informatica/Paused/NormalExplanation
@@ -49,6 +52,7 @@ var missed_count = 0
 var is_bonus_level = false
 var loading = false
 var game_over = false
+var lives = 0
 
 # state variables 
 var current_block = null
@@ -63,8 +67,6 @@ var bonus_last = 0
 var bonus_list1 = []
 var bonus_list2 = []
 
-@export var fartedmuted = false
-
 var should_watch_mouse = false
 var mouse_button_at = null
 
@@ -74,7 +76,12 @@ var score_bonus_cleared = 100
 
 func _ready():
 	started = true
-	
+	if Fof.GAME in Fof.world and Fof.LIVES in Fof.world.game:
+		lives =  Fof.world.game.lives
+		info_lives.show()
+	else:
+		lives = -33
+		info_lives.hide()
 	_update_audio()
 	_load_level(current_level)
 
@@ -236,7 +243,7 @@ func _next_level(sweet:bool = true):
 	_load_level(1 + current_level)
 
 func _update_status():
-	label_level.text = level.name
+	label_level.text = level.name.replace("_", " ")
 	label_score.text = str(score)
 	label_bonus.text = str(bonus_count)
 	if is_bonus_level:
@@ -246,6 +253,7 @@ func _update_status():
 		label_required.text = str(level.required)
 		label_health.text = str(possible_count - missed_count)
 		label_max_health.text = str(possible_count)
+		label_lives = str(lives)
 
 func _update_show_timer():
 	var format_this = ""
@@ -254,7 +262,7 @@ func _update_show_timer():
 		var seconds: int = int(bonus_timer) % 60
 		format_this = "%d:%02d" % [minutes,seconds]
 	else:
-		format_this = str(bonus_timer)
+		format_this = str(int(bonus_timer))
 	label_bonus_timer.text = format_this
 
 ###################################################################################################
@@ -279,10 +287,13 @@ func _input(event):
 
 func _handle_mouse_button(event):
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_WHEEL_DOWN):
+		_capture_mouse()
 		_size(-1)
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_WHEEL_UP):
+		_capture_mouse()
 		_size(+1)
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		_capture_mouse()
 		if is_bonus_level:
 			_bonus_click()
 		else:
@@ -292,9 +303,16 @@ func _handle_mouse_button(event):
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			should_watch_mouse = event.pressed
 
+func _capture_mouse():
+	#Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_CONFINED
+	# doesn't exist: get_tree().set_input_as_handled()
+	pass
+
 func _handle_mouse_move(event):
 	if !should_watch_mouse:
 		return
+	_capture_mouse()
 	var x = event.position[0]
 	var y = event.position[1]
 	var xdiff = x - mouse_button_at[0]
@@ -315,6 +333,7 @@ func _key_pressed(code:int):
 		KEY_3: _load_level(2) # cave
 		KEY_4: _load_level(3) # lair
 		KEY_5: _load_level(4) # pit
+		KEY_5: _load_level(5) # pit'
 		KEY_9: _load_level(9) # win
 		KEY_B: _bonus_hack()
 		KEY_N: _next_level(true)
@@ -322,14 +341,36 @@ func _key_pressed(code:int):
 		KEY_I: _tmi()
 
 func _bonus_hack():
+	
 	bonus_count = 33
-	_load_level(1)
+	print("HELLO!", bonus_count)
+	#_load_level(1)
+	_update_status()
 
 func _bonus_click():
 	var hit = Fof.camera_mouse(self, camera, [front_wall])
 	var block = hit.get_parent()
 	if  hit and Fof.ENTITY in block:
 		_handle_bonus_blocks(block)
+
+func _check_misses():
+	var c =_count_misses()
+	if c != missed_count:
+		_count_misses(true)
+		missed_count = c
+		_check_misses()
+		_update_status()
+
+func _count_misses(debug:bool = false):
+	var c = 0
+	if debug:
+		print("\nmissed count mismatch ", c, " versus ", missed_count)
+	for ez in block_map.values():
+		ez = ez.filter(func(b): return Fof.BONUS == b.entity.name or b.sleeping).map(func(b): return b.show_me())
+		c = c + (1 if 2 == ez.size() else 0)
+		if debug:
+			print(c, ez)
+	return c
 
 func _handle_bonus_blocks(block):
 	if current_block:
@@ -549,6 +590,7 @@ func _get_blocks():
 	return get_tree().get_nodes_in_group("blocks")
 
 func _remove_block(block):
+	remove_child(block)
 	if not block:
 		return
 	block.remove()
@@ -562,8 +604,9 @@ func _remove_block(block):
 			print("ERROR: _remove_block could not find ", block.entity.name, " in ", block_map)
 
 func _remove_blocks():
-	for b in _get_blocks():
-		remove_child(b)
+	for block in _get_blocks():
+		#remove_child(block)
+		_remove_block(block)
 
 func _show_blocks():
 	_count_bonus(true)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://c14i1wtlh6cqy"]
+[gd_scene load_steps=36 format=3 uid="uid://c14i1wtlh6cqy"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_f834v"]
 [ext_resource type="Texture2D" uid="uid://cxj76fnp1evfn" path="res://images/bg/village.png" id="2_0no1k"]
@@ -39,7 +39,7 @@ albedo_texture = ExtResource("3_n4n7o")
 size = Vector3(1, 23.8441, 0.247384)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_unf7i"]
-size = Vector3(13.4204, 0.69025, 8.08)
+size = Vector3(13.4204, 0.69025, 19.7636)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p7kat"]
 albedo_texture = ExtResource("4_whk3h")
@@ -74,6 +74,9 @@ normal_texture = SubResource("NoiseTexture2D_1g7xh")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_alflm"]
 size = Vector3(0.254354, 1.55366, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kfsqm"]
+size = Vector3(14.7777, 5.32571, 1)
 
 [sub_resource type="Environment" id="Environment_l5wru"]
 background_mode = 2
@@ -164,10 +167,9 @@ material = SubResource("StandardMaterial3D_ntdjv")
 
 [node name="frontwall" type="StaticBody3D" parent="Board"]
 transform = Transform3D(-0.999984, 0, -0.00563729, 0, 1, 0, 0.00563729, 0, -0.999984, 0, 0, 0.115766)
-visible = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/frontwall"]
-transform = Transform3D(1, 4.65661e-10, 0, 0, -4.37114e-08, -1, -4.65661e-10, 1, -4.37114e-08, -1.47603, 3.36524, -0.52906)
+transform = Transform3D(1, 9.31323e-10, 0, 0, -4.37114e-08, -1, -9.31323e-10, 1, -4.37114e-08, -1.47603, 9.17491, -0.52906)
 shape = SubResource("BoxShape3D_unf7i")
 
 [node name="Info" type="CSGBox3D" parent="Board"]
@@ -209,7 +211,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.445866, -0.0666857, 0.2989
 text = "AVAILABLE"
 
 [node name="Value" type="Label3D" parent="Board/Info/Health"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.597885, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.58933, 0, 0)
 text = "0
 "
 
@@ -238,18 +240,17 @@ text = "Bonus        OF    3"
 horizontal_alignment = 0
 
 [node name="Value" type="Label3D" parent="Board/Info/Bonus"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.677222, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.697184, -0.00285196, 0)
 text = "0
 "
 
 [node name="Lives" type="Label3D" parent="Board/Info"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.565159, -0.725223, 0.310448)
-visible = false
-text = "Lives           OF    3"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.451092, -0.725223, 0.310448)
+text = "Lives        OF    3"
 horizontal_alignment = 0
 
 [node name="Value" type="Label3D" parent="Board/Info/Lives"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.677222, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.600227, 0, 0)
 text = "0
 "
 
@@ -306,6 +307,12 @@ material = SubResource("StandardMaterial3D_81pqr")
 [node name="extraCollision" type="CollisionShape3D" parent="Board/StaticBosdy3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.46597, 6.93397, 0)
 shape = SubResource("BoxShape3D_alflm")
+
+[node name="roof" type="StaticBody3D" parent="Board"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35481, 20.052, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Board/roof"]
+shape = SubResource("BoxShape3D_kfsqm")
 
 [node name="mainAudio" type="AudioStreamPlayer3D" parent="."]
 volume_db = -8.8
