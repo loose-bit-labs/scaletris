@@ -22,8 +22,8 @@ var block_scene = preload("res://block.tscn")
 @onready var label_health = $Board/Info/Health/Value
 @onready var label_max_health = $Board/Info/MaxHealth/Value
 @onready var label_score = $Board/Info/Score/Value
-@onready var label_bonus = $Board/Info/Bonus/Value
-@onready var label_bonus_count = $Board/Info/Bonus
+@onready var label_bonus_count = $Board/Info/Bonus/Value
+@onready var label_bonus = $Board/Info/Bonus
 @onready var label_bonus_timer = $Board/Info/BonusTimer
 
 @onready var info_lives = $Board/Info/Lives
@@ -72,12 +72,15 @@ var mouse_button_at = null
 
 var score_bonus_cleared = 100
 
+@export var dev_mode = true
+@export var helpful_helper = false
+
 ###################################################################################################
 
 func _ready():
 	started = true
 	if Fof.GAME in Fof.world and Fof.LIVES in Fof.world.game:
-		lives =  Fof.world.game.lives
+		lives = Fof.world.game.lives
 		info_lives.show()
 	else:
 		lives = -33
@@ -89,8 +92,7 @@ func _ready():
 
 func _load_level(level_index:int=0):
 	if level_index >= Fof.world.levels.size():
-		game_over = true
-		u_win.show()
+		_on_level_over(false)
 		return
 	
 	loading = true
@@ -102,7 +104,8 @@ func _load_level(level_index:int=0):
 		loading = false
 		return
 	
-	print("loading level ", current_level)
+	if dev_mode:
+		print("loading level ", current_level)
 	
 	_load_reset_values()
 	_load_blocks()
@@ -114,7 +117,8 @@ func _load_is_bonus(_level_index:int=0):
 	is_bonus_level = Fof.BONUS_LEVEL in level
 	if is_bonus_level:
 		if bonus_count < required_bonus_count:
-			print("sorry, needed ", required_bonus_count, " but you only collected ", bonus_count)
+			if dev_mode:
+				print("sorry, needed ", required_bonus_count, " but you only collected ", bonus_count)
 			bonus_count = 0
 			return true
 		else:
@@ -245,7 +249,7 @@ func _next_level(sweet:bool = true):
 func _update_status():
 	label_level.text = level.name.replace("_", " ")
 	label_score.text = str(score)
-	label_bonus.text = str(bonus_count)
+	label_bonus_count.text = str(bonus_count)
 	if is_bonus_level:
 		_update_show_timer()
 	else:
@@ -253,7 +257,7 @@ func _update_status():
 		label_required.text = str(level.required)
 		label_health.text = str(possible_count - missed_count)
 		label_max_health.text = str(possible_count)
-		label_lives = str(lives)
+		label_lives.text = str(lives)
 
 func _update_show_timer():
 	var format_this = ""
@@ -268,14 +272,14 @@ func _update_show_timer():
 ###################################################################################################
 
 func _input(event):
-	if event is InputEventKey and event.pressed:
+	if dev_mode and event is InputEventKey and event.pressed:
 		_key_pressed(event.keycode) # temporary hack...
 	if event.is_action_pressed("left"):
 		_move(Vector3(-1, 0, 0))
 	if event.is_action_pressed("right"):
 		_move(Vector3(+1, 0, 0))
 	if event.is_action_pressed("ui_accept"):
-		_move(Vector3(0, -1, 0))
+		_move(Vector3(0, -4.4, 0))
 	if event.is_action_pressed("up"):
 		_size(+1)
 	if event.is_action_pressed("down"):
@@ -333,18 +337,19 @@ func _key_pressed(code:int):
 		KEY_3: _load_level(2) # cave
 		KEY_4: _load_level(3) # lair
 		KEY_5: _load_level(4) # pit
-		KEY_5: _load_level(5) # pit'
+		KEY_6: _load_level(6) # pit'
+		KEY_7: _load_level(7) # ...
+		KEY_8: _load_level(8) # ...
 		KEY_9: _load_level(9) # win
 		KEY_B: _bonus_hack()
 		KEY_N: _next_level(true)
 		KEY_Q: _show_blocks()
 		KEY_I: _tmi()
+		KEY_X: _auto_match()
+		KEY_Z: _toggle_helper()
 
 func _bonus_hack():
-	
-	bonus_count = 33
-	print("HELLO!", bonus_count)
-	#_load_level(1)
+	bonus_count = 9
 	_update_status()
 
 func _bonus_click():
@@ -356,7 +361,8 @@ func _bonus_click():
 func _check_misses():
 	var c =_count_misses()
 	if c != missed_count:
-		_count_misses(true)
+		if dev_mode:
+			_count_misses(true)
 		missed_count = c
 		_check_misses()
 		_update_status()
@@ -371,6 +377,10 @@ func _count_misses(debug:bool = false):
 		if debug:
 			print(c, ez)
 	return c
+
+func _toggle_helper():
+	helpful_helper = !helpful_helper
+	print("helpful_helper is ", helpful_helper )
 
 func _handle_bonus_blocks(block):
 	if current_block:
@@ -393,15 +403,18 @@ func _handle_bonus_blocks(block):
 		return
 	
 	if last_block.entity.name == current_block.entity.name:
-		print("nice, two ", current_block.entity.name)
+		if dev_mode:
+			print("nice, two ", current_block.entity.name)
 		if last_block.size == current_block.size:
 			score = score + 33
 			_remove_block(current_block)
 			_remove_block(last_block)
 			var remaining = block_map.size()
-			print("size matched ", block.entity.name, ", bonus_index is ", bonus_index, " and ", remaining )
+			if dev_mode:
+				print("size matched ", block.entity.name, ", bonus_index is ", bonus_index, " and ", remaining )
 			if bonus_index < 0 and !remaining:
-				print("DECENT!")
+				if dev_mode:
+					print("DECENT!")
 				score = score + score_bonus_cleared * current_level
 				_update_status()
 				_next_level(true)
@@ -411,7 +424,8 @@ func _handle_bonus_blocks(block):
 			current_block = null
 			last_block = null
 		else:
-			print("size no match ", block.entity.name)
+			if dev_mode:
+				print("size no match ", current_block.entity.name, " with ", current_block.size, " and ", last_block.size )
 	else:
 		pass
 		#print("no match...")
@@ -442,23 +456,49 @@ func _size(size_change:int):
 func _create_new_box():
 	if is_bonus_level:
 		# FIXME: should not happen
-		print("how did you get here?")
+		if dev_mode:
+			print("how did you get here?")
 		return
 	if loading:
 		# TODO: don't think this happens...
-		print("still loading...")
+		if dev_mode:
+			print("still loading...")
 		return
 	var block = _instantiate_block()
 	var entity = Fof.entity_for_level(current_level, block_map)
 	if null == entity:
-		print("U LOST I GUESS....", kills , " vs ", level.required)
-		u_lose.show()
-		game_over = true
-		return
+		_on_level_over()
+		return null
 	block.entity = entity
 	_add_block(block, entity)
 	block.configure(self, _random_position(), _random_spin(), gravity, entity)
+	if helpful_helper:
+		var xmin = -4
+		var xmax = +3
+		var x = xmin + (xmax - xmin) * (block.size / entity.level)
+		print("helpling: ", entity.level, " vs ", block.size, " so ", x)
+		block.position.x = x
 	return block
+
+func _on_level_over(lost:bool = true):
+	if lost:
+		# todo: implement lives mechanic
+		lives = lives - 1
+		if lives <= 0:
+			if dev_mode:
+				print("U LOST I GUESS....", kills , " vs ", level.required, " and ", lives)
+			#TODO: play loser sound
+			u_lose.show()
+			game_over = true
+		else:
+			#TODO: play dead sound
+			if dev_mode:
+				print("You are still alive, so restart level")
+			_load_level(current_level)
+	else:
+		#TODO: play winner sound
+		game_over = true
+		u_win.show()
 
 func _add_block(block, entity):
 	var entity_name = entity[Fof.NAME]
@@ -501,6 +541,8 @@ func _you_have_fallen_and_you_cant_get_up():
 
 func _check_match():
 	var entity_name = current_block.entity[Fof.NAME]
+	if not entity_name in block_map:
+		return 
 	var blocks = block_map[entity_name]
 	var missed = []
 	var matched = []
@@ -520,6 +562,20 @@ func _check_match():
 
 ###################################################################################################
 
+func _auto_match():
+	var picks = []
+	for entity_name in block_map:
+		var blocks = block_map[entity_name].filter(func(b): return b.sleeping and Fof.BONUS != b.entity.type)
+		if 2 == blocks.size():
+			picks.append(blocks)
+			print(blocks.size(), " for ", blocks[0].entity.name)
+	if !picks.size():
+		return
+	var pick = picks.pick_random()
+	var primary = pick.pop_front()
+	print("pick ", pick)
+	_matched(primary, pick, null)
+
 # TODO: play the right tone for win / gain
 func _matched(primary, others, _blocks):
 	print("matched ", primary.entity, " and ", others.size(), " others")
@@ -531,6 +587,7 @@ func _matched(primary, others, _blocks):
 		_remove_block(other)
 	for block in _get_blocks():
 		block.wakeUp()
+	_check_misses()
 
 # TODO: play per monster sound?
 func _killed(block, count):
@@ -590,8 +647,8 @@ func _get_blocks():
 	return get_tree().get_nodes_in_group("blocks")
 
 func _remove_block(block):
-	remove_child(block)
 	if not block:
+		remove_child(block)
 		return
 	block.remove()
 	if block.entity.name in block_map:
@@ -602,6 +659,7 @@ func _remove_block(block):
 		# thinks this is actually ok...
 		if false:
 			print("ERROR: _remove_block could not find ", block.entity.name, " in ", block_map)
+	remove_child(block)
 
 func _remove_blocks():
 	for block in _get_blocks():
@@ -658,8 +716,6 @@ func _tmi():
 	print("required_bonus_count: ", required_bonus_count)
 	print("bonus_count: ", bonus_count)
 	print("bonus_timer: ", bonus_timer)
-	print("possible_count: ", possible_count)
-	print("missed_count: ", missed_count)
 	print("is_bonus_level: ", is_bonus_level)
 	print("loading: ", loading)
 	print("game_over: ", game_over)
@@ -676,3 +732,6 @@ func _tmi():
 	print("muted: ", Fof.muted)
 	print("should_watch_mouse: ", should_watch_mouse)
 	print("mouse_button_at: ", mouse_button_at)
+	print("possible_count: ", possible_count)
+	print("missed_count: ", missed_count)
+	print("block_map: ", block_map)

@@ -225,7 +225,7 @@ text = "0
 "
 
 [node name="Score" type="Label3D" parent="Board/Info"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.312405, -0.284675, 0.293211)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.312405, -0.630525, 0.293211)
 text = "SCORE
 "
 
@@ -235,7 +235,7 @@ text = "0
 "
 
 [node name="Bonus" type="Label3D" parent="Board/Info"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5509, -0.491385, 0.310448)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5509, -0.258722, 0.310448)
 text = "Bonus        OF    3"
 horizontal_alignment = 0
 
@@ -245,12 +245,12 @@ text = "0
 "
 
 [node name="Lives" type="Label3D" parent="Board/Info"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.451092, -0.725223, 0.310448)
-text = "Lives        OF    3"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.451092, -0.450639, 0.310448)
+text = "Lives"
 horizontal_alignment = 0
 
 [node name="Value" type="Label3D" parent="Board/Info/Lives"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.600227, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.598131, 0, 0)
 text = "0
 "
 
@@ -275,8 +275,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.157982, -0.301603, 0)
 shape = SubResource("BoxShape3D_mot7i")
 
 [node name="BonusTimer" type="Label3D" parent="Board/Info"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.768434, 0.313547)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.82922, 0.313547)
 text = "0:00"
 
 [node name="farrightwall" type="StaticBody3D" parent="Board"]
@@ -356,22 +355,21 @@ text = "PAUSED"
 font_size = 128
 
 [node name="LabelMuted" type="Label3D" parent="Informatica/Paused"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0286331, -2.13439, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19687, -2.13439, 0.10837)
 text = "(m)uted"
 
 [node name="MutedBox" type="CSGBox3D" parent="Informatica/Paused/LabelMuted"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.550558, 0.0449386, 0.110711)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.528554, -0.000465989, -0.000606537)
 size = Vector3(0.18, 0.18, 0.0126728)
 material = SubResource("StandardMaterial3D_qbs3o")
 
 [node name="UnmutedBox" type="CSGBox3D" parent="Informatica/Paused/LabelMuted"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.550558, 0.0471489, 0.110711)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.528554, 0.00174439, -0.000606537)
 size = Vector3(0.18, 0.18, 0.0126728)
 material = SubResource("StandardMaterial3D_7b402")
 
 [node name="NormalExplanation" type="Label3D" parent="Informatica/Paused"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32748, -0.18811, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32748, -0.18811, 0.108364)
 text = "Goal:  Scale matching blocks to collect them and advance levels
 
 Legend:
@@ -393,7 +391,7 @@ font_size = 28
 horizontal_alignment = 0
 
 [node name="BonusExplanation" type="Label3D" parent="Informatica/Paused"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0369482, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0369482, 0.108364)
 visible = false
 text = "Goal: click a block and scale it to match 
 its mate on the other side of the divider
@@ -403,6 +401,10 @@ to earn bonus points before the timer
 get down to zero.
 
 Good Luck!"
+
+[node name="MoreInfo" type="Label3D" parent="Informatica/Paused"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.615436, -2.13127, 0.10578)
+text = "CTRL-Q to quit          CTRL-HOME for main screen"
 
 [node name="Win" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8047, 3.14299, 1.26077)

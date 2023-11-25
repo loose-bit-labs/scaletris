@@ -18,6 +18,7 @@ var selected = ""
 var options = ["classic", "quest"]
 
 func _ready():
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_handle_mute()
 	reset()
 
@@ -44,13 +45,15 @@ func _input(event):
 		mousey(false)
 	if event is InputEventMouseButton and event.pressed:
 		mousey(true)
+	if event.is_action_pressed("quit"):
+		#TODO: prompt
+		get_tree().quit()
 
 func _toggle_mute():
 	Fof.muted = !Fof.muted
 	_handle_mute()
 
 func _handle_mute():
-	print("TODO: ", Fof.muted)
 	music.stream_paused = Fof.muted
 	# FIXME: this probably won't work"
 	fx.stream_paused = Fof.muted 
@@ -82,4 +85,3 @@ func _active(which:String = "", start:bool = false):
 
 func _start_game():
 	get_tree().change_scene_to_file(main_scene)
-

@@ -1,11 +1,13 @@
 extends CSGBox3D
 
+const welcome_scene = "res://welcome.tscn"
+
 @onready var arena =  $"../.."
 @onready var mutedBox = $LabelMuted/MutedBox
 @onready var unmutedBox = $LabelMuted/UnmutedBox
 
 func _input(event):
-	if event.is_action_pressed("pause") or event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("pause") or event.is_action_pressed("ui_cancel") or event.is_action_pressed("help"):
 		toggle()
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if event.is_action_pressed("mute"):
@@ -15,6 +17,13 @@ func _input(event):
 		else:
 			mutedBox.hide()
 			unmutedBox.show()
+	if event.is_action_pressed("quit"):
+		#TODO: prompt
+		get_tree().quit()
+	if event.is_action_pressed("home"):
+		#TODO: prompt
+		print("if only!")
+		get_tree().change_scene_to_file(welcome_scene)
 
 func pause():
 	get_tree().paused = true

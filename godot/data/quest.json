@@ -19,14 +19,7 @@
 			},
 			"boss": "spider",
 			"music":"at-the-side-of-an-rpg-village-121718.mp3",
-			"bonus":{
-				"item":"coin_bag",
-				"count": 5,
-				"required": 3,
-				"chance": 0.1,
-				"gap":1.71,
-				"usefulGapRange": "is from 4.24 to 0.64, 7 is no gap"
-			}
+			"bonus":{"item":"coin_bag"}
 		},
 		{
 			"name": "woods",
@@ -42,7 +35,8 @@
 				"sabertooth behemoth ghost giant":1
 			},
 			"boss":"lion",
-			"music":"secret-garden-mystically-chill-out-music-7489.mp3"
+			"music":"secret-garden-mystically-chill-out-music-7489.mp3",
+			"bonus":{"item":"coin_bag"}
 		},
 		{
 			"name": "cave",
@@ -54,7 +48,8 @@
 				"goblin_axe goblin_spear goblin_sword orc_archer orc_sword":8
 			},
 			"boss": "octopus",
-			"music":"dark-mystery-trailer-taking-our-time-131566.mp3"
+			"music":"dark-mystery-trailer-taking-our-time-131566.mp3",
+			"bonus":{"item":"coin_bag"}
 		},
 		{
 			"name": "lair",
@@ -67,7 +62,8 @@
 				"dragon dragon_flying firedrake":12
 			},
 			"boss": "dragon_transform",
-			"music": "boss-fight-143121.mp3"
+			"music": "boss-fight-143121.mp3",
+			"bonus":{"item":"coin_bag"}
 		},
 		{
 			"name": "pit",

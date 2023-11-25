@@ -47,6 +47,13 @@ const TIMER = "timer"
 
 const DEFAULT_BONUS_TIMER = 90
 
+var DEFAULT_BONUS_SETTINGS = {
+	"count": 5,
+	"required": 3,
+	"chance": 0.2,
+	"gap":3.3 # usefulGapRange is from 4.24 to 0.64, 7 is no gap
+}
+
 #################################################################################################
 
 const TILE_DEFAULT = "mr-tiles"
@@ -139,12 +146,14 @@ func _load_levels(levels):
 			loaded_levels.append(bonus)
 	return loaded_levels
 
-
 func _level_slackness(level):
 	if not CHANCE in level:
 		# TODO: make sure is bonus level!
 		level.chance = {}
 	if BONUS in level:
+		for field in DEFAULT_BONUS_SETTINGS:
+			if not field in level.bonus:
+				level.bonus[field] = DEFAULT_BONUS_SETTINGS[field]
 		if not level.bonus.item in bestiary:
 			#print("SLACK: load bonus ", level.bonus.item)
 			_load_beastie(level.bonus.item, LOOT, bestiary)
