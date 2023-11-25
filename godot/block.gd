@@ -169,3 +169,6 @@ func show_me():
 
 func info():
 	return {"size":size, "entity":entity.name, "type":entity.type, "sleeping":sleeping, "sleepyTime":sleepyTime, "in_bonus_zone":in_bonus_zone}
+
+func _on_animation_player_animation_finished(_anim_name):
+	main.remove_child(self)

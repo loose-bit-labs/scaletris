@@ -659,7 +659,7 @@ func _remove_block(block):
 		# thinks this is actually ok...
 		if false:
 			print("ERROR: _remove_block could not find ", block.entity.name, " in ", block_map)
-	remove_child(block)
+	#remove_child(block)
 
 func _remove_blocks():
 	for block in _get_blocks():
