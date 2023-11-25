@@ -22,7 +22,7 @@ func _input(event):
 		get_tree().quit()
 	if event.is_action_pressed("home"):
 		#TODO: prompt
-		print("if only!")
+		unpause()
 		get_tree().change_scene_to_file(welcome_scene)
 
 func pause():

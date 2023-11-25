@@ -31,7 +31,8 @@ var block_scene = preload("res://block.tscn")
 
 @onready var u_win = $Informatica/Win
 @onready var u_lose = $Informatica/Lose
-@onready var explain_normal = $Informatica/Paused/NormalExplanation
+@onready var explain_quest = $Informatica/Paused/QuestExplanation
+@onready var explain_classic = $Informatica/Paused/ClassicExplanation
 @onready var explain_bonus = $Informatica/Paused/BonusExplanation
 
 @onready var camera = $Camera3D
@@ -146,7 +147,7 @@ func _load_reset_values():
 
 func _load_blocks():
 	block_map = {}
-	_remove_blocks()
+	_remove_blocks(true)
 	# TODO: make this nicer / make sense / fix uvs
 	for box in boxes:
 		box.set_material(level.material)
@@ -166,13 +167,20 @@ func _load_has_bonus():
 
 func _load_start_level():
 	loading = false
+	for e in [explain_classic, explain_quest, explain_bonus]:
+		e.hide()
 	if is_bonus_level:
-		explain_normal.hide()
 		explain_bonus.show()
 		_load_bonus_level()
 	else:
-		explain_normal.show()
-		explain_bonus.hide()
+		var l = Fof.loaded
+		var a = l.rfind("/") + 1
+		var b = l.rfind(".")
+		l = l.substr(a, b - a)
+		print(">>>> ", l, "<-----")
+		match l:
+			"classic": explain_classic.show()
+			"quest": explain_quest.show()
 
 func _load_bonus_level():
 	bonus_timer = level.bonusLevel.timer
@@ -661,10 +669,12 @@ func _remove_block(block):
 			print("ERROR: _remove_block could not find ", block.entity.name, " in ", block_map)
 	#remove_child(block)
 
-func _remove_blocks():
+func _remove_blocks(force:bool = false):
 	for block in _get_blocks():
-		#remove_child(block)
-		_remove_block(block)
+		if force:
+			remove_child(block)
+		else:
+			_remove_block(block)
 
 func _show_blocks():
 	_count_bonus(true)

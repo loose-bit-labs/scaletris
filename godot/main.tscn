@@ -368,8 +368,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.528554, 0.00174439, -0.000
 size = Vector3(0.18, 0.18, 0.0126728)
 material = SubResource("StandardMaterial3D_7b402")
 
-[node name="NormalExplanation" type="Label3D" parent="Informatica/Paused"]
+[node name="QuestExplanation" type="Label3D" parent="Informatica/Paused"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32748, -0.18811, 0.108364)
+visible = false
 text = "Goal:  Scale matching blocks to collect them and advance levels
 
 Legend:
@@ -405,6 +406,27 @@ Good Luck!"
 [node name="MoreInfo" type="Label3D" parent="Informatica/Paused"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.615436, -2.13127, 0.10578)
 text = "CTRL-Q to quit          CTRL-HOME for main screen"
+
+[node name="ClassicExplanation" type="Label3D" parent="Informatica/Paused"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32748, -0.18811, 0.108364)
+text = "Goal:  Scale matching blocks to collect them and advance levels
+
+Legend:
+- MATCHED shows how many pairs have been collected. 
+- AVAILABLE shows how many kinds of blocks can still fall.
+                        Don't let it get to zero!
+Controls:
+- Scale Blocks:  mouse wheel or up/down arrows
+- Move Blocks: click and drag or left/right arrows
+
+Each level has a themed block that matches the background 
+image. These blocks cannot be scaled.
+
+They need to be deposited into the bonus are on the right 
+side of the board to earn a special bonus level!
+"
+font_size = 28
+horizontal_alignment = 0
 
 [node name="Win" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8047, 3.14299, 1.26077)
