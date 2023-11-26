@@ -8,7 +8,6 @@ extends Node3D
 var particle_override = false
 @onready var particles = $RigidBody3D/GPUParticles3D
 
-
 var shape : BoxShape3D = null
 var main = null
 
@@ -38,10 +37,21 @@ func _ready():
 	show_particles(true, false)
 	add_to_group("blocks")
 
+var NON = []
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !sleeping:
 		_am_i_getting_sleepy(delta)
+	if !_nan_hack():
+		NON.append(body.position)
+
+func _nan_hack():
+	for v in [body.position.x, body.position.y, body.position.z]:
+		if is_nan(v):
+			print("NNNNNNNNNOOOOOOONNNNNNNN   ", NON)
+			main.nan_hack_me_baby(self)
+			return true
+	return false
 
 func configure(main_, position_:Vector3, spin:Vector3, gravity:float, entity_):
 	self.main = main_
@@ -168,7 +178,7 @@ func show_me():
 	return JSON.stringify(info())
 
 func info():
-	return {"size":size, "entity":entity.name, "type":entity.type, "sleeping":sleeping, "sleepyTime":sleepyTime, "in_bonus_zone":in_bonus_zone}
+	return {"size":size, "position": body.position, "entity":entity.name, "type":entity.type, "sleeping":sleeping, "sleepyTime":sleepyTime, "in_bonus_zone":in_bonus_zone}
 
 func _on_animation_player_animation_finished(_anim_name):
 	main.remove_child(self)

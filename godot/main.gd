@@ -14,7 +14,11 @@ var block_scene = preload("res://block.tscn")
 @onready var bonus_wall = $Board/bonuswall
 @onready var front_wall = $Board/frontwall
 @onready var hide_bonus = $Board/Info/walls/hideBonus
+@onready var far_box = $Board/farrightwall/Box
+@onready var bonus_box = $Board/Info/walls/backBonus
+@onready var info_box = $Board/Info
 @onready var boxes = [backBox, floorBox, leftBox, rightBox, topBox, hide_bonus]
+@onready var bonus_boxes = [far_box, bonus_box]
 
 @onready var label_level = $Board/Info/Level/Value
 @onready var label_kills = $Board/Info/Kills/Value
@@ -79,15 +83,31 @@ var score_bonus_cleared = 100
 ###################################################################################################
 
 func _ready():
+	_live_it_up()
+	_bonus_boxes()
+	_update_audio()
+	_load_level(current_level)
 	started = true
+
+func _live_it_up():
 	if Fof.GAME in Fof.world and Fof.LIVES in Fof.world.game:
 		lives = Fof.world.game.lives
 		info_lives.show()
 	else:
 		lives = -33
 		info_lives.hide()
-	_update_audio()
-	_load_level(current_level)
+
+func _bonus_boxes():
+	var bonus_material = StandardMaterial3D.new()
+	var info_material = StandardMaterial3D.new()
+	if Fof.GAME in Fof.world:
+		if Fof.BONUS in Fof.world.game:
+			bonus_material = Fof.load_background_material(Fof.world.game.bonus)
+		if Fof.INFO in Fof.world.game:
+			info_material = Fof.load_background_material(Fof.world.game.info)
+	for box in bonus_boxes:
+		box.set_material(bonus_material)
+	info_box.set_material(info_material) # FIXME: not working?
 
 ###################################################################################################
 
@@ -117,6 +137,7 @@ func _load_level(level_index:int=0):
 func _load_is_bonus(_level_index:int=0):
 	is_bonus_level = Fof.BONUS_LEVEL in level
 	if is_bonus_level:
+		#bonus_count = 9001
 		if bonus_count < required_bonus_count:
 			if dev_mode:
 				print("sorry, needed ", required_bonus_count, " but you only collected ", bonus_count)
@@ -148,6 +169,7 @@ func _load_reset_values():
 func _load_blocks():
 	block_map = {}
 	_remove_blocks(true)
+	_remove_blocks(true) # FIXME: seriously... please remove *all* of them!
 	# TODO: make this nicer / make sense / fix uvs
 	for box in boxes:
 		box.set_material(level.material)
@@ -193,9 +215,11 @@ func _load_bonus_level():
 
 func _drop_bonus_item():
 	var modo = bonus_index % 2
+	var idxo = int(bonus_index/2.)%4
 	bonus_index = bonus_index + 1
+	
 	var list = bonus_list1 if modo else bonus_list2
-	var side = +1 if modo else - 1
+	var side = 2 * modo - 1 #+1 if modo else - 1
 	var next = list.pop_front()
 	if !next:
 		#print("_load_bonus_level done? ", bonus_list1, " vs ",bonus_list2 )
@@ -204,8 +228,21 @@ func _drop_bonus_item():
 	var entity = Fof.entity_by_name(next)
 	var block = _instantiate_block()
 	add_child(block)
+	
 	var p = Vector3( side * 2 * randf() + side, 6, 0)
+	if !false:
+		if modo:
+			p.x = 0 + idxo * 2.7 / 4
+		else:
+			p.x = -4.8 + idxo * (-1.77 - -4.8) / 4
+	gravity = 1
+	p = _random_position()
+	#print("drop at ", p, " gravity is ", gravity)
+	#print("BD ", side, " and ", idxo, "  so ", p.x)
 	block.configure(self, p, _random_spin(), gravity, entity)
+
+	#block.body.position = p
+	
 	if next in block_map:
 		block.random_size([block_map[next][0].size])
 		block_map[next].append(block)
@@ -345,10 +382,10 @@ func _key_pressed(code:int):
 		KEY_3: _load_level(2) # cave
 		KEY_4: _load_level(3) # lair
 		KEY_5: _load_level(4) # pit
-		KEY_6: _load_level(6) # pit'
-		KEY_7: _load_level(7) # ...
-		KEY_8: _load_level(8) # ...
-		KEY_9: _load_level(9) # win
+		KEY_6: _load_level(5) # pit'
+		KEY_7: _load_level(6) # ...
+		KEY_8: _load_level(7) # ...
+		KEY_9: _load_level(8) # win
 		KEY_B: _bonus_hack()
 		KEY_N: _next_level(true)
 		KEY_Q: _show_blocks()
@@ -636,7 +673,7 @@ func _missed(primary, others, _blocks):
 ###################################################################################################
 
 func _random_position():
-	return Vector3( 4 *_rand() - 1, 6 ,0*_rand())
+	return Vector3(4 *_rand() - 1, 6 , 0)
 
 func _random_spin():
 	return 6.6 * Vector3(_rand(), _rand(), _rand())
@@ -663,11 +700,6 @@ func _remove_block(block):
 		block_map[block.entity.name].erase(block)
 		if 0 == block_map[block.entity.name].size():
 			block_map.erase(block.entity.name)
-	else:
-		# thinks this is actually ok...
-		if false:
-			print("ERROR: _remove_block could not find ", block.entity.name, " in ", block_map)
-	#remove_child(block)
 
 func _remove_blocks(force:bool = false):
 	for block in _get_blocks():
@@ -714,6 +746,11 @@ func _count_bonus(show_:bool = false):
 	bonus_count = bc
 	_update_status()
 
+func nan_hack_me_baby(block):
+	_remove_block(block)
+	# FIXME: do something cooler...
+	#block.body.position = Vector3(.77, 6, 0)
+	
 ###################################################################################################
 
 func _tmi():
@@ -745,3 +782,5 @@ func _tmi():
 	print("possible_count: ", possible_count)
 	print("missed_count: ", missed_count)
 	print("block_map: ", block_map)
+	for entity_name in block_map:
+		print("> ", entity_name, " : ", block_map[entity_name].map(func(b): return b.show_me() )  )

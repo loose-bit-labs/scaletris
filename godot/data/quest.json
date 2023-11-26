@@ -3,7 +3,9 @@
 		"level_override":false,
 		"glow": true,
 		"scale": {"minimum":1.25, "maximum": 1.8},
-		"tiles": "tiles/quest"
+		"tiles": "tiles/quest",
+		"bonus": "treasure-room",
+		"info": "work_bench"
 	},
 	"levels":[
 		{

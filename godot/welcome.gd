@@ -16,6 +16,7 @@ var main_scene = "res://main.tscn"
 
 var selected = ""
 var options = ["classic", "quest"]
+var loading = false
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -33,6 +34,8 @@ func reset():
 	left.show()
 
 func _input(event):
+	#if loading:
+	#	return
 	if event.is_action_pressed("mute"):
 		_toggle_mute()
 	if event.is_action_pressed("ui_accept"):
@@ -76,12 +79,13 @@ func _active(which:String = "", start:bool = false):
 	if start and "" != which:
 		var world = Fof.GAME_CLASSIC if "classic" == which else Fof.GAME_QUEST
 		print("let's go! ", which, " -> ", world)
-		Fof.load_world(world)
-		_start_game()
+		loading = true
+		Fof.load_world(world, _start_game)
 	if which != selected:
 		selected = which
 		player.stop()
 		player.play("spin_" + which)
 
 func _start_game():
+	loading = false
 	get_tree().change_scene_to_file(main_scene)
