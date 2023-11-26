@@ -225,30 +225,30 @@ func _drop_bonus_item():
 		#print("_load_bonus_level done? ", bonus_list1, " vs ",bonus_list2 )
 		bonus_index = -88
 		return
-	var entity = Fof.entity_by_name(next)
-	var block = _instantiate_block()
-	add_child(block)
 	
 	var p = Vector3( side * 2 * randf() + side, 6, 0)
-	if !false:
+	if not false:
 		if modo:
 			p.x = 0 + idxo * 2.7 / 4
 		else:
 			p.x = -4.8 + idxo * (-1.77 - -4.8) / 4
-	gravity = 1
-	p = _random_position()
-	#print("drop at ", p, " gravity is ", gravity)
-	#print("BD ", side, " and ", idxo, "  so ", p.x)
-	block.configure(self, p, _random_spin(), gravity, entity)
-
-	#block.body.position = p
 	
-	if next in block_map:
-		block.random_size([block_map[next][0].size])
-		block_map[next].append(block)
+	_add_bonus_block(next, p)
+
+func _add_bonus_block(entity_name, position_, size:int = -1):
+	var entity = Fof.entity_by_name(entity_name)
+	var block = _instantiate_block()
+	add_child(block)
+	var spin = _random_spin() * 0
+	block.configure(self, position_, spin, gravity, entity)
+	if entity_name in block_map:
+		block.random_size([block_map[entity_name][0].size])
+		block_map[entity_name].append(block)
 	else:
-		block_map[next] = [block]
+		block_map[entity_name] = [block]
 		block.random_size()
+	if -1 != size:
+			block.set_size(size)
 
 func _instantiate_block():
 	var block = block_scene.instantiate()
@@ -746,11 +746,16 @@ func _count_bonus(show_:bool = false):
 	bonus_count = bc
 	_update_status()
 
+# sometimes thers is a mad physics glitch
 func nan_hack_me_baby(block):
 	_remove_block(block)
-	# FIXME: do something cooler...
-	#block.body.position = Vector3(.77, 6, 0)
-	
+	if is_bonus_level:
+		_add_bonus_block(block.entity.name, block.og, block.size)
+	else:
+		if current_block == block:
+			current_block = null
+
+
 ###################################################################################################
 
 func _tmi():

@@ -28,6 +28,8 @@ var sleepyTime = 0
 @export var SCALE_MINIMUM = 1.5
 @export var SCALE_MAXIMUM = 3
 
+var og = Vector3(0,7,0)
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# don't share the collision shape!
@@ -36,19 +38,17 @@ func _ready():
 	shape = collision.shape
 	show_particles(true, false)
 	add_to_group("blocks")
-
-var NON = []
+ 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !sleeping:
 		_am_i_getting_sleepy(delta)
-	if !_nan_hack():
-		NON.append(body.position)
+	_nan_hack() 
 
 func _nan_hack():
 	for v in [body.position.x, body.position.y, body.position.z]:
 		if is_nan(v):
-			print("NNNNNNNNNOOOOOOONNNNNNNN   ", NON)
+			#print("NNNNNNNNNOOOOOOONNNNNNNN   ", NON)
 			main.nan_hack_me_baby(self)
 			return true
 	return false
@@ -59,6 +59,7 @@ func configure(main_, position_:Vector3, spin:Vector3, gravity:float, entity_):
 	body.angular_velocity = spin
 	body.gravity_scale = gravity
 	entity = entity_
+	og = position_
 	box.set_material(entity[Fof.MATERIAL])
 
 func _max_size():

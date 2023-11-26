@@ -224,9 +224,9 @@ func _bonus_item_for_level(level_index:int, block_map = {}):
 	var bonus_max = 5 if not COUNT in bonus else bonus[COUNT]
 	if bonus_count >= bonus_max:
 		return null
-	var bonus_chance = .1 if not CHANCE in bonus else bonus[CHANCE] - bonus_count * .01
+	var bonus_chance = .1 if not CHANCE in bonus else (bonus.chance - bonus_count * .01)
 	var r = randf()
-	print("BBBBBONUS! ", bonus_chance, " vs ", r)
+	print("BBBBBONUS! ", bonus_chance, " < ", r, " BC ", bonus.chance, " - ", bonus_count)
 	if r < bonus_chance:
 		var bonus_item = entity_by_name(bonus.item, level_index).duplicate()
 		bonus_item.type = BONUS # anything can be used as a bonus item...
@@ -238,10 +238,10 @@ func entity_by_name(entity_name:String, level_index:int = -1):
 		print("ERROR: no beasty matches ", entity_name)
 		return null
 	var entity = bestiary[entity_name]
-	if (world.game.level_override or !entity.level ) and level_index >= 0:
+	if (world.game.level_override or !entity.level) and level_index >= 0:
 		var level = get_level(level_index)
 		if level and SIZES in level:
-			entity.level = level.sizes
+			entity.level = level.sizes - 1
 		else:
 			entity.level = level_index + 2
 	return entity
