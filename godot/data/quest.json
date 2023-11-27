@@ -7,6 +7,7 @@
 		"bonus": "treasure-room",
 		"info": "work_bench",
 		"lives":1,
+		"life":"💪",
 		"explanation": "Goal: Scale matching blocks to collect them and advance levels@@Legend:@- MATCHED shows how many pairs have been collected. @- AVAILABLE shows how many kinds of blocks can still fall.@Don't let it get to zero!@Controls:@- Scale Blocks:  mouse wheel or up/down arrows@- Move Blocks: click and drag or left/right arrows@@Block Types:@- Red: hostiles, match pairs to defeat them@- Green: friendlies, matching also removes a hostile!@- Yellow: bonus blocks need to be collected in the vault to@earn a bonus level. Non-bonus blocks count against your bonus!"
 	},
 	"levels":[

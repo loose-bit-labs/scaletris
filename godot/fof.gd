@@ -47,9 +47,27 @@ const TIMER = "timer"
 const INFO = "info"
 const SPEED = "speed"
 const EXPLANATION = "explanation"
-const DEATH_BONUS = "deathBonus"
+const DEATH_BONUS = "death_bonus"
+const LEVEL_OVERRIDE = "level_override"
+const GLOW = "glow"
 
+const TILE_DEFAULT = "classic"
+const IMAGE_ROOT = "res://images/"
+const IMAGE_EXTENSION = ".png"
+const BG_ROOT = "res://images/bg/"
 const DEFAULT_BONUS_TIMER = 90
+
+var DEFAULT_GAME_SETTINGS = {
+	"tiles": TILE_DEFAULT,
+	"explanation": "",
+	"glow": false,
+	"level_override": false,
+	"death_bonus": false,
+	"lives": 0,
+	"life": "",
+	"bonus": "",
+	"info": ""
+}
 
 var DEFAULT_BONUS_SETTINGS = {
 	"count": 5,
@@ -57,14 +75,8 @@ var DEFAULT_BONUS_SETTINGS = {
 	"chance": 0.2,
 	"gap":3.3 # usefulGapRange is from 4.24 to 0.64, 7 is no gap
 }
-
 #################################################################################################
 
-const TILE_DEFAULT = "mr-tiles"
-const IMAGE_ROOT = "res://images/"
-const IMAGE_EXTENSION = ".png"
-
-const BG_ROOT = "res://images/bg/"
 var world
 var bestiary
 var loaded = ""
@@ -82,6 +94,13 @@ func load_world(filename:String = WORLD_FILE, callback:Callable = func():return)
 		callback.call()
 		return
 	world = _unspace(JSON.parse_string(FileAccess.open(filename, FileAccess.READ).get_as_text()))
+	if GAME in world:
+		for key in DEFAULT_GAME_SETTINGS:
+			if not key in world.game:
+				world.game[key] = DEFAULT_GAME_SETTINGS[key]
+				print("SET WORLD.", key, " to ", DEFAULT_GAME_SETTINGS[key])
+	else:
+		world[GAME] = DEFAULT_GAME_SETTINGS.duplicate()
 	if BESTIARY in world:
 		bestiary = _load_bestiary(world[BESTIARY])
 	else:
@@ -151,8 +170,7 @@ func _load_levels(levels):
 		level[MATERIAL] = image_to_material(level[IMAGE], LEVELS)
 		level[MUSIC] = load("res://audio/music/"+level[MUSIC])
 		loaded_levels.append(level)
-		if BONUS in level and (index == count - 1 or not BONUS_LEVEL in levels[1+index]):
-			print("iou a hacked in bonus level! after ", level.name)
+		if BONUS in level and  (index == count - 1 or not BONUS_LEVEL in levels[1+index]):
 			var bonus = level.duplicate()
 			bonus[BONUS_LEVEL] = {"timer":DEFAULT_BONUS_TIMER}
 			bonus[SPEED] = 2 * level.speed
@@ -205,6 +223,30 @@ func get_gap(level_index:int = 0):
 	var bonus = get_bonus(level_index)
 	return 7 if (!bonus or not GAP in bonus) else bonus[GAP]
 
+func game_lives():
+	return world.game.lives
+
+func game_level_override():
+	return world.game.level_override
+
+func game_glow():
+	return world.game.glow
+
+func game_tiles():
+	return world.game.tiles
+
+func game_bonus():
+	return world.game.bonus
+	
+func game_info():
+	return world.game.info
+
+func game_explanation():
+	return world.game.explanation
+
+func game_life():
+	return world.game.life
+
 func is_bonus_level(level):
 	return Fof.BONUS_LEVEL in level
 
@@ -214,12 +256,12 @@ func game_has_death_bonus():
 func has_death_bonus(level):
 	return can_earn_bonus(level) and not is_bonus_level(level) and game_has_death_bonus()
 
-func entity_for_level(level_index:int, block_map = {}, i_can_has_bonus:bool = true):
+func entity_for_level(level_index:int, block_map = {}, i_can_has_bonus:bool = true, matched = {}, sweeter:float = 0):
 	if i_can_has_bonus:
-		var bonus = _bonus_item_for_level(level_index, block_map)
+		var bonus = bonus_item_for_level(level_index, block_map, sweeter)
 		if bonus:
 			return bonus
-	var thou_shalt_not = _forbidden_entities(block_map)
+	var thou_shalt_not = _forbidden_entities(block_map, matched)
 	var chance = get_level(level_index)[CHANCE]
 	var picker = _entity_probability(chance, thou_shalt_not)
 	if !picker.size():
@@ -237,7 +279,7 @@ func entity_for_level(level_index:int, block_map = {}, i_can_has_bonus:bool = tr
 		print("ERROR: entity_for_level for ", entity_name, " from ", picker )
 	return entity
 
-func _bonus_item_for_level(level_index:int, block_map = {}):
+func bonus_item_for_level(level_index:int, block_map = {}, sweeter:float = 0):
 	var bonus = get_bonus(level_index)
 	if not bonus:
 		return null
@@ -245,14 +287,13 @@ func _bonus_item_for_level(level_index:int, block_map = {}):
 	var bonus_max = 5 if not COUNT in bonus else bonus[COUNT]
 	if bonus_count >= bonus_max:
 		return null
-	var bonus_chance = .1 if not CHANCE in bonus else (bonus.chance - bonus_count * .01)
+	var bonus_chance = bonus.chance - bonus_count * .01 + sweeter
 	var r = randf()
 	print("BBBBBONUS! ", bonus_chance, " < ", r, " BC ", bonus.chance, " - ", bonus_count)
 	if r < bonus_chance:
 		var bonus_item = entity_by_name(bonus.item, level_index).duplicate()
 		bonus_item.type = BONUS # anything can be used as a bonus item...
 		return bonus_item
- 
 
 func entity_by_name(entity_name:String, level_index:int = -1):
 	if not entity_name in bestiary:
@@ -269,8 +310,8 @@ func entity_by_name(entity_name:String, level_index:int = -1):
 
 ##########################################################
 
-func _forbidden_entities(block_map:Dictionary):
-	var no_go = {}
+func _forbidden_entities(block_map:Dictionary, matched = {}):
+	var no_go = matched
 	for entity_name in block_map:
 		var size = block_map[entity_name].size()
 		if size >= 2:
@@ -289,6 +330,19 @@ func _image_resource_to_material(image_resource:String, type:String=""):
 	return image_to_material(load(image_resource), type)
 
 func image_to_material(image, type:String=""):
+	if false:
+		var txt = ImageTexture.create_from_image(image.get_image())
+		print("hi, ", txt)
+		var img = image.get_image()
+		img.decompress()
+		# = txt
+		#img.unlock()
+		for x in range(0,image.get_width()):
+			img.set_pixel(x,0,Color.BLACK)
+			img.set_pixel(x,1,Color.BLACK)
+			img.set_pixel(x,2,Color.BLACK)
+		#img.lock()
+		#img.compress(5)
 	var material = StandardMaterial3D.new()
 	material.uv1_scale.x = -1
 	material.set_texture(StandardMaterial3D.TEXTURE_ALBEDO, image)
