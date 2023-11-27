@@ -47,6 +47,7 @@ const TIMER = "timer"
 const INFO = "info"
 const SPEED = "speed"
 const EXPLANATION = "explanation"
+const DEATH_BONUS = "deathBonus"
 
 const DEFAULT_BONUS_TIMER = 90
 
@@ -193,18 +194,31 @@ func get_scale(level_index:int = 0):
 			return src[SCALE]
 	return {}
 
+func can_earn_bonus(level):
+	return BONUS in level
+
 func get_bonus(level_index:int = 0):
 	var level = get_level(level_index)
-	return null if not BONUS in level else level[BONUS]
+	return null if not can_earn_bonus(level) else level[BONUS]
 
 func get_gap(level_index:int = 0):
 	var bonus = get_bonus(level_index)
 	return 7 if (!bonus or not GAP in bonus) else bonus[GAP]
 
-func entity_for_level(level_index:int, block_map = {}):
-	var bonus = _bonus_item_for_level(level_index, block_map)
-	if bonus:
-		return bonus
+func is_bonus_level(level):
+	return Fof.BONUS_LEVEL in level
+
+func game_has_death_bonus():
+	return DEATH_BONUS in Fof.world.game
+
+func has_death_bonus(level):
+	return can_earn_bonus(level) and not is_bonus_level(level) and game_has_death_bonus()
+
+func entity_for_level(level_index:int, block_map = {}, i_can_has_bonus:bool = true):
+	if i_can_has_bonus:
+		var bonus = _bonus_item_for_level(level_index, block_map)
+		if bonus:
+			return bonus
 	var thou_shalt_not = _forbidden_entities(block_map)
 	var chance = get_level(level_index)[CHANCE]
 	var picker = _entity_probability(chance, thou_shalt_not)
@@ -244,7 +258,7 @@ func entity_by_name(entity_name:String, level_index:int = -1):
 	if not entity_name in bestiary:
 		print("ERROR: no beasty matches ", entity_name)
 		return null
-	var entity = bestiary[entity_name]
+	var entity = bestiary[entity_name].duplicate()
 	if (world.game.level_override or !entity.level) and level_index >= 0:
 		var level = get_level(level_index)
 		if level and SIZES in level:

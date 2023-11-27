@@ -146,7 +146,7 @@ func _load_level(level_index:int=0):
 	_update_status()
 
 func _load_is_bonus(_level_index:int=0):
-	is_bonus_level = Fof.BONUS_LEVEL in level
+	is_bonus_level = Fof.is_bonus_level(level)
 	if is_bonus_level:
 		#bonus_count = 9001
 		if not bonus_force and bonus_count < required_bonus_count:
@@ -164,7 +164,7 @@ func _load_is_bonus(_level_index:int=0):
 		label_bonus_timer.hide()
 		bonus_wall.position.y = 8.8
 		
-	bonus_wall.position.y = 9001 ### hack!!!1
+	#bonus_wall.position.y = 9001 ### hack!!!1
 	return false
 
 func _load_reset_values():
@@ -232,64 +232,33 @@ func _drop_bonus_item():
 	if not bonus_can_drop:
 		return
 	var block = _instantiate_block()
-	var entity = Fof.entity_for_level(current_level - 1 , block_map)
+	var entity = Fof.entity_for_level(current_level - 1 , block_map, false)
 	if null == entity:
 		bonus_can_drop = false
 		return null
-	if entity.type == Fof.BONUS:
-		return
 	block.entity = entity
-	_add_block(block, entity, false) 
-	block.configure(self, _random_position(), _random_spin(), gravity, entity)
-	
-	if true:
-		return
-	# FIXME: this code is "better", but has a super weird bug...
+	if entity.name in block_map:
+		var first = block_map[entity.name][0].entity
+		print("second ", entity.name, " first is on ", first.right)
+		entity.right = not first.right
+	else:
+		entity.right = true if randf() < .5 else false
+		print("first ", entity.name, " on ", entity.right)
+	_add_block(block, entity, false)
 	
 	var modo = bonus_index % 2
 	var idxo = int(bonus_index/2.)%4
 	bonus_index = bonus_index + 1
 	
-	var list = bonus_list1 if modo else bonus_list2
-	var side = 2 * modo - 1 #+1 if modo else - 1
-	var next = list.pop_front()
-	if !next:
-		bonus_index = -88
-		return
+	var p = _random_position()
 	
-	var p = Vector3( side * 2 * randf() + side, 6, 0)
 	if not false:
-		if modo:
+		if entity.right:
 			p.x = 0 + idxo * 2.7 / 4
 		else:
 			p.x = -4.8 + idxo * (-1.77 - -4.8) / 4
-	_add_bonus_block(next, p)
-
-func _add_bonus_block(entity_name, position_, size:int = -1):
-	var entity = Fof.entity_by_name(entity_name)
-	var block = _instantiate_block()
-	add_child(block)
-	var spin = _random_spin()
-	block.configure(self, position_, spin, gravity, entity)
-	if entity_name in block_map:
-		block.random_size([block_map[entity_name][0].size])
-		block_map[entity_name].append(block)
-	else:
-		block_map[entity_name] = [block]
-		block.random_size()
-	if -1 != size:
-			block.set_size(size)
-
-# sometimes there is a mad physics glitch
-func nan_hack_me_baby(block):
-	_remove_block(block)
-	remove_child(block)
-	if is_bonus_level:
-		print("hacko", block.og)
-		_add_bonus_block(block.entity.name, block.og, block.size)
-	else:
-		if current_block == block:
-			current_block = null
+			
+	block.configure(self, p, _random_spin(), gravity, entity)
 
 func _instantiate_block():
 	var block = block_scene.instantiate()
@@ -326,7 +295,8 @@ func _process_bonus_level(delta):
 		_next_level(false)
 
 func _next_level(sweet:bool = true):
-	if not is_bonus_level and required_bonus_count and "idk" in Fof.world.game:
+	if Fof.has_death_bonus(level):
+	#if not is_bonus_level and required_bonus_count and "deathBonus" in Fof.world.game:
 		if 0 >= bonus_count:
 			lives = -33
 			_on_level_over(true, "You *must* collect at least one bonus item!")
@@ -875,6 +845,7 @@ func _tmi():
 	print("bonus_last: ", bonus_last)
 	print("bonus_list1: ", bonus_list1)
 	print("bonus_list2: ", bonus_list2)
+	print("bonus_can_drop: ", bonus_can_drop)
 	print("muted: ", Fof.muted)
 	print("should_watch_mouse: ", should_watch_mouse)
 	print("mouse_button_at: ", mouse_button_at)

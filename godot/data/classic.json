@@ -4,8 +4,8 @@
 		"glow": false,
 		"tiles": "tiles/classic",
 		"lives": 3,
-		"idk": true,
-		"explanation":"Goal:  Scale matching blocks to collect them and advance levels@@Legend:@- MATCHED shows how many pairs have been collected. @- AVAILABLE shows how many kinds of blocks can still fall.@Don't let it get to zero!@Controls:@- Scale Blocks:  mouse wheel or up/down arrows@- Move Blocks: click and drag or left/right arrows@@Each level has a themed block that matches the background @image. These blocks cannot be scaled.@@They need to be deposited into the bonus are on the right @side of the board to earn a special bonus level!"
+		"deathBonus": true,
+		"explanation":"Goal:  Scale matching blocks to collect them and advance levels@@Legend:@- MATCHED shows how many pairs have been collected. @- AVAILABLE shows how many kinds of blocks can still fall.@Don't let it get to zero!@Controls:@- Scale Blocks:  mouse wheel or up/down arrows@- Move Blocks: click and drag or left/right arrows@@Each level has a themed block that matches the background @image. These blocks cannot be scaled.@@They need to be deposited into the bonus are on the right @side of the board to earn a special bonus level!@You must save at least one to continue!"
 	},
 	"levels": [
 		{
