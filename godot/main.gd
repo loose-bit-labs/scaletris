@@ -33,11 +33,16 @@ var block_scene = preload("res://block.tscn")
 @onready var info_lives = $Board/Info/Lives
 @onready var label_lives = $Board/Info/Lives/Value
 
+@onready var pauser = $Informatica/Paused
+@onready var pause_title = $Informatica/Paused/Title
+
 @onready var u_win = $Informatica/Win
 @onready var u_lose = $Informatica/Lose
-@onready var explain_quest = $Informatica/Paused/QuestExplanation
-@onready var explain_classic = $Informatica/Paused/ClassicExplanation
+@onready var lose_tmi = $Informatica/Lose/TMI
+
 @onready var explain_bonus = $Informatica/Paused/BonusExplanation
+@onready var explain_normal = $Informatica/Paused/NormalExplanation
+@onready var explain_levelled = $Informatica/Paused/LevelledExplanation
 
 @onready var camera = $Camera3D
 
@@ -49,6 +54,7 @@ var kills = 0
 var current_level = 0
 var level = {}
 var score = 0
+var score_before = 0
 var required_bonus_count = 5
 var bonus_count = 0
 var bonus_timer = 0
@@ -58,6 +64,7 @@ var is_bonus_level = false
 var loading = false
 var game_over = false
 var lives = 0
+var level_up_please = false
 
 # state variables 
 var current_block = null
@@ -71,6 +78,8 @@ var bonus_index = 0
 var bonus_last = 0
 var bonus_list1 = []
 var bonus_list2 = []
+var bonus_list = []
+var bonus_force = false
 
 var should_watch_mouse = false
 var mouse_button_at = null
@@ -84,7 +93,7 @@ var score_bonus_cleared = 100
 
 func _ready():
 	_live_it_up()
-	_bonus_boxes()
+	_game_specific()
 	_update_audio()
 	_load_level(current_level)
 	started = true
@@ -97,7 +106,7 @@ func _live_it_up():
 		lives = -33
 		info_lives.hide()
 
-func _bonus_boxes():
+func _game_specific():
 	var bonus_material = StandardMaterial3D.new()
 	var info_material = StandardMaterial3D.new()
 	if Fof.GAME in Fof.world:
@@ -105,6 +114,8 @@ func _bonus_boxes():
 			bonus_material = Fof.load_background_material(Fof.world.game.bonus)
 		if Fof.INFO in Fof.world.game:
 			info_material = Fof.load_background_material(Fof.world.game.info)
+		if Fof.EXPLANATION in Fof.world.game:
+			explain_normal.text = Fof.world.game.explanation.replace("@", "\n")
 	for box in bonus_boxes:
 		box.set_material(bonus_material)
 	info_box.set_material(info_material) # FIXME: not working?
@@ -113,7 +124,7 @@ func _bonus_boxes():
 
 func _load_level(level_index:int=0):
 	if level_index >= Fof.world.levels.size():
-		_on_level_over(false)
+		_on_level_over(false, "You beat all the levels!")
 		return
 	
 	loading = true
@@ -138,7 +149,7 @@ func _load_is_bonus(_level_index:int=0):
 	is_bonus_level = Fof.BONUS_LEVEL in level
 	if is_bonus_level:
 		#bonus_count = 9001
-		if bonus_count < required_bonus_count:
+		if not bonus_force and bonus_count < required_bonus_count:
 			if dev_mode:
 				print("sorry, needed ", required_bonus_count, " but you only collected ", bonus_count)
 			bonus_count = 0
@@ -146,15 +157,22 @@ func _load_is_bonus(_level_index:int=0):
 		else:
 			label_bonus_timer.show()
 			bonus_wall.position.y = 0
+			
+			#find_children()
 	else:
 		in_bonus_zone = false
 		label_bonus_timer.hide()
 		bonus_wall.position.y = 8.8
+		
+	bonus_wall.position.y = 9001 ### hack!!!1
 	return false
 
 func _load_reset_values():
+	level_up_please = false
 	possible_count = level.chance.size()
 	kills = 0
+	score_before = 0
+	bonus_force = false
 	missed_count = 0
 	bonus_count = 0
 	gravity = level.speed
@@ -162,6 +180,7 @@ func _load_reset_values():
 	mainAudio.stream = level[Fof.MUSIC]
 	last_block = null
 	current_block = null
+	pause_title.text = "PAUSED"
 	if !Fof.muted:
 		mainAudio.play()
 	_update_audio()
@@ -175,36 +194,31 @@ func _load_blocks():
 		box.set_material(level.material)
 
 func _load_has_bonus():
-	required_bonus_count = 3
 	if Fof.BONUS in level:
+		required_bonus_count = 3
 		label_bonus_count.show()
 		hide_bonus.hide()
 		right_wall.position.y = level.bonus.gap
 		if Fof.REQUIRED in level.bonus:
 			required_bonus_count = level.bonus.required
 	else:
+		required_bonus_count = 0
 		label_bonus_count.hide()
 		hide_bonus.show()
 		right_wall.position.y = 7
 
 func _load_start_level():
 	loading = false
-	for e in [explain_classic, explain_quest, explain_bonus]:
+	for e in [explain_normal, explain_bonus, explain_levelled]:
 		e.hide()
 	if is_bonus_level:
 		explain_bonus.show()
 		_load_bonus_level()
 	else:
-		var l = Fof.loaded
-		var a = l.rfind("/") + 1
-		var b = l.rfind(".")
-		l = l.substr(a, b - a)
-		print(">>>> ", l, "<-----")
-		match l:
-			"classic": explain_classic.show()
-			"quest": explain_quest.show()
+		explain_normal.show()
 
 func _load_bonus_level():
+	bonus_can_drop = true
 	bonus_timer = level.bonusLevel.timer
 	bonus_index = 0
 	bonus_last = 0
@@ -213,7 +227,25 @@ func _load_bonus_level():
 	bonus_list1.shuffle()
 	bonus_list2.shuffle()
 
+var bonus_can_drop = true
 func _drop_bonus_item():
+	if not bonus_can_drop:
+		return
+	var block = _instantiate_block()
+	var entity = Fof.entity_for_level(current_level - 1 , block_map)
+	if null == entity:
+		bonus_can_drop = false
+		return null
+	if entity.type == Fof.BONUS:
+		return
+	block.entity = entity
+	_add_block(block, entity, false) 
+	block.configure(self, _random_position(), _random_spin(), gravity, entity)
+	
+	if true:
+		return
+	# FIXME: this code is "better", but has a super weird bug...
+	
 	var modo = bonus_index % 2
 	var idxo = int(bonus_index/2.)%4
 	bonus_index = bonus_index + 1
@@ -222,7 +254,6 @@ func _drop_bonus_item():
 	var side = 2 * modo - 1 #+1 if modo else - 1
 	var next = list.pop_front()
 	if !next:
-		#print("_load_bonus_level done? ", bonus_list1, " vs ",bonus_list2 )
 		bonus_index = -88
 		return
 	
@@ -232,14 +263,13 @@ func _drop_bonus_item():
 			p.x = 0 + idxo * 2.7 / 4
 		else:
 			p.x = -4.8 + idxo * (-1.77 - -4.8) / 4
-	
 	_add_bonus_block(next, p)
 
 func _add_bonus_block(entity_name, position_, size:int = -1):
 	var entity = Fof.entity_by_name(entity_name)
 	var block = _instantiate_block()
 	add_child(block)
-	var spin = _random_spin() * 0
+	var spin = _random_spin()
 	block.configure(self, position_, spin, gravity, entity)
 	if entity_name in block_map:
 		block.random_size([block_map[entity_name][0].size])
@@ -249,6 +279,17 @@ func _add_bonus_block(entity_name, position_, size:int = -1):
 		block.random_size()
 	if -1 != size:
 			block.set_size(size)
+
+# sometimes there is a mad physics glitch
+func nan_hack_me_baby(block):
+	_remove_block(block)
+	remove_child(block)
+	if is_bonus_level:
+		print("hacko", block.og)
+		_add_bonus_block(block.entity.name, block.og, block.size)
+	else:
+		if current_block == block:
+			current_block = null
 
 func _instantiate_block():
 	var block = block_scene.instantiate()
@@ -268,7 +309,7 @@ func _process(delta):
 		_process_bonus_level(delta)
 		return
 	_count_bonus()
-	if  current_block && current_block.sleeping:
+	if current_block && current_block.sleeping:
 		_you_have_fallen_and_you_cant_get_up()
 	if !current_block:
 		_create_new_box()
@@ -285,11 +326,74 @@ func _process_bonus_level(delta):
 		_next_level(false)
 
 func _next_level(sweet:bool = true):
+	if not is_bonus_level and required_bonus_count and "idk" in Fof.world.game:
+		if 0 >= bonus_count:
+			lives = -33
+			_on_level_over(true, "You *must* collect at least one bonus item!")
+			return
+		if 1 == bonus_count:
+			_on_level_over(true, "You only collected one bonus item...")
+			return
+	_post_level_text(sweet)
+	explain_bonus.hide()
+	explain_normal.hide()
+	explain_levelled.show()
+	pauser.pause()
+	level_up_please = true
+	
+func _post_level_text(sweet:bool):
+	var collected = "You collected %d points, your total score is now %d." %[score_before,score]
+	if is_bonus_level:
+		var lived = "Congratulations, you made it through the Bonus Level!\n"
+		if sweet:
+			pause_title.text = "SUCCESS! 🥇"
+			if lives < 5:
+				lived = lived + "You cleaned this one up and get another life!"
+				lives = lives + 1
+			else:
+				lived = lived + "You cleaned this one up and get an additional 50 Bonus Points!"
+				score = score + 50
+		else:
+			pause_title.text = "Bonus Timer Ran Out! ⌛"
+		explain_levelled.text = lived
+		return
+		
+	if sweet:
+		pause_title.text = "SUCCESS! 🏆"
+		var lines = []
+		lines.append("You passed Level " + level.name.replace("_", " "))
+		lines.append(collected)
+		if required_bonus_count:
+			if bonus_count < required_bonus_count:
+				lines.append("Unfortunately, you didn't make the Bonus Layer.")
+			else:
+				lines.append("You qualified for the Bonus Layer!")
+		explain_levelled.text = "\n".join(lines)
+	else:
+		pause_title.text = "Bummer... 😭"
+		explain_levelled.text = "You failed Level " + level.name.replace("_", " ")
+
+func _in_the_bed(sweet:bool):
 	if sweet:
 		print("TODO: play level success sound")
+		if is_bonus_level:
+			explain_levelled.text = 'Full points for the bonus level!'
+		else:
+			explain_levelled.text = 'Nice! Great job on ' + level.name + '!'
+		pause_title.text = "SUCCESS! 🏆"
 	else:
 		print("TODO: play level fail sound")
-	_load_level(1 + current_level)
+		if is_bonus_level:
+			explain_levelled.text = 'Looks like the timer ran out! '
+		else:
+			explain_levelled.text = 'Oh, dang! No luck on ' + level.name + '...'
+		pause_title.text = "Bummer... 😭"
+		
+# cheese
+func _on_paused_visibility_changed():
+	if level_up_please and not pauser.is_visible_in_tree():
+		level_up_please = false
+		_load_level(1 + current_level)
 
 func _update_status():
 	label_level.text = level.name.replace("_", " ")
@@ -394,8 +498,7 @@ func _key_pressed(code:int):
 		KEY_Z: _toggle_helper()
 
 func _bonus_hack():
-	bonus_count = 9
-	_update_status()
+	bonus_force = true
 
 func _bonus_click():
 	var hit = Fof.camera_mouse(self, camera, [front_wall])
@@ -512,7 +615,7 @@ func _create_new_box():
 	var block = _instantiate_block()
 	var entity = Fof.entity_for_level(current_level, block_map)
 	if null == entity:
-		_on_level_over()
+		_on_level_over(true, "You ran out of options!")
 		return null
 	block.entity = entity
 	_add_block(block, entity)
@@ -525,16 +628,15 @@ func _create_new_box():
 		block.position.x = x
 	return block
 
-func _on_level_over(lost:bool = true):
+func _on_level_over(lost:bool = true, tmi:String = ""):
+	lose_tmi.text = tmi
 	if lost:
-		# todo: implement lives mechanic
 		lives = lives - 1
 		if lives <= 0:
-			if dev_mode:
-				print("U LOST I GUESS....", kills , " vs ", level.required, " and ", lives)
 			#TODO: play loser sound
-			u_lose.show()
+			#{If lives = 0} You just lost your last life and have been "scaled to Zero". Wanna try again?
 			game_over = true
+			u_lose.show()
 		else:
 			#TODO: play dead sound
 			if dev_mode:
@@ -545,10 +647,11 @@ func _on_level_over(lost:bool = true):
 		game_over = true
 		u_win.show()
 
-func _add_block(block, entity):
+func _add_block(block, entity, make_current:bool = true):
 	var entity_name = entity[Fof.NAME]
 	add_child(block)
-	current_block = block
+	if make_current:
+		current_block = block
 	in_bonus_zone = false
 	
 	if Fof.BONUS == entity.type:
@@ -745,15 +848,6 @@ func _count_bonus(show_:bool = false):
 	#print("bc:", block_map, " -> ", bc)
 	bonus_count = bc
 	_update_status()
-
-# sometimes thers is a mad physics glitch
-func nan_hack_me_baby(block):
-	_remove_block(block)
-	if is_bonus_level:
-		_add_bonus_block(block.entity.name, block.og, block.size)
-	else:
-		if current_block == block:
-			current_block = null
 
 
 ###################################################################################################

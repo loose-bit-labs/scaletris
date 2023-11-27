@@ -5,7 +5,9 @@
 		"scale": {"minimum":1.25, "maximum": 1.8},
 		"tiles": "tiles/quest",
 		"bonus": "treasure-room",
-		"info": "work_bench"
+		"info": "work_bench",
+		"lives":1,
+		"explanation": "Goal: Scale matching blocks to collect them and advance levels@@Legend:@- MATCHED shows how many pairs have been collected. @- AVAILABLE shows how many kinds of blocks can still fall.@Don't let it get to zero!@Controls:@- Scale Blocks:  mouse wheel or up/down arrows@- Move Blocks: click and drag or left/right arrows@@Block Types:@- Red: hostiles, match pairs to defeat them@- Green: friendlies, matching also removes a hostile!@- Yellow: bonus blocks need to be collected in the vault to@earn a bonus level. Non-bonus blocks count against your bonus!"
 	},
 	"levels":[
 		{
@@ -27,7 +29,7 @@
 			"name": "woods",
 			"required":6,
 			"speed":0.70,
-			"force":80,
+			"force":95,
 			"chance": {
 				"eagle":1, 
 				"archer_r archer_w lancer_l":1,
@@ -44,7 +46,7 @@
 			"name": "cave",
 			"required":8,
 			"speed":0.8,
-			"force":80,
+			"force":90,
 			"chance": {
 				"crossbowman_s short_swordsman_p swordsman_r":1,
 				"goblin_axe goblin_spear goblin_sword orc_archer orc_sword":8
@@ -55,9 +57,9 @@
 		},
 		{
 			"name": "lair",
-			"required":12,
+			"required":10,
 			"speed":0.9,
-			"force":70,
+			"force":85,
 			"chance": {
 				"great_axeman_r great_swordsman_g":2,
 				"pikeman_c knight_o":1,
@@ -69,9 +71,9 @@
 		},
 		{
 			"name": "pit",
-			"required":16,
+			"required":13,
 			"speed":1.0,
-			"force":60,
+			"force":80,
 			"chance": {
 				"pikeman_c knight_o":1,
 				"imp":12,
@@ -107,7 +109,7 @@
 			"goblin_axe":       { "level":4 }, "goblin_spear":     { "level":4 },
 			"goblin_sword":     { "level":4 },
 
-			"lizardman":       { "level":5 }, "minotaur":         { "level":5 },
+			"lizardman":        { "level":5 }, "minotaur":         { "level":5 },
 			"orc_archer":       { "level":5 }, "orc_sword":        { "level":5 },
 
 			"giant":            { "level":6 }, "octopus":          { "level":6 },

@@ -1,16 +1,17 @@
-[gd_scene load_steps=36 format=3 uid="uid://c14i1wtlh6cqy"]
+[gd_scene load_steps=37 format=3 uid="uid://c14i1wtlh6cqy"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_f834v"]
 [ext_resource type="Texture2D" uid="uid://cxj76fnp1evfn" path="res://images/bg/village.png" id="2_0no1k"]
 [ext_resource type="Script" path="res://mainAudio.gd" id="3_d7c1v"]
 [ext_resource type="Script" path="res://fxAudio.gd" id="3_mt5kj"]
 [ext_resource type="Texture2D" uid="uid://consbeyof5ukg" path="res://images/bg/treasure-room.png" id="3_n4n7o"]
+[ext_resource type="Texture2D" uid="uid://c6jo7vd0f44th" path="res://images/bg/The_Lab_Rat.png" id="3_vmlpl"]
 [ext_resource type="Script" path="res://paused.gd" id="4_t7pre"]
 [ext_resource type="Texture2D" uid="uid://bkt0ed631cr3n" path="res://images/bg/work_bench.png" id="4_whk3h"]
 [ext_resource type="Script" path="res://gameOver.gd" id="5_510jg"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_m4gtk"]
-size = Vector3(12.623, 1.28369, 2.85168)
+size = Vector3(12.623, 0.0489651, 2.85168)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_do3kx"]
 albedo_texture = ExtResource("2_0no1k")
@@ -24,19 +25,21 @@ albedo_color = Color(0.882353, 0.843137, 0.847059, 1)
 albedo_texture = ExtResource("2_0no1k")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_tn0uu"]
-size = Vector3(1.48787, 0.277463, 21.2837)
+size = Vector3(3.18856, 0.277463, 21.2837)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iyodj"]
-albedo_texture = ExtResource("2_0no1k")
+albedo_texture = ExtResource("3_vmlpl")
+uv1_scale = Vector3(-1, 1, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_j4fwc"]
-size = Vector3(0.681809, 0.265513, 6.36558)
+size = Vector3(3.75232, 0.265513, 6.36558)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ntdjv"]
-albedo_texture = ExtResource("3_n4n7o")
+albedo_texture = ExtResource("3_vmlpl")
+uv1_scale = Vector3(-1, 1, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8qp2v"]
-size = Vector3(1, 23.8441, 0.247384)
+size = Vector3(2.54685, 23.8441, 0.247384)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_unf7i"]
 size = Vector3(13.4204, 0.69025, 19.7636)
@@ -58,7 +61,7 @@ albedo_texture = ExtResource("3_n4n7o")
 size = Vector3(1.82003, 4.49202, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_7bhq1"]
-size = Vector3(1, 6.88859, 0.303008)
+size = Vector3(3.25998, 6.88859, 0.303008)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vxkqw"]
 size = Vector3(1, 24.2295, 0.236255)
@@ -73,7 +76,7 @@ normal_scale = 2.0
 normal_texture = SubResource("NoiseTexture2D_1g7xh")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_alflm"]
-size = Vector3(0.254354, 1.55366, 1)
+size = Vector3(0.254354, 1.55366, 4.03572)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kfsqm"]
 size = Vector3(14.7777, 5.32571, 1)
@@ -112,7 +115,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01915, 0, 0)
 [node name="floor" type="StaticBody3D" parent="Board"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/floor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.675726, -0.652481, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.675726, 0.122981, 0)
 shape = SubResource("BoxShape3D_m4gtk")
 
 [node name="Box" type="CSGBox3D" parent="Board/floor"]
@@ -128,7 +131,7 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.2922
 shape = SubResource("BoxShape3D_ax87v")
 
 [node name="Box" type="CSGBox3D" parent="Board/backwall"]
-transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, -1, -0.114996, 3.26866, -1.5876)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.114996, 3.26866, -1.5876)
 size = Vector3(8.90139, 6.5431, 0.045876)
 material = SubResource("StandardMaterial3D_6fqkn")
 
@@ -140,8 +143,8 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -6.592
 shape = SubResource("BoxShape3D_tn0uu")
 
 [node name="Box" type="CSGBox3D" parent="Board/leftwall"]
-transform = Transform3D(0.00631809, 7.59749e-08, -0.99998, -0.99998, -7.54964e-08, -0.00631809, 7.59749e-08, -1, -7.54964e-08, 0, 3.242, 0)
-size = Vector3(6.49269, 0.459531, 0.623739)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.129344, 3.242, 0)
+size = Vector3(0.892651, 6.4109, 0.513722)
 material = SubResource("StandardMaterial3D_iyodj")
 
 [node name="rightwall" type="StaticBody3D" parent="Board"]
@@ -152,8 +155,8 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -3.
 shape = SubResource("BoxShape3D_j4fwc")
 
 [node name="Box" type="CSGBox3D" parent="Board/rightwall/bottomBox"]
-transform = Transform3D(1, 0, 0, 0, 1, -8.35188e-23, 0, -8.35188e-23, 1, 0, 0, 0)
-size = Vector3(0.537812, 0.181988, 6.38228)
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(0.260181, 0.589586, 6.38228)
 material = SubResource("StandardMaterial3D_ntdjv")
 
 [node name="topBox" type="CollisionShape3D" parent="Board/rightwall"]
@@ -161,15 +164,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.4558, 0)
 shape = SubResource("BoxShape3D_8qp2v")
 
 [node name="Box" type="CSGBox3D" parent="Board/rightwall/topBox"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -8.71256, 0)
-size = Vector3(0.537812, 0.181988, 6.38228)
+transform = Transform3D(-4.37114e-08, 1, 0, 4.37114e-08, 1.91069e-15, -1, -1, -4.37114e-08, -4.37114e-08, 0, -8.75771, 0)
+size = Vector3(0.260181, 0.589586, 6.38228)
 material = SubResource("StandardMaterial3D_ntdjv")
 
 [node name="frontwall" type="StaticBody3D" parent="Board"]
 transform = Transform3D(-0.999984, 0, -0.00563729, 0, 1, 0, 0.00563729, 0, -0.999984, 0, 0, 0.115766)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/frontwall"]
-transform = Transform3D(1, 9.31323e-10, 0, 0, -4.37114e-08, -1, -9.31323e-10, 1, -4.37114e-08, -1.47603, 9.17491, -0.52906)
+transform = Transform3D(1, 2.32831e-09, 0, 0, -4.37114e-08, -1, -2.32831e-09, 1, -4.37114e-08, -1.47478, 9.17491, -0.751577)
 shape = SubResource("BoxShape3D_unf7i")
 
 [node name="Info" type="CSGBox3D" parent="Board"]
@@ -350,9 +353,13 @@ material = SubResource("StandardMaterial3D_sn4my")
 script = ExtResource("4_t7pre")
 
 [node name="Title" type="Label3D" parent="Informatica/Paused"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.74203, 0.154547)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.74203, 0.149944)
 text = "PAUSED"
 font_size = 128
+
+[node name="KeyInfo" type="Label3D" parent="Informatica/Paused"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.92361, 0.106853)
+text = "Escape, P, Space or Click to Continue"
 
 [node name="LabelMuted" type="Label3D" parent="Informatica/Paused"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.19687, -2.13439, 0.10837)
@@ -368,9 +375,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.528554, 0.00174439, -0.000
 size = Vector3(0.18, 0.18, 0.0126728)
 material = SubResource("StandardMaterial3D_7b402")
 
-[node name="QuestExplanation" type="Label3D" parent="Informatica/Paused"]
+[node name="NormalExplanation" type="Label3D" parent="Informatica/Paused"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32748, -0.18811, 0.108364)
-visible = false
 text = "Goal:  Scale matching blocks to collect them and advance levels
 
 Legend:
@@ -407,26 +413,11 @@ Good Luck!"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.615436, -2.13127, 0.10578)
 text = "CTRL-Q to quit          CTRL-HOME for main screen"
 
-[node name="ClassicExplanation" type="Label3D" parent="Informatica/Paused"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32748, -0.18811, 0.108364)
-text = "Goal:  Scale matching blocks to collect them and advance levels
-
-Legend:
-- MATCHED shows how many pairs have been collected. 
-- AVAILABLE shows how many kinds of blocks can still fall.
-                        Don't let it get to zero!
-Controls:
-- Scale Blocks:  mouse wheel or up/down arrows
-- Move Blocks: click and drag or left/right arrows
-
-Each level has a themed block that matches the background 
-image. These blocks cannot be scaled.
-
-They need to be deposited into the bonus are on the right 
-side of the board to earn a special bonus level!
-"
+[node name="LevelledExplanation" type="Label3D" parent="Informatica/Paused"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14204, 0.778235, 0.108364)
+visible = false
+text = "Noice!"
 font_size = 28
-horizontal_alignment = 0
 
 [node name="Win" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8047, 3.14299, 1.26077)
@@ -455,7 +446,7 @@ Hit the any key or click the mouse to try again."
 [node name="Lose" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.861677, 3.14299, 1.26077)
 visible = false
-size = Vector3(6.79585, 4.61145, 0.19972)
+size = Vector3(6.79585, 4.61145, 0.0492058)
 material = SubResource("StandardMaterial3D_sn4my")
 script = ExtResource("5_510jg")
 
@@ -465,7 +456,7 @@ text = "YOU LOST!"
 font_size = 128
 
 [node name="Explanation" type="Label3D" parent="Informatica/Lose"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.286929, -0.494122, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.286929, -0.83163, 0.018383)
 text = "We were all cheering for, because, frankly, you were doing 
 an amazing job!
 
@@ -475,8 +466,12 @@ And I was all like: game over, dude!
 
 Hit the any key or click the mouse to try again."
 
+[node name="TMI" type="Label3D" parent="Informatica/Lose"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.315965, 0.0573347)
+
 [connection signal="body_entered" from="Board/Info/walls/bonus_area" to="." method="_on_bonus_area_body_entered"]
 [connection signal="body_shape_exited" from="Board/Info/walls/bonus_area" to="." method="_on_bonus_area_body_shape_exited"]
 [connection signal="finished" from="mainAudio" to="mainAudio" method="_on_finished"]
+[connection signal="visibility_changed" from="Informatica/Paused" to="." method="_on_paused_visibility_changed"]
 [connection signal="visibility_changed" from="Informatica/Win" to="Informatica/Win" method="_on_visibility_changed"]
 [connection signal="visibility_changed" from="Informatica/Lose" to="Informatica/Lose" method="_on_visibility_changed"]

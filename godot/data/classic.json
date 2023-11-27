@@ -3,24 +3,24 @@
 		"level_override": true,
 		"glow": false,
 		"tiles": "tiles/classic",
-		"lives": 3
+		"lives": 3,
+		"idk": true,
+		"explanation":"Goal:  Scale matching blocks to collect them and advance levels@@Legend:@- MATCHED shows how many pairs have been collected. @- AVAILABLE shows how many kinds of blocks can still fall.@Don't let it get to zero!@Controls:@- Scale Blocks:  mouse wheel or up/down arrows@- Move Blocks: click and drag or left/right arrows@@Each level has a themed block that matches the background @image. These blocks cannot be scaled.@@They need to be deposited into the bonus are on the right @side of the board to earn a special bonus level!"
 	},
 	"levels": [
 		{
 			"name": "The_Lab_Rat",
 			"required": 10,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.0
 			},
-			"sizes": 3,
-			"speed": 0.33,
-			"force": 100,
+			"sizes": 2,
+			"speed": 0.2,
+			"force": 70,
 			"chance": {
 				"L1-P01 L1-P02 L1-P03 L1-P04 L1-P05 L1-P06 L1-P07 L1-P08 L1-P09 L1-P10": 1,
 				"L1-P11 L1-P12 L1-P13 L1-P14 L1-P15": 1,
-				"L1-P16 L1-P17 L1-P18 L1-P19 L1-P20": 0,
-				"L1-P21 L1-P22 L1-P23 L1-P24 L1-P25 L1-P26 L1-P27 L1-P28 L1-P29 L1-P30": 0
 			},
 			"boss": "",
 			"music": "calm-piano-beat-royalty-free-music-177129.mp3",
@@ -28,7 +28,7 @@
 				"item": "L1-The_Lab_Rat",
 				"count": 5,
 				"required": 4,
-				"chance": 0.5,
+				"chance": 0.12,
 				"gap": 1.7
 			}
 		},
@@ -38,12 +38,12 @@
 			},
 			"name": "The_Lab_Rat",
 			"speed": 1.5,
-			"force": 100,
+			"force": 70,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.0
 			},
-			"sizes": 5,
+			"sizes": 2,
 			"music": "calm-piano-beat-royalty-free-music-177129.mp3"
 		},
 
@@ -51,19 +51,17 @@
 
 		{
 			"name": "The_Ruler",
-			"required": 15,
+			"required": 14,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.2,
+				"maximum": 1.6
 			},
-			"sizes": 4,
-			"speed": 0.33,
+			"sizes": 2,
+			"speed": 0.25,
 			"force": 100,
 			"chance": {
 				"L2-P01 L2-P02 L2-P03 L2-P04 L2-P05 L2-P06 L2-P07 L2-P08 L2-P09 L2-P10": 1,
 				"L2-P11 L2-P12 L2-P13 L2-P14 L2-P15": 1,
-				"L2-P16 L2-P17 L2-P18 L2-P19 L2-P20": 0,
-				"L2-P21 L2-P22 L2-P23 L2-P24 L2-P25 L2-P26 L2-P27 L2-P28 L2-P29 L2-P30": 0
 			},
 			"boss": "",
 			"music": "chill-electronic-royalty-free-music-175966.mp3",
@@ -71,7 +69,7 @@
 				"item": "L2-The_Ruler",
 				"count": 5,
 				"required": 4,
-				"chance": 0.33,
+				"chance": 0.15,
 				"gap": 1.3
 			}
 		},
@@ -83,10 +81,10 @@
 			"speed": 1.5,
 			"force": 100,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.0
 			},
-			"sizes": 5,
+			"sizes": 2,
 			"music": "chill-electronic-royalty-free-music-175966.mp3"
 		},
 
@@ -96,17 +94,15 @@
 			"name": "The_Speedometer",
 			"required": 20,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.0
 			},
-			"sizes": 5,
-			"speed": 0.33,
+			"sizes": 3,
+			"speed": 0.3,
 			"force": 100,
 			"chance": {
 				"L3-P01 L3-P02 L3-P03 L3-P04 L3-P05 L3-P06 L3-P07 L3-P08 L3-P09 L3-P10": 1,
 				"L3-P11 L3-P12 L3-P13 L3-P14 L3-P15": 1,
-				"L3-P16 L3-P17 L3-P18 L3-P19 L3-P20": 0,
-				"L3-P21 L3-P22 L3-P23 L3-P24 L3-P25 L3-P26 L3-P27 L3-P28 L3-P29 L3-P30": 0
 			},
 			"boss": "",
 			"music": "piano-atmosphere-electronic-royalty-free-music-177123.mp3",
@@ -126,10 +122,10 @@
 			"speed": 1.5,
 			"force": 100,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.0
 			},
-			"sizes": 5,
+			"sizes": 3,
 			"music": "piano-atmosphere-electronic-royalty-free-music-177123.mp3"
 		},
 
@@ -139,17 +135,15 @@
 			"name": "The_Bathroom_Scale",
 			"required": 24,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.1,
+				"maximum": 1.9
 			},
-			"sizes": 5,
+			"sizes": 3,
 			"speed": 0.33,
 			"force": 100,
 			"chance": {
 				"L4-P01 L4-P02 L4-P03 L4-P04 L4-P05 L4-P06 L4-P07 L4-P08 L4-P09 L4-P10": 1,
 				"L4-P11 L4-P12 L4-P13 L4-P14 L4-P15": 1,
-				"L4-P16 L4-P17 L4-P18 L4-P19 L4-P20": 0,
-				"L4-P21 L4-P22 L4-P23 L4-P24 L4-P25 L4-P26 L4-P27 L4-P28 L4-P29 L4-P30": 0
 			},
 			"boss": "",
 			"music": "light-chill-trap-royalty-free-music-177128.mp3",
@@ -169,10 +163,10 @@
 			"speed": 1.5,
 			"force": 100,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.1,
+				"maximum": 1.9
 			},
-			"sizes": 5,
+			"sizes": 3,
 			"music": "light-chill-trap-royalty-free-music-177128.mp3"
 		},
 
@@ -182,12 +176,12 @@
 			"name": "This_Looks_Fishy",
 			"required": 28,
 			"scale": {
-				"minimum": 1.25,
+				"minimum": 1.2,
 				"maximum": 1.8
 			},
-			"sizes": 6,
-			"speed": 0.33,
-			"force": 100,
+			"sizes": 3,
+			"speed": 0.37,
+			"force": 70,
 			"chance": {
 				"L5-P01 L5-P02 L5-P03 L5-P04 L5-P05 L5-P06 L5-P07 L5-P08 L5-P09 L5-P10": 1,
 				"L5-P11 L5-P12 L5-P13 L5-P14 L5-P15": 1,
@@ -210,10 +204,10 @@
 			"speed": 1.5,
 			"force": 100,
 			"scale": {
-				"minimum": 1.25,
+				"minimum": 1.2,
 				"maximum": 1.8
 			},
-			"sizes": 5,
+			"sizes": 3,
 			"music": "jazzy-chill-hop-royalty-free-music-177126.mp3"
 		},
 
@@ -223,11 +217,11 @@
 			"name": "Musical_Scales",
 			"required": 32,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.5
 			},
-			"sizes": 6,
-			"speed": 0.33,
+			"sizes": 4,
+			"speed": 0.4,
 			"force": 100,
 			"chance": {
 				"L6-P01 L6-P02 L6-P03 L6-P04 L6-P05 L6-P06 L6-P07 L6-P08 L6-P09 L6-P10": 1,
@@ -251,10 +245,10 @@
 			"speed": 1.5,
 			"force": 100,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.5
 			},
-			"sizes": 5,
+			"sizes": 4,
 			"music": "this-lo-fi-chill-hop-royalty-free-music-175967.mp3"
 		},
 
@@ -264,11 +258,11 @@
 			"name": "The_Thermometer",
 			"required": 35,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.0
 			},
-			"sizes": 7,
-			"speed": 0.33,
+			"sizes": 4,
+			"speed": 0.43,
 			"force": 100,
 			"chance": {
 				"L7-P01 L7-P02 L7-P03 L7-P04 L7-P05 L7-P06 L7-P07 L7-P08 L7-P09 L7-P10": 1,
@@ -292,10 +286,10 @@
 			"speed": 1.5,
 			"force": 100,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.0
 			},
-			"sizes": 5,
+			"sizes": 4,
 			"music": "light-future-bass-royalty-free-music-175962.mp3"
 		},
 
@@ -305,11 +299,11 @@
 			"name": "Justice",
 			"required": 38,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.5
 			},
-			"sizes": 7,
-			"speed": 0.33,
+			"sizes": 5,
+			"speed": 0.45,
 			"force": 100,
 			"chance": {
 				"L8-P01 L8-P02 L8-P03 L8-P04 L8-P05 L8-P06 L8-P07 L8-P08 L8-P09 L8-P10": 1,
@@ -333,8 +327,8 @@
 			"speed": 1.5,
 			"force": 100,
 			"scale": {
-				"minimum": 1.25,
-				"maximum": 1.8
+				"minimum": 1.0,
+				"maximum": 2.5
 			},
 			"sizes": 5,
 			"music": "sport-trap-royalty-free-music-174936.mp3"

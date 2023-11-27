@@ -11,3 +11,4 @@ func _on_visibility_changed():
 	if is_visible():
 		await get_tree().create_timer(2.0).timeout 
 		interactable = true
+		print("win: you can go on")

@@ -43,12 +43,14 @@ func _ready():
 func _process(delta):
 	if !sleeping:
 		_am_i_getting_sleepy(delta)
-	_nan_hack() 
+	#NON.append(position)
+	_nan_hack()
 
+var NON = []
 func _nan_hack():
 	for v in [body.position.x, body.position.y, body.position.z]:
 		if is_nan(v):
-			#print("NNNNNNNNNOOOOOOONNNNNNNN   ", NON)
+			print("NNNNNNNNNOOOOOOONNNNNNNN   ", NON)
 			main.nan_hack_me_baby(self)
 			return true
 	return false
@@ -98,15 +100,23 @@ func set_size(size_:int):
 	var scale_ = SCALE_MINIMUM + (SCALE_MAXIMUM - SCALE_MINIMUM) / max_size * size
 	#print("set> size to ", size, ", wanted ", size_, " but max is ", max_size, "so scale is ", scale)
 	body.mass = scale_
-	# the box that collides
-	shape.size.x = .5 * scale_
-	shape.size.y = .5 * scale_
-	particles.process_material.emission_box_extents.x = .5 * scale_
-	particles.process_material.emission_box_extents.y = .5 * scale_
-	# the box you see
-	box.scale.x = scale_
-	box.scale.y = scale_
+	if false:
+		var halb = v3(.5 * scale_)
+		shape.size = halb
+		particles.process_material.emission_box_extents = halb
+		box.scale = v3(scale_)
+	else:
+		var halb = .5 * scale_
+		shape.size.x = halb
+		particles.process_material.emission_box_extents.x = halb
+		box.scale.x = scale_
+		shape.size.y = halb
+		particles.process_material.emission_box_extents.y = halb
+		box.scale.y = scale_
 	return size
+
+func v3(v:float):
+	return Vector3(v,v,1+0*v)
 
 # the particle_override_ keeps the sleeping -> once the main has 
 # taken over particle state (selection)

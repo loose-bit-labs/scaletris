@@ -46,6 +46,7 @@ const LIVES = "lives"
 const TIMER = "timer"
 const INFO = "info"
 const SPEED = "speed"
+const EXPLANATION = "explanation"
 
 const DEFAULT_BONUS_TIMER = 90
 
@@ -89,6 +90,12 @@ func load_world(filename:String = WORLD_FILE, callback:Callable = func():return)
 	world[LEVELS] = _load_levels(world[LEVELS])
 	loaded = filename
 	callback.call()
+
+func game_name():
+	var l = Fof.loaded
+	var a = l.rfind("/") + 1
+	var b = l.rfind(".")
+	return l.substr(a, b - a)
 
 func _get_tiles():
 	return TILE_DEFAULT if not GAME in world or not TILES in world.game else world.game.tiles
@@ -251,8 +258,11 @@ func entity_by_name(entity_name:String, level_index:int = -1):
 func _forbidden_entities(block_map:Dictionary):
 	var no_go = {}
 	for entity_name in block_map:
-		if block_map[entity_name].size() >= 2:
+		var size = block_map[entity_name].size()
+		if size >= 2:
 			no_go[entity_name] = true
+			if size > 2:
+				print("BUG: ", size, " x ", entity_name)
 	return no_go
 
 func load_background(bg_name):
@@ -266,6 +276,7 @@ func _image_resource_to_material(image_resource:String, type:String=""):
 
 func image_to_material(image, type:String=""):
 	var material = StandardMaterial3D.new()
+	material.uv1_scale.x = -1
 	material.set_texture(StandardMaterial3D.TEXTURE_ALBEDO, image)
 	if world.game.glow:
 		var c = 33

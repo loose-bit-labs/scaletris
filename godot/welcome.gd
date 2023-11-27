@@ -11,15 +11,17 @@ var main_scene = "res://main.tscn"
 @onready var rightV = $NewWelcome/RightBox/RightBoxV
 @onready var rightC = $NewWelcome/RightBox/RightBoxC
 
+@onready var loading = $Loading
+
 @onready var music = $AudioStreamPlayer3D
 @onready var fx = $fxPlayer
 
 var selected = ""
 var options = ["classic", "quest"]
-var loading = false
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	loading.hide()
 	_handle_mute()
 	reset()
 
@@ -34,8 +36,8 @@ func reset():
 	left.show()
 
 func _input(event):
-	#if loading:
-	#	return
+	if loading.is_visible_in_tree():
+		return
 	if event.is_action_pressed("mute"):
 		_toggle_mute()
 	if event.is_action_pressed("ui_accept"):
@@ -79,7 +81,7 @@ func _active(which:String = "", start:bool = false):
 	if start and "" != which:
 		var world = Fof.GAME_CLASSIC if "classic" == which else Fof.GAME_QUEST
 		print("let's go! ", which, " -> ", world)
-		loading = true
+		loading.show()
 		Fof.load_world(world, _start_game)
 	if which != selected:
 		selected = which
@@ -87,5 +89,6 @@ func _active(which:String = "", start:bool = false):
 		player.play("spin_" + which)
 
 func _start_game():
-	loading = false
+	loading.hide()
+	get_tree().paused = false
 	get_tree().change_scene_to_file(main_scene)
