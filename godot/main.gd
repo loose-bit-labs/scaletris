@@ -46,6 +46,7 @@ var block_scene = preload("res://block.tscn")
 @onready var explain_levelled = $Informatica/Paused/LevelledExplanation
 
 @onready var camera = $Camera3D
+@onready var player = $AnimationPlayer
 
 # note: these are set by level difficulty
 var gravity = .25
@@ -314,7 +315,8 @@ func _next_level(sweet:bool = true):
 	#FRQ pauser.pause()
 	pauser.show()
 	level_up_please = true
-	
+
+
 func _post_level_text(sweet:bool):
 	var diff = score - score_before
 	var collected = "You collected %d points, your total score is now %d." %[diff, score]
@@ -330,6 +332,7 @@ func _post_level_text(sweet:bool):
 				score = score + 50
 		else:
 			pause_title.text = "Bonus Timer Ran Out! ⌛"
+			player.play("lost_level")
 		explain_levelled.text = lived
 		return
 		
@@ -341,12 +344,14 @@ func _post_level_text(sweet:bool):
 		if required_bonus_count:
 			if bonus_count < required_bonus_count:
 				lines.append("Unfortunately, you didn't make the Bonus Layer.")
+				player.play("lost_level")
 			else:
 				lines.append("You qualified for the Bonus Layer!")
 		explain_levelled.text = "\n".join(lines)
 	else:
 		pause_title.text = "Bummer... 😭"
 		explain_levelled.text = "You failed Level " + level.name.replace("_", " ")
+		player.play("lost_level")
 
 func _in_the_bed(sweet:bool):
 	if sweet:
@@ -368,7 +373,7 @@ func _in_the_bed(sweet:bool):
 func _on_paused_visibility_changed():
 	if level_up_please and not pauser.is_visible_in_tree():
 		level_up_please = false
-		if required_bonus_count and bonus_count < required_bonus_count:
+		if not is_bonus_level and required_bonus_count and bonus_count < required_bonus_count:
 			_load_level(2 + current_level)
 		else:
 			_load_level(1 + current_level)
@@ -478,12 +483,17 @@ func _key_pressed(code:int):
 		KEY_7: _load_level(12) # ...
 		KEY_8: _load_level(14) # ...
 		KEY_9: _load_level(16) # win
+		KEY_L: _go_lose()
 		KEY_B: _bonus_hack()
 		KEY_N: _next_level(true)
 		KEY_Q: _show_blocks()
 		KEY_I: _tmi()
 		KEY_X: _auto_match()
 		KEY_Z: _toggle_helper()
+
+func _go_lose():
+	lives = 0
+	_on_level_over(true, "Test losing")
 
 func _bonus_hack():
 	bonus_force = true
@@ -628,17 +638,18 @@ func _on_level_over(lost:bool = true, tmi:String = ""):
 	if lost:
 		lives = lives - 1
 		if lives <= 0:
-			#TODO: play loser sound
 			#{If lives = 0} You just lost your last life and have been "scaled to Zero". Wanna try again?
+			player.play("game_over")
 			game_over = true
 			u_lose.show()
 		else:
-			#TODO: play dead sound
+			
+			player.play("lost_level")
 			if dev_mode:
 				print("You are still alive, so restart level")
 			_load_level(current_level)
 	else:
-		#TODO: play winner sound
+		player.play("victory")
 		game_over = true
 		u_win.show()
 
@@ -766,8 +777,11 @@ func _helped(block, count):
 
 func _missed(primary, others, _blocks):
 	print("missed ", primary.entity, " and ", others.size(), " others")
-	fxAudio.play_fx(fxAudio.BELL2)
+	fxAudio.play_fx(fxAudio.MISMATCH)
 	missed_count = missed_count + 1
+	primary.go_red()
+	for o in others:
+		o.go_red()
 	_update_status()
 
 ###################################################################################################
@@ -783,10 +797,15 @@ func _rand():
 
 ###################################################################################################
 
+var last_hit = 0
+const hit_wait = .25
 func on_collision(_block,body):
 	if body.name == "frontwall" || body.name == "backwall":
 		return
-	fxAudio.play_tonk() 
+	var now = Time.get_unix_time_from_system()
+	if now - last_hit > hit_wait:
+		fxAudio.play_tonk() 
+		last_hit = now
 
 func _get_blocks():
 	return get_tree().get_nodes_in_group("blocks")

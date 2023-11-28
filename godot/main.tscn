@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://c14i1wtlh6cqy"]
+[gd_scene load_steps=43 format=3 uid="uid://c14i1wtlh6cqy"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_f834v"]
 [ext_resource type="Texture2D" uid="uid://cxj76fnp1evfn" path="res://images/bg/village.png" id="2_0no1k"]
@@ -9,6 +9,9 @@
 [ext_resource type="Script" path="res://paused.gd" id="4_t7pre"]
 [ext_resource type="Texture2D" uid="uid://bkt0ed631cr3n" path="res://images/bg/work_bench.png" id="4_whk3h"]
 [ext_resource type="Script" path="res://gameOver.gd" id="5_510jg"]
+[ext_resource type="AudioStream" uid="uid://dkllsilygbwcr" path="res://audio/fx/162465__kastenfrosch__lostitem.mp3" id="8_elshh"]
+[ext_resource type="AudioStream" uid="uid://dvr5hkhjopfgj" path="res://audio/fx/76376__deleted_user_877451__game_over.wav" id="9_g62sf"]
+[ext_resource type="AudioStream" uid="uid://dckrwuvayw604" path="res://audio/music/victory-epic-music-155790.mp3" id="10_ponel"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_m4gtk"]
 size = Vector3(12.623, 0.0489651, 2.85168)
@@ -87,9 +90,84 @@ glow_hdr_threshold = 0.98
 [sub_resource type="Animation" id="Animation_6jj5w"]
 resource_name = "remove_block"
 
+[sub_resource type="Animation" id="Animation_sxkyo"]
+resource_name = "lost_level"
+length = 2.0
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("fxAudio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("8_elshh")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = true
+
+[sub_resource type="Animation" id="Animation_h5nmj"]
+resource_name = "game_over"
+length = 1.5
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("fxAudio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("9_g62sf")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = true
+tracks/1/type = "audio"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("mainAudio")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("8_elshh")
+}],
+"times": PackedFloat32Array(0.3)
+}
+tracks/1/use_blend = true
+
+[sub_resource type="Animation" id="Animation_hl4j6"]
+resource_name = "victory"
+length = 100.0
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("mainAudio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("10_ponel")
+}],
+"times": PackedFloat32Array(-0.4)
+}
+tracks/0/use_blend = true
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_pcy84"]
 _data = {
-"remove_block": SubResource("Animation_6jj5w")
+"game_over": SubResource("Animation_h5nmj"),
+"lost_level": SubResource("Animation_sxkyo"),
+"remove_block": SubResource("Animation_6jj5w"),
+"victory": SubResource("Animation_hl4j6")
 }
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sn4my"]
@@ -142,7 +220,7 @@ shape = SubResource("BoxShape3D_tn0uu")
 
 [node name="Box" type="CSGBox3D" parent="Board/leftwall"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.129344, 3.242, 0)
-size = Vector3(0.892651, 6.4109, 0.513722)
+size = Vector3(1.13619, 6.4109, 0.513722)
 material = SubResource("StandardMaterial3D_iyodj")
 
 [node name="rightwall" type="StaticBody3D" parent="Board"]
@@ -154,7 +232,7 @@ shape = SubResource("BoxShape3D_j4fwc")
 
 [node name="Box" type="CSGBox3D" parent="Board/rightwall/bottomBox"]
 transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
-size = Vector3(0.260181, 0.589586, 6.38228)
+size = Vector3(0.260181, 0.744547, 6.38228)
 material = SubResource("StandardMaterial3D_ntdjv")
 
 [node name="topBox" type="CollisionShape3D" parent="Board/rightwall"]
@@ -163,7 +241,7 @@ shape = SubResource("BoxShape3D_8qp2v")
 
 [node name="Box" type="CSGBox3D" parent="Board/rightwall/topBox"]
 transform = Transform3D(-4.37114e-08, 1, 0, 4.37114e-08, 1.91069e-15, -1, -1, -4.37114e-08, -4.37114e-08, 0, -8.75771, 0)
-size = Vector3(0.260181, 0.589586, 6.38228)
+size = Vector3(0.260181, 0.656515, 6.38228)
 material = SubResource("StandardMaterial3D_ntdjv")
 
 [node name="frontwall" type="StaticBody3D" parent="Board"]
@@ -299,7 +377,7 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 6.6567
 
 [node name="Box" type="CSGBox3D" parent="Board/farrightwall"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.004, 0, 0)
-size = Vector3(0.537812, 6.34213, 0.332784)
+size = Vector3(0.661206, 6.34213, 0.332784)
 material = SubResource("StandardMaterial3D_ntdjv")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Board/farrightwall"]
@@ -330,7 +408,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35481, 20.052, 0)
 shape = SubResource("BoxShape3D_kfsqm")
 
 [node name="mainAudio" type="AudioStreamPlayer3D" parent="."]
-volume_db = -8.8
+volume_db = -11.11
 script = ExtResource("3_d7c1v")
 
 [node name="fxAudio" type="AudioStreamPlayer3D" parent="."]
@@ -351,9 +429,9 @@ libraries = {
 }
 
 [node name="OmniLight3D2" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6089, 3.28297, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.94953, 2.56823, 1.02052)
 light_intensity_lumens = 100.0
-omni_range = 2.50582
+omni_range = 3.2062
 
 [node name="Informatica" type="Node3D" parent="."]
 
@@ -437,7 +515,7 @@ font_size = 28
 [node name="Win" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8047, 3.14299, 1.26077)
 visible = false
-size = Vector3(6.72748, 4.61145, 0.19972)
+size = Vector3(12.5754, 4.61145, 0.19972)
 material = SubResource("StandardMaterial3D_sn4my")
 script = ExtResource("5_510jg")
 
@@ -461,7 +539,7 @@ Hit the any key or click the mouse to try again."
 [node name="Lose" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.861677, 3.14299, 1.26077)
 visible = false
-size = Vector3(6.79585, 4.61145, 0.0492058)
+size = Vector3(12.6903, 4.61145, 0.0492058)
 material = SubResource("StandardMaterial3D_sn4my")
 script = ExtResource("5_510jg")
 

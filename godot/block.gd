@@ -7,6 +7,7 @@ extends Node3D
 
 var particle_override = false
 @onready var particles = $RigidBody3D/GPUParticles3D
+@onready var redder = $RigidBody3D/RedParticles
 
 var shape : BoxShape3D = null
 var main = null
@@ -38,6 +39,7 @@ func _ready():
 	shape = collision.shape
 	show_particles(true, false)
 	add_to_group("blocks")
+	print(particles.draw_pass_1.material)
  
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -115,7 +117,10 @@ func show_particles(value:bool = true, particle_override_:bool = true):
 	if particle_override_:
 		particle_override = particle_override_
 	particles.emitting = value
-	
+
+func go_red():
+	animationPlayer.play("redzoned")
+
 func move(force):
 	body.apply_central_force(force)
 
@@ -158,6 +163,7 @@ func remove():
 	#print("removing ", entity.name)
 	box.set_material(entity[Fof.MATERIAL_COPY])
 	Fof.glow(box.material, glow_color, .3)
+	await get_tree().create_timer(randf()*.25).timeout
 	animationPlayer.play("remove") # TODO: make this less lame
 
 func _on_rigid_body_3d_body_entered(body_):
@@ -180,5 +186,10 @@ func show_me():
 func info():
 	return {"size":size, "position": body.position, "entity":entity.name, "type":entity.type, "sleeping":sleeping, "sleepyTime":sleepyTime, "in_bonus_zone":in_bonus_zone}
 
-func _on_animation_player_animation_finished(_anim_name):
-	main.remove_child(self)
+func _on_animation_player_animation_finished(anim_name):
+	if "remove" == anim_name:
+		main.remove_child(self)
+
+func _on_red_particles_visibility_changed():
+	redder.emitting = redder.is_visible_in_tree() 
+	print("RED ", redder.emitting)

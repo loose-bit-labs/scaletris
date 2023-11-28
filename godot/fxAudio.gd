@@ -11,6 +11,7 @@ const TONK = "tonk"
 const CLASH = "clash"
 const CLASH2 = "clash2"
 const OUCH = "ouch"
+const MISMATCH = "mismatch"
 
 @export var muted = false
 
@@ -22,6 +23,7 @@ const OUCH = "ouch"
 	CLASH: {CLIP:load("res://audio/fx/clash.mp3")},
 	CLASH2: {CLIP:load("res://audio/fx/clash2.mp3"),VOLUME:13.31},
 	OUCH: {CLIP:load("res://audio/fx/ouch.mp3"), VOLUME:13.31 },
+	MISMATCH: {CLIP:load("res://audio/fx/253174__suntemple__retro-you-lose-sfx.mp3"), VOLUME:13.31 },
 }
 
 # Called when the node enters the scene tree for the first time.

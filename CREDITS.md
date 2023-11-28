@@ -33,10 +33,35 @@ mystery-horror-trailer-170637-license.txt
 horror-trailer-170637.mp3
 PurplePlanetMusic
 -----------------------
+victory
+Victory Epic Music
+PaulYudin
+https://pixabay.com/music/main-title-victory-epic-music-155790/
+-----------------------
+RoyaltyFreeMusic
+https://pixabay.com/users/royaltyfreemusic-29393722/
 
 # Sound FX:
 
 Retro, Explosion 02.wav
+Pop 02.wav
 MATRIXXX_
 https://freesound.org/people/MATRIXXX_/sounds/403298/
-403298__matrixxx__retro-explosion-02.mp3
+https://freesound.org/people/MATRIXXX_/sounds/506545/
+-----------------------
+Retro You Lose SFX
+suntemple
+https://freesound.org/people/suntemple/sounds/253174/
+-----------------------
+lostItem.mp3
+Kastenfrosch
+-----------------------
+Game_over.wav
+deleted_user...
+https://freesound.org/people/deleted_user_877451/sounds/76376/
+-----------------------
+-----------------------
+-----------------------
+-----------------------
+
+

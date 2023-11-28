@@ -4,11 +4,14 @@ var interactable = false
 
 func _input(event):
 	if interactable and (event is InputEventMouseButton or event is InputEventKey) and event.pressed:
-		get_tree().change_scene_to_file("res://welcome.tscn")
+		print("changing...")
 		self.hide()
+		get_tree().change_scene_to_file("res://welcome.tscn")
+		print("changed")
 
 func _on_visibility_changed():
 	if is_visible():
 		await get_tree().create_timer(2.0).timeout 
 		interactable = true
-		print("win: you can go on")
+		print("you can go on")
+		get_tree().paused = false

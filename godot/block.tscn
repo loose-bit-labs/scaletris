@@ -1,6 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://7ahqkm7byqyf"]
+[gd_scene load_steps=17 format=3 uid="uid://7ahqkm7byqyf"]
 
 [ext_resource type="Script" path="res://block.gd" id="1_3u4cw"]
+[ext_resource type="AudioStream" uid="uid://d0l0i1l5je6qt" path="res://audio/fx/506545__matrixxx__pop-02.wav" id="3_c7r2v"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2w4y5"]
 
@@ -37,7 +38,25 @@ sub_emitter_mode = 1
 sub_emitter_frequency = 16.1
 sub_emitter_keep_velocity = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k2by3"]
+albedo_color = Color(0.913725, 0.792157, 0.454902, 1)
+metallic = 0.39
+emission_enabled = true
+emission = Color(0.941176, 0.878431, 0, 1)
+emission_energy_multiplier = 1.58
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_u1fuk"]
+material = SubResource("StandardMaterial3D_k2by3")
+size = Vector2(0.04, 0.04)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2unxg"]
+albedo_color = Color(0.972549, 0.235294, 0.12549, 1)
+metallic = 0.24
+emission_enabled = true
+emission = Color(0.933333, 0, 0, 1)
+
 [sub_resource type="PlaneMesh" id="PlaneMesh_oshci"]
+material = SubResource("StandardMaterial3D_2unxg")
 size = Vector2(0.022, 0.033)
 orientation = 2
 
@@ -109,10 +128,55 @@ tracks/3/keys = {
 "update": 0,
 "values": [Vector3(1, 1, 1), Vector3(1.2, 1.2, 1.2), Vector3(0.5, 0.5, 0.5), Vector3(0.2, 0.2, 0.2), Vector3(0.1, 0.1, 0.1)]
 }
+tracks/4/type = "audio"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("AudioStreamPlayer3D")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("3_c7r2v")
+}, {
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("3_c7r2v")
+}],
+"times": PackedFloat32Array(0, 0.5)
+}
+tracks/4/use_blend = true
+
+[sub_resource type="Animation" id="Animation_u056l"]
+resource_name = "redzoned"
+length = 2.0
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("RigidBody3D/RedParticles")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [],
+"method": &"show"
+}, {
+"args": [],
+"method": &"hide"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_nyjon"]
+resource_name = "nothing"
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_4ghug"]
 _data = {
 "RESET": SubResource("Animation_o7ji1"),
+"nothing": SubResource("Animation_nyjon"),
+"redzoned": SubResource("Animation_u056l"),
 "remove": SubResource("Animation_tjwl4")
 }
 
@@ -143,6 +207,18 @@ fixed_fps = 22
 transform_align = 2
 trail_lifetime = 0.4
 process_material = SubResource("ParticleProcessMaterial_ke5vg")
+draw_pass_1 = SubResource("PlaneMesh_u1fuk")
+
+[node name="RedParticles" type="GPUParticles3D" parent="RigidBody3D"]
+visible = false
+amount = 256
+lifetime = 0.18
+preprocess = 0.05
+speed_scale = 0.77
+fixed_fps = 22
+transform_align = 2
+trail_lifetime = 0.4
+process_material = SubResource("ParticleProcessMaterial_ke5vg")
 draw_pass_1 = SubResource("PlaneMesh_oshci")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -150,7 +226,12 @@ libraries = {
 "": SubResource("AnimationLibrary_4ghug")
 }
 
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_c7r2v")
+volume_db = -8.8
+
 [connection signal="body_entered" from="RigidBody3D" to="." method="_on_rigid_body_3d_body_entered"]
 [connection signal="body_shape_entered" from="RigidBody3D" to="." method="_on_rigid_body_3d_body_shape_entered"]
 [connection signal="sleeping_state_changed" from="RigidBody3D" to="." method="_on_rigid_body_3d_sleeping_state_changed"]
+[connection signal="visibility_changed" from="RigidBody3D/RedParticles" to="." method="_on_red_particles_visibility_changed"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
