@@ -251,7 +251,7 @@ func is_bonus_level(level):
 	return Fof.BONUS_LEVEL in level
 
 func game_has_death_bonus():
-	return DEATH_BONUS in Fof.world.game
+	return DEATH_BONUS in Fof.world.game and Fof.world.game.death_bonus
 
 func has_death_bonus(level):
 	return can_earn_bonus(level) and not is_bonus_level(level) and game_has_death_bonus()

@@ -43,17 +43,6 @@ func _ready():
 func _process(delta):
 	if !sleeping:
 		_am_i_getting_sleepy(delta)
-	#NON.append(position)
-	_nan_hack()
-
-var NON = []
-func _nan_hack():
-	for v in [body.position.x, body.position.y, body.position.z]:
-		if is_nan(v):
-			print("NNNNNNNNNOOOOOOONNNNNNNN   ", NON)
-			#main.nan_hack_me_baby(self)
-			return true
-	return false
 
 func configure(main_, position_:Vector3, spin:Vector3, gravity:float, entity_):
 	self.main = main_

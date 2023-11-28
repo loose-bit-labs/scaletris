@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://welcome.gd" id="1_cuc1k"]
 [ext_resource type="AudioStream" uid="uid://b5vvqjq6brewx" path="res://audio/music/whip-110235.mp3" id="2_sutqe"]
 [ext_resource type="Script" path="res://welcome_small_box.gd" id="3_a5qc5"]
-[ext_resource type="Texture2D" uid="uid://drj6liss2keq1" path="res://images/textures/welcome_cube_texture.png" id="3_dode8"]
-[ext_resource type="AudioStream" uid="uid://cudvrfiudwjgp" path="res://audio/fx/pow.mp3" id="5_d016t"]
+[ext_resource type="Texture2D" uid="uid://b7yfo0rjc8oh8" path="res://lbl-nuts-and-bolts.png" id="3_b20fw"]
+[ext_resource type="AudioStream" uid="uid://bmocjvsmbobyb" path="res://audio/fx/403298__matrixxx__retro-explosion-02.mp3" id="6_2riwq"]
 [ext_resource type="AudioStream" uid="uid://0ojdo8aj6jxh" path="res://audio/fx/tonk.mp3" id="6_w4otv"]
 
 [sub_resource type="Environment" id="Environment_nmikw"]
@@ -24,7 +24,7 @@ size = Vector3(15.4731, 0.0238408, 4.12753)
 bounce = 0.2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gich6"]
-albedo_texture = ExtResource("3_dode8")
+albedo_texture = ExtResource("3_b20fw")
 metallic = 0.21
 roughness = 0.2
 uv1_scale = Vector3(-1, 1, 1)
@@ -35,7 +35,7 @@ uv1_scale = Vector3(-1, 1, 1)
 bounce = 0.2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2cimx"]
-albedo_texture = ExtResource("3_dode8")
+albedo_texture = ExtResource("3_b20fw")
 metallic = 0.28
 roughness = 0.2
 emission = Color(1, 1, 1, 1)
@@ -90,8 +90,8 @@ tracks/1/loop_wrap = true
 tracks/1/keys = {
 "clips": [{
 "end_offset": 0.0,
-"start_offset": 0.44,
-"stream": ExtResource("5_d016t")
+"start_offset": 0.0,
+"stream": ExtResource("6_2riwq")
 }],
 "times": PackedFloat32Array(0)
 }
@@ -244,7 +244,7 @@ angular_velocity_min = 0.22
 angular_velocity_max = 7.7
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uh4mp"]
-albedo_texture = ExtResource("3_dode8")
+albedo_texture = ExtResource("3_b20fw")
 metallic = 0.1
 emission = Color(0.811765, 0.560784, 0.482353, 1)
 emission_energy_multiplier = 0.22

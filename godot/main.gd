@@ -175,7 +175,7 @@ func _load_reset_values():
 	level_up_please = false
 	possible_count = level.chance.size()
 	kills = 0
-	score_before = 0
+	score_before = score
 	bonus_force = false
 	missed_count = 0
 	bonus_count = 0
@@ -368,7 +368,10 @@ func _in_the_bed(sweet:bool):
 func _on_paused_visibility_changed():
 	if level_up_please and not pauser.is_visible_in_tree():
 		level_up_please = false
-		_load_level(1 + current_level)
+		if required_bonus_count and bonus_count < required_bonus_count:
+			_load_level(2 + current_level)
+		else:
+			_load_level(1 + current_level)
 
 func _update_status():
 	label_level.text = level.name.replace("_", " ")
