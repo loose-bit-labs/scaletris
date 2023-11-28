@@ -201,7 +201,7 @@ material = SubResource("StandardMaterial3D_6lwq3")
 [node name="GPUParticles3D" type="GPUParticles3D" parent="RigidBody3D"]
 amount = 256
 lifetime = 0.18
-preprocess = 0.05
+preprocess = 0.11
 speed_scale = 0.77
 fixed_fps = 22
 transform_align = 2
