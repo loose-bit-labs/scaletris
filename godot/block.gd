@@ -29,6 +29,8 @@ var sleepyTime = 0
 @export var SCALE_MINIMUM = 1.5
 @export var SCALE_MAXIMUM = 3
 
+@export var IMPACT_THESHOLD = 2.2
+
 var og = Vector3(0,7,0)
 
 # Called when the node enters the scene tree for the first time.
@@ -39,7 +41,7 @@ func _ready():
 	shape = collision.shape
 	show_particles(true, false)
 	add_to_group("blocks")
-	print(particles.draw_pass_1.material)
+	#print(particles.draw_pass_1.material)
  
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -167,7 +169,10 @@ func remove():
 	animationPlayer.play("remove") # TODO: make this less lame
 
 func _on_rigid_body_3d_body_entered(body_):
-	main.on_collision(self, body_)
+	var impact = body.linear_velocity.length_squared()
+	if impact > IMPACT_THESHOLD:
+		#print(">>> ", body.linear_velocity.length_squared())
+		main.on_collision(self, body_)
 
 func _on_rigid_body_3d_body_shape_entered(_body_rid, _body, _body_shape_index, _local_shape_index):
 	#print("bump...", body_rid, body_, body_shape_index, local_shape_index)
@@ -179,6 +184,7 @@ func _on_rigid_body_3d_sleeping_state_changed():
 	if body.sleeping:
 		sleeping = true
 		show_particles(false, false)
+		main.i_was_so_tired(self)
 
 func show_me():
 	return JSON.stringify(info())
@@ -192,4 +198,4 @@ func _on_animation_player_animation_finished(anim_name):
 
 func _on_red_particles_visibility_changed():
 	redder.emitting = redder.is_visible_in_tree() 
-	print("RED ", redder.emitting)
+	#print("RED ", redder.emitting)

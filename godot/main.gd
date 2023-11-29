@@ -2,7 +2,6 @@ extends Node3D
 
 var block_scene = preload("res://block.tscn")
 
-@onready var fxAudio = $fxAudio
 @onready var mainAudio = $mainAudio
 
 @onready var backBox =  $Board/backwall/Box
@@ -16,7 +15,7 @@ var block_scene = preload("res://block.tscn")
 @onready var hide_bonus = $Board/Info/walls/hideBonus
 @onready var far_box = $Board/farrightwall/Box
 @onready var bonus_box = $Board/Info/walls/backBonus
-@onready var info_box = $Board/Info
+@onready var info_box = $Board/Info/Box
 @onready var divider_box = $Board/bonuswall/Box
 @onready var boxes = [backBox, floorBox, leftBox, rightBox, topBox, hide_bonus]
 @onready var bonus_boxes = [far_box, bonus_box, divider_box]
@@ -61,6 +60,7 @@ var score_before = 0
 var required_bonus_count = 5
 var bonus_count = 0
 var bonus_timer = 0
+var non_bonus = {}
 var possible_count = 0
 var missed_count = 0
 var is_bonus_level = false
@@ -94,25 +94,22 @@ var score_bonus_cleared = 100
 
 @export var dev_mode = true
 @export var helpful_helper = false
+@export var overly_friendly = false
 
 ###################################################################################################
 
 func _ready():
-	_live_it_up()
-	_game_specific()
-	_update_audio()
+	_game_specific() 
 	_load_level(current_level)
 	started = true
 
-func _live_it_up():
+func _game_specific():
 	lives = Fof.game_lives()
 	if lives:
 		info_lives.show()
 	else:
 		lives = -33
 		info_lives.hide()
-
-func _game_specific():
 	var bonus_material = _game_texture(Fof.game_bonus())
 	var info_material = _game_texture(Fof.game_info())
 	var explanation = Fof.game_explanation()
@@ -120,10 +117,14 @@ func _game_specific():
 		explain_normal.text = Fof.world.game.explanation.replace("@", "\n")
 	for box in bonus_boxes:
 		box.set_material(bonus_material)
-	info_box.set_material(info_material) # FIXME: not working?
+	info_box.set_material(info_material)
 
 func _game_texture(txt):
-	return StandardMaterial3D.new() if not txt else Fof.load_background_material(txt)
+	if txt:
+		return Fof.load_background_material(txt)
+	var material = StandardMaterial3D.new()
+	material.albedo_color = Color.WHITE
+	return material
 
 ###################################################################################################
 
@@ -174,6 +175,7 @@ func _load_is_bonus(_level_index:int=0):
 
 func _load_reset_values():
 	matched_blocks = {}
+	non_bonus = {}
 	level_up_please = false
 	possible_count = level.chance.size()
 	kills = 0
@@ -188,9 +190,7 @@ func _load_reset_values():
 	last_block = null
 	current_block = null
 	pause_title.text = "PAUSED"
-	if !Fof.muted:
-		mainAudio.play()
-	_update_audio()
+	mainAudio.play()
 
 func _load_blocks():
 	block_map = {}
@@ -250,11 +250,13 @@ func _drop_bonus_item():
 	block.entity = entity
 	if entity.name in block_map:
 		var first = block_map[entity.name][0].entity
-		print("second ", entity.name, " first is on ", first.right)
+		if dev_mode:
+			print("second ", entity.name, " first is on ", first.right)
 		entity.right = not first.right
 	else:
 		entity.right = true if randf() < .5 else false
-		print("first ", entity.name, " on ", entity.right)
+		if dev_mode:
+			print("first ", entity.name, " on ", entity.right)
 	_add_block(block, entity, false)
 	
 	# fixme: this is not really right anymore...
@@ -303,12 +305,11 @@ func _process_bonus_level(delta):
 		bonus_last = 1
 	_update_status()
 	if bonus_timer <= 0:
-		print("TODO: play the sadness tune")
+		player.play("lost_level")
 		_next_level(false)
 
 func _next_level(sweet:bool = true):
 	if not bonus_force and Fof.has_death_bonus(level):
-		print("DEATH BONUS!!!", bonus_count)
 		if 0 >= bonus_count:
 			lives = -33
 			_on_level_over(true, "You *must* collect at least one bonus item!")
@@ -319,6 +320,10 @@ func _next_level(sweet:bool = true):
 	if sweet and current_level >= Fof.world.levels.size() - 1:
 		_on_level_over(false, "You beat all the levels!")
 		return
+	if sweet:
+		player.play("fx_success")
+	else:
+		player.play("fx_fail")
 	_post_level_text(sweet)
 	_update_status()
 	_please_level_up()
@@ -356,31 +361,15 @@ func _post_level_text(sweet:bool):
 		lines.append(collected)
 		if required_bonus_count:
 			if not bonus_force and bonus_count < required_bonus_count:
-				lines.append("Unfortunately, you didn't make the Bonus Layer.")
+				lines.append("Unfortunately, you didn't make the Bonus Level.")
 				player.play("lost_level")
 			else:
-				lines.append("You qualified for the Bonus Layer!")
+				lines.append("You qualified for the Bonus Level!")
 		explain_levelled.text = "\n".join(lines)
 	else:
 		pause_title.text = "Bummer... 😭"
 		explain_levelled.text = "You failed Level " + level.name.replace("_", " ")
 		player.play("lost_level")
-
-func _in_the_bed(sweet:bool):
-	if sweet:
-		print("TODO: play level success sound")
-		if is_bonus_level:
-			explain_levelled.text = 'Full points for the bonus level!'
-		else:
-			explain_levelled.text = 'Nice! Great job on ' + level.name + '!'
-		pause_title.text = "SUCCESS! 🏆"
-	else:
-		print("TODO: play level fail sound")
-		if is_bonus_level:
-			explain_levelled.text = 'Looks like the timer ran out! '
-		else:
-			explain_levelled.text = 'Oh, dang! No luck on ' + level.name + '...'
-		pause_title.text = "Bummer... 😭"
 
 func _on_paused_visibility_changed():
 	if level_up_please and not pauser.is_visible_in_tree():
@@ -427,7 +416,7 @@ func _input(event):
 	if pauser.is_visible_in_tree():
 		return
 	if dev_mode and event is InputEventKey and event.pressed:
-		_key_pressed(event.keycode) # temporary hack...
+		_key_pressed(event.keycode)
 	if event.is_action_pressed("left"):
 		_move(Vector3(-1, 0, 0))
 	if event.is_action_pressed("right"):
@@ -497,6 +486,7 @@ func _key_pressed(code:int):
 		KEY_9: _load_level(16) # win
 		KEY_L: _go_lose()
 		KEY_B: _bonus_hack()
+		KEY_F: _toggle_overly_friendly()
 		KEY_N: _next_level(true)
 		KEY_Q: _show_blocks()
 		KEY_I: _tmi()
@@ -519,13 +509,7 @@ func _bonus_click():
 		_handle_bonus_blocks(block)
 
 func _check_misses():
-	var c =_count_misses()
-	if c != missed_count:
-		if dev_mode:
-			_count_misses(true)
-		missed_count = c
-		_check_misses()
-		_update_status()
+	missed_count =_count_misses()
 
 func _count_misses(debug:bool = false):
 	var c = 0
@@ -542,8 +526,10 @@ func _toggle_helper():
 	helpful_helper = !helpful_helper
 	print("helpful_helper is ", helpful_helper )
 
-
-
+func _toggle_overly_friendly():
+	overly_friendly = !overly_friendly
+	print("overly_friendly is ", overly_friendly )
+	
 func _handle_bonus_blocks(block):
 	if _current_safety():
 		current_block.show_particles(false)
@@ -557,13 +543,12 @@ func _handle_bonus_blocks(block):
 	if not last_block:
 		return
 	
-	if last_block == current_block:
+	if not _current_safety() or last_block == current_block:
 		# TODO: clear indicator 
 		current_block = null
 		last_block = null
 		return
-	
-	_current_safety()
+		
 	if last_block.entity.name == current_block.entity.name:
 		if dev_mode:
 			print("nice, two ", current_block.entity.name)
@@ -586,23 +571,12 @@ func _handle_bonus_blocks(block):
 			current_block = null
 			last_block = null
 		else:
+			player.play("lost_item")
 			if dev_mode:
 				print("size no match ", current_block.entity.name, " with ", current_block.size, " and ", last_block.size )
 	else:
 		pass
-		#print("no match...")
-		#current_block = last_block
-
-###################################################################################################
-
-func toggle_mute():
-	Fof.muted = !Fof.muted
-	return _update_audio()
-
-func _update_audio():
-	mainAudio.set_mute(Fof.muted)
-	fxAudio.muted = Fof.muted
-	return Fof.muted
+		# this is too annoying...  player.play("lost_item")
 
 ###################################################################################################
 
@@ -662,8 +636,6 @@ func _on_level_over(lost:bool = true, tmi:String = ""):
 			player.play("lost_level")
 			if dev_mode:
 				print("You are still alive, so restart level")
-			#frq
-			#_load_level(current_level)
 			pause_title.text = "Bummer... 😭"
 			explain_levelled.text = "You failed Level " + level.name.replace("_", " ") + "\n\nDon't Despair!"
 			if 1 == lives:
@@ -720,17 +692,20 @@ func _you_have_fallen_and_you_cant_get_up():
 ###################################################################################################
 
 func _check_match():
-	var entity_name = current_block.entity[Fof.NAME]
+	if not _current_safety():
+		return
+	var entity_name = current_block.entity.name
 	if not entity_name in block_map:
 		return 
 	var blocks = block_map[entity_name]
 	var missed = []
 	var matched = []
+	var friend_hack = overly_friendly and current_block.entity.type == Fof.FRIENDS
 	for other in blocks:
 		if other.in_bonus_zone:
 			continue
 		if other != current_block:
-			if other.size == current_block.size:
+			if other.size == current_block.size or friend_hack:
 				matched.append(other)
 			else:
 				missed.append(other)
@@ -772,20 +747,21 @@ func _matched(primary, others, _blocks):
 	_check_misses()
 
 # TODO: play per monster sound?
-func _killed(block, count):
-	fxAudio.play_fx(fxAudio.CLASH)
+func _killed(block, count, animate = true):
+	if animate:
+		player.play("game_reward")
 	kills = kills + 1
 	score += block.entity.level * count * 17
-	print(kills, " of ",level.required, " kills, and experience is ", score )
+	if dev_mode:
+		print(kills, " of ",level.required, " kills, and experience is ", score )
 	if kills >= level.required:
-		print("VICTORIOUS!")
+		if dev_mode:
+			print("VICTORIOUS!")
 		_next_level(true)
 	else:
 		_update_status()
 
-# TODO: play per helper sound?
 func _helped(block, count):
-	fxAudio.play_fx(fxAudio.BELL3) #TODO: better sound
 	var picks = []
 	for entity_name in block_map:
 		var other = Fof.entity_by_name(entity_name)
@@ -793,22 +769,45 @@ func _helped(block, count):
 			picks.append_array(block_map[entity_name])
 	var picked = null if !picks.size() else picks.pick_random()
 	if picked:
-		_killed(picked,1)
+		if dev_mode:
+			print("you got help from ", count, " ", block.entity.name, "! they killed ", picked.entity.name, "!")
+		_play_or(block, "fx_attack_blocked")
+		#player.play("fx_attack_blocked")
+		_killed(picked, 1, false)
 		_remove_block(picked)
-		print("you got help from ", count, " ", block.entity.name, "! they killed ", picked.entity.name, "!")
 	else:
-		print(block.entity.name, " wanted to help, but you are too good!")
+		_play_or(block, "got_item")
+		#player.play("got_item")
+		if dev_mode:
+			print(block.entity.name, " wanted to help, but you are too good!")
 
 ###################################################################################################
 
 func _missed(primary, others, _blocks):
-	print("missed ", primary.entity, " and ", others.size(), " others")
-	fxAudio.play_fx(fxAudio.MISMATCH)
-	missed_count = missed_count + 1
+	if dev_mode:
+		print("missed ", primary.entity, " and ", others.size(), " others")
+	if primary.entity.type == Fof.FRIENDS:
+		player.play("lost_item")
+	else:
+		_play_or(primary, "lost_item")
+	missed_count = missed_count + 1 # TODO: remove this: _check_misses is used now 
 	primary.go_red()
 	for o in others:
 		o.go_red()
+	_check_misses()
 	_update_status()
+
+###################################################################################################
+
+func _play_or(block, animation_name:String):
+	if block.entity.fx:
+		if dev_mode:
+			print("fx ",block.entity.fx, " for ", block.entity.name)
+		player.play(block.entity.fx)
+	else:
+		if dev_mode:
+			print("fx ", animation_name, " even for ", block.entity.name)
+		player.play(animation_name)
 
 ###################################################################################################
 
@@ -823,15 +822,10 @@ func _rand():
 
 ###################################################################################################
 
-var last_hit = 0
-const hit_wait = .25
-func on_collision(_block,body):
+func on_collision(_block, body):
 	if body.name == "frontwall" || body.name == "backwall":
 		return
-	var now = Time.get_unix_time_from_system()
-	if now - last_hit > hit_wait:
-		fxAudio.play_tonk() 
-		last_hit = now
+	player.play("tonk")
 
 func _get_blocks():
 	return get_tree().get_nodes_in_group("blocks")
@@ -871,27 +865,42 @@ func _bonus_area(body, entered:bool):
 	block.in_bonus_zone = entered
 
 func i_was_so_tired(block):
-	if false:
-		print("yawn! ", block.entity.name, " and ", in_bonus_zone)
+	if dev_mode and false:
+		print("yawn! ", block.entity, " and ", block.in_bonus_zone)
 
 func _count_bonus(show_:bool = false):
 	if show_:
 		print("------------------------------------")
 	var bc = 0
+	var boo = false
 	for type in block_map:
 		for block in block_map[type]:
-			if block.in_bonus_zone and block.sleeping:
+			if not block.sleeping:
+				continue
+			if block.in_bonus_zone:
 				if type == Fof.BONUS:
 					bc = bc + 1
+					_sting(block, "got_item")
 				else:
 					bc = bc - 1
+					_sting(block)
+			else:
+				if type == Fof.BONUS:
+					_sting(block)
 			if show_:
 				print(bc, " ", block.show_me())
 	#print("bc:", block_map, " -> ", bc)
+	if boo:
+		player.play("lost_item")
 	if bonus_count < required_bonus_count and bc == required_bonus_count and required_bonus_count:
 		player.play("earned_bonus")
 	bonus_count = bc
 	_update_status()
+
+func _sting(block, animation_name:String = "lost_item"):
+	if not block.entity.id in non_bonus:
+		non_bonus[block.entity.id] = true
+		player.play(animation_name)
 
 ###################################################################################################
 
@@ -919,7 +928,6 @@ func _tmi():
 	print("bonus_list1: ", bonus_list1)
 	print("bonus_list2: ", bonus_list2)
 	print("bonus_can_drop: ", bonus_can_drop)
-	print("muted: ", Fof.muted)
 	print("should_watch_mouse: ", should_watch_mouse)
 	print("mouse_button_at: ", mouse_button_at)
 	print("possible_count: ", possible_count)
@@ -927,3 +935,17 @@ func _tmi():
 	print("block_map: ", block_map)
 	for entity_name in block_map:
 		print("> ", entity_name, " : ", block_map[entity_name].map(func(b): return b.show_me() )  )
+
+# just in case...
+func _on_too_far_down_body_entered(body):
+	if body is StaticBody3D or body.name.contains("wall"):
+		if dev_mode:
+			print("ignoring ", body.name)
+		return
+	if body == current_block:
+		current_block = null # stahp!
+	if dev_mode:
+		print("body is thru the ice!: ", body.name)
+	body.position.y = 7.7
+	#body.apply_central_force(-body.linear_velocity)
+	body.set_linear_velocity(Vector3.ZERO)

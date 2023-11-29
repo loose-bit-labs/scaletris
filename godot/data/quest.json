@@ -102,7 +102,7 @@
 			"boss":"death-knight-01017-3379213631",
 			"music":"horror-trailer-170637.mp3"
 		}
-	] ,
+	],
 	"bestiary": {
 		"friends": {
 				"dog-00334-2622494961 dog-00361-3944965462 fox-00385-1595040174 fox-00393-4034436970 eagle-00373-3217859794":1,
@@ -124,8 +124,7 @@
 			"bear-00486-3485357593 bear-00514-2005029457 boar-01707-1056320801 boar-01708-1056320804":2, 
 			"mountain-lion-00453-4195839046 mountain-lion-00464-218777566 mountain-lion-00473-218777575 panther-00545-3550666725 panther-00580-3818462919":2, 
 			"ghost-00029-931301982":2, 
-			"wolf-00374-1048381279":2, 
-			"wolf-00377-1048381282":2, 
+			"wolf-00374-1048381279 wolf-00377-1048381282":2, 
 
 			"tiger-00421-4097257445 tiger-00539-236767682":3,
 			"ogre-00601-2224858635 ogre-00605-1413699028 ogre-00611-1215510101":3,
@@ -141,5 +140,27 @@
 			"death-knight-00996-2493615306 death-knight-01000-38916150 death-knight-01017-3379213631 demon-00099-589926348 demon-01269-3611933099 demon-01279-1517704139 demon-01296-874440032 demon-01334-399350963 demon-01347-524762270 demon-01349-524762272 demon-01354-4091764950 demon-01364-516092971 demon-01377-4124505523 demon-01397-304229112":5
 		},
 		"loot":     { "coin_bag":  { "level":2, "value":10 } }
+	},
+	"fx": {
+		"wolf werewolf goblin dog": "fx_growl",
+		"mountain-lion tiger bear panther dragon": "fx_roar",
+		"boar": "fx_oink",
+		"bat rat squirrel": "fx_squeak",
+		"owl": "fx_hoot",
+		"frog": "fx_croak",
+		"eagle": "fx_eagle",
+		"archer": "fx_arrow",
+		"snake": "fx_hiss",
+		"spider scorpion": "fx_rattle",
+		"lancer woodsman dwarf knight paladin": "fx_fanfare",
+		"ogre orc": "fx_ogre",
+		"ghost": "fx_ghost",
+		"elf wizard": "fx_chimes",
+		"fox": "fx_fox",
+		"skeleton": "fx_bones",
+		"rock": "fx_rocks",
+		"death-knight": "fx_evil_chant",
+		"imp": "fx_evil_laugh_high",
+		"demon": "fx_evil_hiss"
 	}
 }

@@ -40,7 +40,6 @@ func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_materials()
 	loading.hide()
-	_handle_mute()
 	reset()
 
 func _materials():
@@ -72,7 +71,7 @@ func _input(event):
 	if loading.is_visible_in_tree():
 		return
 	if event.is_action_pressed("mute"):
-		_toggle_mute()
+		Fof.toggle_mute()
 	if event.is_action_pressed("ui_accept"):
 		_active(selected, true)
 	if event.is_action_pressed("ui_up"):
@@ -86,15 +85,6 @@ func _input(event):
 	if event.is_action_pressed("quit"):
 		#TODO: prompt
 		get_tree().quit()
-
-func _toggle_mute():
-	Fof.muted = !Fof.muted
-	_handle_mute()
-
-func _handle_mute():
-	music.stream_paused = Fof.muted
-	# FIXME: this probably won't work"
-	fx.stream_paused = Fof.muted 
 
 func _selecto(dir:int = +1):
 	match selected:
@@ -114,7 +104,7 @@ func mousey(start:bool = false):
 func _active(which:String = "", start:bool = false):
 	if start and "" != which:
 		var world = Fof.GAME_CLASSIC if "classic" == which else Fof.GAME_QUEST
-		print("let's go! ", which, " -> ", world)
+		#print("let's go! ", which, " -> ", world)
 		loading.show()
 		Fof.load_world(world, _start_game)
 	if which != selected:

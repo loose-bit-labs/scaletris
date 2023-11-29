@@ -21,7 +21,7 @@ func _input(event):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if event.is_action_pressed("mute"):
 		_no_quit()
-		if arena.toggle_mute():
+		if Fof.toggle_mute():
 			mutedBox.show()
 			unmutedBox.hide()
 		else:
@@ -39,7 +39,6 @@ func _input(event):
 		#TODO: prompt
 		unpause()
 		get_tree().change_scene_to_file(welcome_scene)
-
 
 func _quit():
 	quit_count = quit_count + 1
@@ -60,6 +59,7 @@ func _quit():
 
 func _no_quit():
 	quitting.hide()
+	# FIXME: this logic is bugged.. there is a hack around in main._on_paused_visibility_changed
 	if 1 == quit_count:
 		var i = 0
 		for other in others:

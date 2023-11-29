@@ -16,7 +16,7 @@ func _on_body_entered(_body):
 
 func _on_left_box_body_entered(_body):
 	if not shrinking:
-		print("left hit ", shrinking)
+		#print("left hit ", shrinking)
 		player.play("left_on_hit")
 
 func _on_animation_player_animation_finished(anim_name):

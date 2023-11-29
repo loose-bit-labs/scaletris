@@ -51,6 +51,7 @@ const DEATH_BONUS = "death_bonus"
 const LEVEL_OVERRIDE = "level_override"
 const GLOW = "glow"
 const BONUS_MATERIAL = "bonus_material"
+const FX = "fx"
 
 const TILE_DEFAULT = "classic"
 const IMAGE_ROOT = "res://images/"
@@ -81,13 +82,24 @@ var DEFAULT_BONUS_SETTINGS = {
 var world
 var bestiary
 var loaded = ""
-var muted = false
 
 #################################################################################################
 
 func _init():
 	load_world()
 
+#################################################################################################
+
+func toggle_mute():
+	var bus_idx = AudioServer.get_bus_index("Master")
+	var current = AudioServer.is_bus_mute(bus_idx)
+	AudioServer.set_bus_mute(bus_idx, not current)
+	return not current
+
+func is_muted():
+	var bus_idx = AudioServer.get_bus_index("Master")
+	return AudioServer.is_bus_mute(bus_idx)
+	
 ##########################################################
 
 func load_world(filename:String = WORLD_FILE, callback:Callable = func():return):
@@ -99,7 +111,7 @@ func load_world(filename:String = WORLD_FILE, callback:Callable = func():return)
 		for key in DEFAULT_GAME_SETTINGS:
 			if not key in world.game:
 				world.game[key] = DEFAULT_GAME_SETTINGS[key]
-				print("SET WORLD.", key, " to ", DEFAULT_GAME_SETTINGS[key])
+				#print("SET WORLD.", key, " to ", DEFAULT_GAME_SETTINGS[key])
 	else:
 		world[GAME] = DEFAULT_GAME_SETTINGS.duplicate()
 	if game_bonus():
@@ -109,13 +121,11 @@ func load_world(filename:String = WORLD_FILE, callback:Callable = func():return)
 	if BESTIARY in world:
 		bestiary = _load_bestiary(world[BESTIARY])
 	else:
-		print("WARN: starting with an empty bestiary")
+		#print("WARN: starting with an empty bestiary")
 		bestiary = {}
 		world[BESTIARY] = bestiary
 	world[LEVELS] = _load_levels(world[LEVELS])
 	loaded = filename
-	if "frog" in bestiary:
-		print(bestiary.frog)
 	callback.call()
 
 func game_name():
@@ -148,6 +158,13 @@ func _load_beastie(name_:String, type:String = FOES, lookup:Dictionary = {}, b:D
 	entity[TYPE] = type
 	entity[MATERIAL] = image_to_material(entity[IMAGE], type)
 	entity[MATERIAL_COPY] = image_to_material(entity[IMAGE])
+	entity[FX] = ""
+	var fx = {} if not FX in world else world.fx
+	for pattern in fx:
+		var longest = ""
+		if name_.begins_with(pattern) and pattern.length() > longest.length():
+			longest = pattern
+			entity.fx = fx[longest]
 	if not LEVEL in entity:
 		entity.level = 0
 	lookup[name_] = entity
@@ -289,17 +306,19 @@ func bonus_item_for_level(level_index:int, block_map = {}, sweeter:float = 0):
 		return null
 	var bonus_chance = bonus.chance - bonus_count * .01 + sweeter
 	var r = randf()
-	print("BBBBBONUS! ", bonus_chance, " < ", r, " BC ", bonus.chance, " - ", bonus_count)
 	if r < bonus_chance:
 		var bonus_item = entity_by_name(bonus.item, level_index).duplicate()
+		bonus_item.id = ResourceUID.create_id()
 		bonus_item.type = BONUS # anything can be used as a bonus item...
 		return bonus_item
 
 func entity_by_name(entity_name:String, level_index:int = -1):
 	if not entity_name in bestiary:
-		print("ERROR: no beasty matches ", entity_name)
+		if not BONUS == entity_name:
+			print("ERROR: no beasty matches ", entity_name)
 		return null
 	var entity = bestiary[entity_name].duplicate()
+	entity.id = ResourceUID.create_id()
 	if (world.game.level_override or !entity.level) and level_index >= 0:
 		var level = get_level(level_index)
 		if level and SIZES in level:
@@ -316,8 +335,8 @@ func _forbidden_entities(block_map:Dictionary, matched = {}):
 		var size = block_map[entity_name].size()
 		if size >= 2:
 			no_go[entity_name] = true
-			if size > 2:
-				print("BUG: ", size, " x ", entity_name)
+			if size > 2 and BONUS != entity_name:
+				print("BUG:FB ", size, " x ", entity_name)
 	return no_go
 
 func load_background(bg_name):
