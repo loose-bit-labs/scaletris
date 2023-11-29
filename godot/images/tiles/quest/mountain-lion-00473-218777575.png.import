@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8nmuucdqn5kk"
-path="res://.godot/imported/coin_bag.png-5e74bacda15c887d0453de8176a58df8.ctex"
+uid="uid://d3vs8q775cmon"
+path="res://.godot/imported/mountain-lion-00473-218777575.png-4ebabb99bdf7e4a4dbfc6b8a36cfd29c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/tiles/quest/coin_bag.png"
-dest_files=["res://.godot/imported/coin_bag.png-5e74bacda15c887d0453de8176a58df8.ctex"]
+source_file="res://images/tiles/quest/mountain-lion-00473-218777575.png"
+dest_files=["res://.godot/imported/mountain-lion-00473-218777575.png-4ebabb99bdf7e4a4dbfc6b8a36cfd29c.ctex"]
 
 [params]
 

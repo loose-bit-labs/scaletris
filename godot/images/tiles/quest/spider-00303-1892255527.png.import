@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8nmuucdqn5kk"
-path="res://.godot/imported/coin_bag.png-5e74bacda15c887d0453de8176a58df8.ctex"
+uid="uid://c1eqm511w3td8"
+path="res://.godot/imported/spider-00303-1892255527.png-d0259cbb146d0d484704ef9f78573cde.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/tiles/quest/coin_bag.png"
-dest_files=["res://.godot/imported/coin_bag.png-5e74bacda15c887d0453de8176a58df8.ctex"]
+source_file="res://images/tiles/quest/spider-00303-1892255527.png"
+dest_files=["res://.godot/imported/spider-00303-1892255527.png-d0259cbb146d0d484704ef9f78573cde.ctex"]
 
 [params]
 

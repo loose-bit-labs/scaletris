@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8nmuucdqn5kk"
-path="res://.godot/imported/coin_bag.png-5e74bacda15c887d0453de8176a58df8.ctex"
+uid="uid://dvqv0mwasfqye"
+path="res://.godot/imported/scorpion-00020-429966925.png-66abd18c16f0d908ea5b9181247417ac.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/tiles/quest/coin_bag.png"
-dest_files=["res://.godot/imported/coin_bag.png-5e74bacda15c887d0453de8176a58df8.ctex"]
+source_file="res://images/tiles/quest/scorpion-00020-429966925.png"
+dest_files=["res://.godot/imported/scorpion-00020-429966925.png-66abd18c16f0d908ea5b9181247417ac.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8nmuucdqn5kk"
-path="res://.godot/imported/coin_bag.png-5e74bacda15c887d0453de8176a58df8.ctex"
+uid="uid://d1csj6h66qhjs"
+path="res://.godot/imported/demon-01377-4124505523.png-7eae5c2d93b5cfd2301a728a73002d17.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/tiles/quest/coin_bag.png"
-dest_files=["res://.godot/imported/coin_bag.png-5e74bacda15c887d0453de8176a58df8.ctex"]
+source_file="res://images/tiles/quest/demon-01377-4124505523.png"
+dest_files=["res://.godot/imported/demon-01377-4124505523.png-7eae5c2d93b5cfd2301a728a73002d17.ctex"]
 
 [params]
 
