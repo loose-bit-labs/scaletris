@@ -75,6 +75,30 @@ tracks/0/keys = {
 "values": [Vector3(1.2, 1.2, 1.2)]
 }
 
+[sub_resource type="Animation" id="Animation_nyjon"]
+resource_name = "nothing"
+
+[sub_resource type="Animation" id="Animation_u056l"]
+resource_name = "redzoned"
+length = 2.0
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("RigidBody3D/RedParticles")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [],
+"method": &"show"
+}, {
+"args": [],
+"method": &"hide"
+}]
+}
+
 [sub_resource type="Animation" id="Animation_tjwl4"]
 resource_name = "remove"
 tracks/0/type = "method"
@@ -147,30 +171,6 @@ tracks/4/keys = {
 "times": PackedFloat32Array(0, 0.5)
 }
 tracks/4/use_blend = true
-
-[sub_resource type="Animation" id="Animation_u056l"]
-resource_name = "redzoned"
-length = 2.0
-tracks/0/type = "method"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("RigidBody3D/RedParticles")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 2),
-"transitions": PackedFloat32Array(1, 1),
-"values": [{
-"args": [],
-"method": &"show"
-}, {
-"args": [],
-"method": &"hide"
-}]
-}
-
-[sub_resource type="Animation" id="Animation_nyjon"]
-resource_name = "nothing"
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_4ghug"]
 _data = {
