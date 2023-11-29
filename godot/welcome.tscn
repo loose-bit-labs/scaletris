@@ -4,7 +4,7 @@
 [ext_resource type="AudioStream" uid="uid://b5vvqjq6brewx" path="res://audio/music/whip-110235.mp3" id="2_sutqe"]
 [ext_resource type="Script" path="res://welcome_small_box.gd" id="3_a5qc5"]
 [ext_resource type="Texture2D" uid="uid://b7yfo0rjc8oh8" path="res://lbl-nuts-and-bolts.png" id="3_b20fw"]
-[ext_resource type="Texture2D" uid="uid://dryje2fjwvuct" path="res://images/textures/x-pick.png" id="3_obqem"]
+[ext_resource type="Texture2D" uid="uid://o3w1572753dw" path="res://images/textures/x-pick.png" id="3_obqem"]
 [ext_resource type="Texture2D" uid="uid://do81vwu2g7eof" path="res://images/textures/x-classic.png" id="3_x6t5o"]
 [ext_resource type="AudioStream" uid="uid://bmocjvsmbobyb" path="res://audio/fx/403298__matrixxx__retro-explosion-02.mp3" id="6_2riwq"]
 [ext_resource type="AudioStream" uid="uid://0ojdo8aj6jxh" path="res://audio/fx/tonk.mp3" id="6_w4otv"]
