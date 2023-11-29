@@ -17,8 +17,8 @@
 				"maximum": 2.0
 			},
 			"sizes": 2,
-			"speed": 0.2,
-			"force": 70,
+			"speed": 0.32,
+			"force": 60,
 			"chance": {
 				"L1-P01 L1-P02 L1-P03 L1-P04 L1-P05 L1-P06 L1-P07 L1-P08 L1-P09 L1-P10": 1,
 				"L1-P11 L1-P12 L1-P13 L1-P14 L1-P15": 1,
@@ -39,7 +39,7 @@
 			},
 			"name": "The_Lab_Rat",
 			"speed": 4,
-			"force": 70,
+			"force": 60,
 			"scale": {
 				"minimum": 1.0,
 				"maximum": 2.0
@@ -58,8 +58,8 @@
 				"maximum": 1.6
 			},
 			"sizes": 2,
-			"speed": 0.25,
-			"force": 70,
+			"speed": 0.36,
+			"force": 60,
 			"chance": {
 				"L2-P01 L2-P02 L2-P03 L2-P04 L2-P05 L2-P06 L2-P07 L2-P08 L2-P09 L2-P10": 1,
 				"L2-P11 L2-P12 L2-P13 L2-P14 L2-P15": 1,
@@ -80,7 +80,7 @@
 			},
 			"name": "The_Ruler",
 			"speed": 4,
-			"force": 70,
+			"force": 60,
 			"scale": {
 				"minimum": 1.0,
 				"maximum": 2.0
@@ -99,8 +99,8 @@
 				"maximum": 2.0
 			},
 			"sizes": 3,
-			"speed": 0.3,
-			"force": 70,
+			"speed": 0.4,
+			"force": 60,
 			"chance": {
 				"L3-P01 L3-P02 L3-P03 L3-P04 L3-P05 L3-P06 L3-P07 L3-P08 L3-P09 L3-P10": 1,
 				"L3-P11 L3-P12 L3-P13 L3-P14 L3-P15": 1,
@@ -121,7 +121,7 @@
 			},
 			"name": "The_Speedometer",
 			"speed": 4,
-			"force": 70,
+			"force": 60,
 			"scale": {
 				"minimum": 1.0,
 				"maximum": 2.0
@@ -140,8 +140,8 @@
 				"maximum": 1.9
 			},
 			"sizes": 3,
-			"speed": 0.33,
-			"force": 70,
+			"speed": 0.44,
+			"force": 65,
 			"chance": {
 				"L4-P01 L4-P02 L4-P03 L4-P04 L4-P05 L4-P06 L4-P07 L4-P08 L4-P09 L4-P10": 1,
 				"L4-P11 L4-P12 L4-P13 L4-P14 L4-P15": 1,
@@ -162,7 +162,7 @@
 			},
 			"name": "The_Bathroom_Scale",
 			"speed": 4,
-			"force": 70,
+			"force": 65,
 			"scale": {
 				"minimum": 1.1,
 				"maximum": 1.9
@@ -181,7 +181,7 @@
 				"maximum": 1.8
 			},
 			"sizes": 3,
-			"speed": 0.37,
+			"speed": 0.47,
 			"force": 70,
 			"chance": {
 				"L5-P01 L5-P02 L5-P03 L5-P04 L5-P05 L5-P06 L5-P07 L5-P08 L5-P09 L5-P10": 1,
@@ -222,8 +222,8 @@
 				"maximum": 2.5
 			},
 			"sizes": 4,
-			"speed": 0.4,
-			"force": 70,
+			"speed": 0.5,
+			"force": 80,
 			"chance": {
 				"L6-P01 L6-P02 L6-P03 L6-P04 L6-P05 L6-P06 L6-P07 L6-P08 L6-P09 L6-P10": 1,
 				"L6-P11 L6-P12 L6-P13 L6-P14 L6-P15": 1,
@@ -244,7 +244,7 @@
 			},
 			"name": "Musical_Scales",
 			"speed": 4,
-			"force": 70,
+			"force": 80,
 			"scale": {
 				"minimum": 1.0,
 				"maximum": 2.5
@@ -263,8 +263,8 @@
 				"maximum": 2.0
 			},
 			"sizes": 4,
-			"speed": 0.43,
-			"force": 70,
+			"speed": 0.55,
+			"force": 90,
 			"chance": {
 				"L7-P01 L7-P02 L7-P03 L7-P04 L7-P05 L7-P06 L7-P07 L7-P08 L7-P09 L7-P10": 1,
 				"L7-P11 L7-P12 L7-P13 L7-P14 L7-P15": 1,
@@ -285,7 +285,7 @@
 			},
 			"name": "The_Thermometer",
 			"speed": 4,
-			"force": 70,
+			"force": 90,
 			"scale": {
 				"minimum": 1.0,
 				"maximum": 2.0
@@ -304,8 +304,8 @@
 				"maximum": 2.5
 			},
 			"sizes": 5,
-			"speed": 0.5,
-			"force": 70,
+			"speed": 0.6,
+			"force": 100,
 			"chance": {
 				"L8-P01 L8-P02 L8-P03 L8-P04 L8-P05 L8-P06 L8-P07 L8-P08 L8-P09 L8-P10": 1,
 				"L8-P11 L8-P12 L8-P13 L8-P14 L8-P15": 1,
@@ -326,7 +326,7 @@
 			},
 			"name": "Justice",
 			"speed": 4,
-			"force": 70,
+			"force": 100,
 			"scale": {
 				"minimum": 1.0,
 				"maximum": 2.5
