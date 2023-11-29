@@ -86,19 +86,7 @@ var muted = false
 #################################################################################################
 
 func _init():
-	#_silent_wolf()
 	load_world()
-
-func _silent_wolf():
-
-	SilentWolf.configure({
-		"api_key": "jkl34kjldf90ij3ji9fjkljdfs981234ji123fal",
-		"game_id": "Scaletris",
-		"log_level": 1
-	})
-	SilentWolf.configure_scores({
-		"open_scene_on_close": "res://welcome.tscn"
-	})
 
 ##########################################################
 

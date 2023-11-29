@@ -217,6 +217,9 @@ func _load_has_bonus():
 
 func _load_start_level():
 	loading = false
+	_show_hide_explanations()
+
+func _show_hide_explanations():
 	for e in [explain_normal, explain_bonus, explain_levelled]:
 		e.hide()
 	if is_bonus_level:
@@ -317,10 +320,13 @@ func _next_level(sweet:bool = true):
 		_on_level_over(false, "You beat all the levels!")
 		return
 	_post_level_text(sweet)
+	_update_status()
+	_please_level_up()
+	
+func _please_level_up():
 	explain_bonus.hide()
 	explain_normal.hide()
 	explain_levelled.show()
-	_update_status()
 	pauser.show()
 	level_up_please = true
 
@@ -380,6 +386,9 @@ func _on_paused_visibility_changed():
 	if level_up_please and not pauser.is_visible_in_tree():
 		level_up_please = false
 		_load_level(1 + current_level)
+	else:
+		if not pauser.is_visible_in_tree():
+			_show_hide_explanations()
 
 func _update_status():
 	label_level.text = level.name.replace("_", " ")
@@ -493,6 +502,7 @@ func _key_pressed(code:int):
 		KEY_I: _tmi()
 		KEY_X: _auto_match()
 		KEY_Z: _toggle_helper()
+		KEY_T: bonus_timer = 999
 		KEY_O: Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func _go_lose():
@@ -542,7 +552,7 @@ func _handle_bonus_blocks(block):
 	current_block.show_particles(true)
 	# FIXME: this is not working
 	current_block.body.apply_central_force(Vector3(0,2.1,0))
-	#body.apply_impulse(f) #frq
+	#body.apply_impulse(f)
 	#body.apply_central_force(f)
 	if not last_block:
 		return
@@ -649,36 +659,25 @@ func _on_level_over(lost:bool = true, tmi:String = ""):
 			game_over = true
 			u_lose.show()
 		else:
-			
 			player.play("lost_level")
 			if dev_mode:
 				print("You are still alive, so restart level")
-			_load_level(current_level)
+			#frq
+			#_load_level(current_level)
+			pause_title.text = "Bummer... 😭"
+			explain_levelled.text = "You failed Level " + level.name.replace("_", " ") + "\n\nDon't Despair!"
+			if 1 == lives:
+				explain_levelled.text += "\n\nBut... you only have 1 life left! Do your best!"
+			else:
+				explain_levelled.text += "\n\nYou are a still alive! Focus! You can do it!"
+			player.play("lost_level")
+			_update_status()
+			current_level = current_level - 1 # FIXME: this is hacky...
+			_please_level_up()
 	else:
 		player.play("victory")
 		game_over = true
 		u_win.show()
-		#_silent_wolf()
-
-func _silent_wolf():
-	var player_name = "test"
-	SilentWolf.Scores.save_score(player_name, score)
-	#var sw_result: Dictionary = await SilentWolf.Scores.get_scores(200).sw_get_scores_complete
-	var sw_result: Dictionary = await SilentWolf.Scores.get_scores().sw_get_scores_complete
-	print("Scores: " + str(sw_result.scores))
-	print("Scores: " + str(sw_result.scores))
-	for score_ in sw_result.score:
-		print("> ", score_.player_name, " has ", str(int(score_.score)))
-	SilentWolf.Scores.get_score_position(score)
-	sw_result = await SilentWolf.Scores.get_top_score_by_player(player_name).sw_top_player_score_complete 
-	print("Got top player score: " + str(sw_result.score))
-	print("Does player have a top score? " + str(!sw_result.score.empty()))
-	sw_result = await SilentWolf.Scores.get_scores_around(score, 2).sw_get_scores_around_complete
-	print("scores_above: " + str(sw_result.scores_above))
-	print("scores_below: " + str(sw_result.scores_below))
-	print("position: " + str(sw_result.position))
-	
-
 
 func _add_block(block, entity, make_current:bool = true):
 	var entity_name = entity[Fof.NAME]
@@ -814,7 +813,7 @@ func _missed(primary, others, _blocks):
 ###################################################################################################
 
 func _random_position():
-	return Vector3(4 *_rand() - 1, 6 , 0)
+	return Vector3(4 *_rand() - 1, 8, 0)
 
 func _random_spin():
 	return 6.6 * Vector3(_rand(), _rand(), _rand())
@@ -889,9 +888,10 @@ func _count_bonus(show_:bool = false):
 			if show_:
 				print(bc, " ", block.show_me())
 	#print("bc:", block_map, " -> ", bc)
+	if bonus_count < required_bonus_count and bc == required_bonus_count and required_bonus_count:
+		player.play("earned_bonus")
 	bonus_count = bc
 	_update_status()
-
 
 ###################################################################################################
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=3 uid="uid://c14i1wtlh6cqy"]
+[gd_scene load_steps=46 format=3 uid="uid://c14i1wtlh6cqy"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_f834v"]
 [ext_resource type="Texture2D" uid="uid://cxj76fnp1evfn" path="res://images/bg/village.png" id="2_0no1k"]
@@ -12,6 +12,7 @@
 [ext_resource type="AudioStream" uid="uid://dkllsilygbwcr" path="res://audio/fx/162465__kastenfrosch__lostitem.mp3" id="8_elshh"]
 [ext_resource type="AudioStream" uid="uid://dvr5hkhjopfgj" path="res://audio/fx/76376__deleted_user_877451__game_over.wav" id="9_g62sf"]
 [ext_resource type="AudioStream" uid="uid://dckrwuvayw604" path="res://audio/music/victory-epic-music-155790.mp3" id="10_ponel"]
+[ext_resource type="AudioStream" uid="uid://dj53q6ksnrg7c" path="res://audio/fx/656643__ienba__game-reward.wav" id="11_dyceq"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_m4gtk"]
 size = Vector3(12.623, 0.0489651, 2.85168)
@@ -60,6 +61,9 @@ albedo_texture = ExtResource("3_n4n7o")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_mot7i"]
 size = Vector3(1.82003, 4.49202, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nr8f8"]
+size = Vector3(2.00913, 1.85736, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_7bhq1"]
 size = Vector3(3.25998, 6.88859, 0.303008)
@@ -162,8 +166,28 @@ tracks/0/keys = {
 }
 tracks/0/use_blend = true
 
+[sub_resource type="Animation" id="Animation_gjpk6"]
+resource_name = "earned_bonus"
+length = 1.7
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("fxAudio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("11_dyceq")
+}],
+"times": PackedFloat32Array(0.1)
+}
+tracks/0/use_blend = true
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_pcy84"]
 _data = {
+"earned_bonus": SubResource("Animation_gjpk6"),
 "game_over": SubResource("Animation_h5nmj"),
 "lost_level": SubResource("Animation_sxkyo"),
 "remove_block": SubResource("Animation_6jj5w"),
@@ -372,6 +396,12 @@ shape = SubResource("BoxShape3D_mot7i")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.68828, -0.82922, 0.313547)
 text = "0:00"
 
+[node name="StaticBody3D" type="StaticBody3D" parent="Board/Info"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Board/Info/StaticBody3D"]
+transform = Transform3D(1, 0, 0.000925024, 0, 1, 0, -0.000925024, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_nr8f8")
+
 [node name="farrightwall" type="StaticBody3D" parent="Board"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 6.65673, 3.1561, 0)
 
@@ -505,12 +535,23 @@ Good Luck!"
 
 [node name="MoreInfo" type="Label3D" parent="Informatica/Paused"]
 transform = Transform3D(1, 0, 0, 0, 0.901719, 0.432322, 0, -0.432322, 0.901719, 0.25955, -1.846, 0.452315)
+visible = false
 text = "CTRL-Q: Quit   CTRL-HOME: main menu  ALT-Enter: Toggle FullScreen"
 
 [node name="LevelledExplanation" type="Label3D" parent="Informatica/Paused"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14204, 0.778235, 0.13515)
+visible = false
 text = "Noice!"
 font_size = 28
+
+[node name="Quitting" type="Label3D" parent="Informatica/Paused"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0735793)
+visible = false
+text = "Are you sure you want to quit?
+
+Hit CTRL-Q again to exit
+
+Any other key to continue..."
 
 [node name="Win" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8047, 3.14299, 1.26077)
