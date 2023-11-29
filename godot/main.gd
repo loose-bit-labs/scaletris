@@ -667,8 +667,8 @@ func _silent_wolf():
 	var sw_result: Dictionary = await SilentWolf.Scores.get_scores().sw_get_scores_complete
 	print("Scores: " + str(sw_result.scores))
 	print("Scores: " + str(sw_result.scores))
-	for score in sw_result.score:
-		print("> ", score.player_name, " has ", str(int(score.score)))
+	for score_ in sw_result.score:
+		print("> ", score_.player_name, " has ", str(int(score_.score)))
 	SilentWolf.Scores.get_score_position(score)
 	sw_result = await SilentWolf.Scores.get_top_score_by_player(player_name).sw_top_player_score_complete 
 	print("Got top player score: " + str(sw_result.score))

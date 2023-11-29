@@ -92,7 +92,7 @@ func _init():
 func _silent_wolf():
 
 	SilentWolf.configure({
-		"api_key": "1o1VUKRKY1TIglvrMUwy6GhLi3gNFpc5LX2B5IK7",
+		"api_key": "jkl34kjldf90ij3ji9fjkljdfs981234ji123fal",
 		"game_id": "Scaletris",
 		"log_level": 1
 	})
