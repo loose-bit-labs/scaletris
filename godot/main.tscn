@@ -87,28 +87,6 @@ background_mode = 2
 glow_intensity = 0.95
 glow_hdr_threshold = 0.98
 
-[sub_resource type="Animation" id="Animation_6jj5w"]
-resource_name = "remove_block"
-
-[sub_resource type="Animation" id="Animation_sxkyo"]
-resource_name = "lost_level"
-length = 2.0
-tracks/0/type = "audio"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("fxAudio")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"clips": [{
-"end_offset": 0.0,
-"start_offset": 0.0,
-"stream": ExtResource("8_elshh")
-}],
-"times": PackedFloat32Array(0)
-}
-tracks/0/use_blend = true
-
 [sub_resource type="Animation" id="Animation_h5nmj"]
 resource_name = "game_over"
 length = 1.5
@@ -142,6 +120,28 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0.3)
 }
 tracks/1/use_blend = true
+
+[sub_resource type="Animation" id="Animation_sxkyo"]
+resource_name = "lost_level"
+length = 2.0
+tracks/0/type = "audio"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("fxAudio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("8_elshh")
+}],
+"times": PackedFloat32Array(0)
+}
+tracks/0/use_blend = true
+
+[sub_resource type="Animation" id="Animation_6jj5w"]
+resource_name = "remove_block"
 
 [sub_resource type="Animation" id="Animation_hl4j6"]
 resource_name = "victory"
@@ -195,8 +195,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.675726, 0.122981, 0)
 shape = SubResource("BoxShape3D_m4gtk")
 
 [node name="Box" type="CSGBox3D" parent="Board/floor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.37795, 0.029385, 0)
-size = Vector3(11.849, 0.009, 0.572545)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.37795, -0.125934, 0)
+size = Vector3(11.849, 0.4489, 0.730627)
 material = SubResource("StandardMaterial3D_do3kx")
 
 [node name="backwall" type="StaticBody3D" parent="Board"]
@@ -207,8 +207,8 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.2922
 shape = SubResource("BoxShape3D_ax87v")
 
 [node name="Box" type="CSGBox3D" parent="Board/backwall"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.114996, 3.26866, -1.5876)
-size = Vector3(8.90139, 6.5431, 0.045876)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0282831, 3.26866, -1.5876)
+size = Vector3(9.24925, 6.67507, 0.045876)
 material = SubResource("StandardMaterial3D_6fqkn")
 
 [node name="leftwall" type="StaticBody3D" parent="Board"]
@@ -220,7 +220,7 @@ shape = SubResource("BoxShape3D_tn0uu")
 
 [node name="Box" type="CSGBox3D" parent="Board/leftwall"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.129344, 3.242, 0)
-size = Vector3(1.13619, 6.4109, 0.513722)
+size = Vector3(1.13619, 6.77796, 0.513722)
 material = SubResource("StandardMaterial3D_iyodj")
 
 [node name="rightwall" type="StaticBody3D" parent="Board"]
@@ -390,7 +390,7 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 8.8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.0302, 0)
 shape = SubResource("BoxShape3D_vxkqw")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Board/bonuswall"]
+[node name="Box" type="CSGBox3D" parent="Board/bonuswall"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.03973, 0)
 size = Vector3(1, 12.2876, 0.286747)
 material = SubResource("StandardMaterial3D_81pqr")
@@ -453,7 +453,7 @@ transform = Transform3D(1, 0, 0, 0, 0.990014, 0.14097, 0, -0.14097, 0.990014, -0
 text = "Escape, P, Space or Click to Continue"
 
 [node name="LabelMuted" type="Label3D" parent="Informatica/Paused"]
-transform = Transform3D(1, 0, 0, 0, 0.956529, 0.291637, 0, -0.291637, 0.956529, -2.19687, -1.96512, 0.256722)
+transform = Transform3D(1, 0, 0, 0, 0.956529, 0.291637, 0, -0.291637, 0.956529, -2.19687, -1.62268, 0.45302)
 text = "(m)uted"
 
 [node name="MutedBox" type="CSGBox3D" parent="Informatica/Paused/LabelMuted"]
@@ -504,8 +504,8 @@ get down to zero.
 Good Luck!"
 
 [node name="MoreInfo" type="Label3D" parent="Informatica/Paused"]
-transform = Transform3D(1, 0, 0, 0, 0.901719, 0.432322, 0, -0.432322, 0.901719, 0.387362, -1.846, 0.452315)
-text = "CTRL-Q to quit          CTRL-HOME for main screen"
+transform = Transform3D(1, 0, 0, 0, 0.901719, 0.432322, 0, -0.432322, 0.901719, 0.25955, -1.846, 0.452315)
+text = "CTRL-Q: Quit   CTRL-HOME: main menu  ALT-Enter: Toggle FullScreen"
 
 [node name="LevelledExplanation" type="Label3D" parent="Informatica/Paused"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14204, 0.778235, 0.13515)
@@ -515,7 +515,7 @@ font_size = 28
 [node name="Win" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8047, 3.14299, 1.26077)
 visible = false
-size = Vector3(12.5754, 4.61145, 0.19972)
+size = Vector3(12.5754, 5.37248, 0.19972)
 material = SubResource("StandardMaterial3D_sn4my")
 script = ExtResource("5_510jg")
 
@@ -539,7 +539,7 @@ Hit the any key or click the mouse to try again."
 [node name="Lose" type="CSGBox3D" parent="Informatica"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.861677, 3.14299, 1.26077)
 visible = false
-size = Vector3(12.6903, 4.61145, 0.0492058)
+size = Vector3(12.6903, 5.65413, 0.0492058)
 material = SubResource("StandardMaterial3D_sn4my")
 script = ExtResource("5_510jg")
 
@@ -550,7 +550,7 @@ font_size = 128
 
 [node name="Explanation" type="Label3D" parent="Informatica/Lose"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.286929, -0.83163, 0.018383)
-text = "We were all cheering for, because, frankly, you were doing 
+text = "We were all cheering for you, because, frankly, you were doing 
 an amazing job!
 
 Then suddenly you were not doing so well...

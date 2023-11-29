@@ -6,6 +6,8 @@ const welcome_scene = "res://welcome.tscn"
 @onready var mutedBox = $LabelMuted/MutedBox
 @onready var unmutedBox = $LabelMuted/UnmutedBox
 
+var full
+
 func _input(event):
 	if _is_go(event):
 		toggle()
@@ -17,6 +19,11 @@ func _input(event):
 		else:
 			mutedBox.hide()
 			unmutedBox.show()
+	if event.is_action_pressed("fullscreen"):
+		if DisplayServer.WINDOW_MODE_FULLSCREEN == DisplayServer.window_get_mode():
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	if event.is_action_pressed("quit"):
 		#TODO: prompt
 		get_tree().quit()

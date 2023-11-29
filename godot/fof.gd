@@ -9,7 +9,7 @@ extends Node
 const GAME_CLASSIC = "res://data/classic.json"
 const GAME_QUEST = "res://data/quest.json"
 
-@export var WORLD_FILE = GAME_QUEST
+@export var WORLD_FILE = GAME_CLASSIC
 
 const NAME = "name"
 const MATERIAL = "material"
@@ -50,6 +50,7 @@ const EXPLANATION = "explanation"
 const DEATH_BONUS = "death_bonus"
 const LEVEL_OVERRIDE = "level_override"
 const GLOW = "glow"
+const BONUS_MATERIAL = "bonus_material"
 
 const TILE_DEFAULT = "classic"
 const IMAGE_ROOT = "res://images/"
@@ -85,7 +86,19 @@ var muted = false
 #################################################################################################
 
 func _init():
+	#_silent_wolf()
 	load_world()
+
+func _silent_wolf():
+
+	SilentWolf.configure({
+		"api_key": "1o1VUKRKY1TIglvrMUwy6GhLi3gNFpc5LX2B5IK7",
+		"game_id": "Scaletris",
+		"log_level": 1
+	})
+	SilentWolf.configure_scores({
+		"open_scene_on_close": "res://welcome.tscn"
+	})
 
 ##########################################################
 
@@ -101,6 +114,10 @@ func load_world(filename:String = WORLD_FILE, callback:Callable = func():return)
 				print("SET WORLD.", key, " to ", DEFAULT_GAME_SETTINGS[key])
 	else:
 		world[GAME] = DEFAULT_GAME_SETTINGS.duplicate()
+	if game_bonus():
+		world.game[BONUS_MATERIAL] = image_to_material(load_background(game_bonus()), LEVELS)
+	else:
+		world.game[BONUS_MATERIAL] = null
 	if BESTIARY in world:
 		bestiary = _load_bestiary(world[BESTIARY])
 	else:
@@ -109,6 +126,8 @@ func load_world(filename:String = WORLD_FILE, callback:Callable = func():return)
 		world[BESTIARY] = bestiary
 	world[LEVELS] = _load_levels(world[LEVELS])
 	loaded = filename
+	if "frog" in bestiary:
+		print(bestiary.frog)
 	callback.call()
 
 func game_name():
@@ -122,23 +141,13 @@ func _get_tiles():
 
 func _load_bestiary(b):
 	var lookup = {}
-	var tiles = _get_tiles()
 	for type in b:
 		var entities = b[type]
 		for name_ in entities:
-			_load_beastie(name_, type, lookup, b, entities[name_])
-			if true:
-				continue
-			var image_resource = IMAGE_ROOT + tiles + "/" + name_ + IMAGE_EXTENSION
 			var entity = entities[name_]
-			entity[NAME] = name_
-			entity[IMAGE] = load(image_resource)
-			entity[TYPE] = type
-			entity[MATERIAL] = image_to_material(entity[IMAGE], type)
-			entity[MATERIAL_COPY] = image_to_material(entity[IMAGE])
-			lookup[name_] = entity # TODO: check collisions
-			if not LEVEL in entity:
-				entity.level = 0
+			if not entity is Dictionary:
+				entity = {LEVEL:entity}
+			_load_beastie(name_, type, lookup, b, entity)
 	return lookup
 
 func _load_beastie(name_:String, type:String = FOES, lookup:Dictionary = {}, b:Dictionary = {}, entity:Dictionary = {}):
@@ -237,6 +246,9 @@ func game_tiles():
 
 func game_bonus():
 	return world.game.bonus
+
+func game_bonus_material():
+	return world.game.bonus_material
 	
 func game_info():
 	return world.game.info
@@ -347,17 +359,14 @@ func image_to_material(image, type:String=""):
 	material.uv1_scale.x = -1
 	material.set_texture(StandardMaterial3D.TEXTURE_ALBEDO, image)
 	if world.game.glow:
-		var c = 33
-		var o = 0
-		var i = .01
-		var a = .01
+		var a = .5
 		match type:
-			FRIENDS: glow(material, Color(o,c,o,a), i)
-			FOES:    glow(material, Color(c,o,o,a), i)
-			LOOT:    glow(material, Color(c,c,o,a), i) 
+			FRIENDS: glow(material, Color(0,.44,0,a))
+			FOES:    glow(material, Color(.55,0,0,a))
+			LOOT:    glow(material, Color(.44,.44,0,a)) 
 	return material
 
-func glow(material:StandardMaterial3D, color:Color, intensity:float):
+func glow(material:StandardMaterial3D, color:Color, intensity:float = 1.):
 	material.emission_enabled = true
 	material.emission = color
 	material.emission_energy_multiplier = intensity

@@ -10,20 +10,53 @@ var main_scene = "res://main.tscn"
 
 @onready var rightV = $NewWelcome/RightBox/RightBoxV
 @onready var rightC = $NewWelcome/RightBox/RightBoxC
+@onready var back = $NewWelcome/AngledBack
 
 @onready var loading = $Loading
 
 @onready var music = $AudioStreamPlayer3D
 @onready var fx = $fxPlayer
 
+@onready var pick_pick = preload("res://images/textures/x-pick.png")
+@onready var pick_classic = preload("res://images/textures/x-classic.png")
+@onready var pick_quest = preload("res://images/textures/x-quest.png")
+
 var selected = ""
 var options = ["classic", "quest"]
 
+var material_pick
+var material_classic
+var material_quest
+
 func _ready():
+	if false:
+		print("WL",JSON.stringify({
+			"selected":selected,
+			"options": options,
+			"loading":loading.is_visible_in_tree(),
+			"paused": get_tree().paused
+		}))
+	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	_materials()
 	loading.hide()
 	_handle_mute()
 	reset()
+
+func _materials():
+	material_pick = _material(pick_pick)
+	material_classic = _material(pick_classic)
+	material_quest =_material(pick_quest)
+	material_pick.uv1_scale.y = .5
+	material_pick.uv1_offset.y = .2
+	material_pick.albedo_color = Color(.4,.4,.4)
+	back.material = material_pick
+
+func _material(txt):
+	var material = StandardMaterial3D.new()
+	material.uv1_scale.x = -1
+	material.set_texture(StandardMaterial3D.TEXTURE_ALBEDO, txt)
+	return material
 
 func reset():
 	left.position.x = 2.2
@@ -74,6 +107,7 @@ func mousey(start:bool = false):
 	if not collision or 0 != collision.name.find("Hot_"):
 		player.stop()
 		selected = ""
+		back.material = material_pick
 		return
 	_active(collision.name.substr(4), start)
 
@@ -87,6 +121,10 @@ func _active(which:String = "", start:bool = false):
 		selected = which
 		player.stop()
 		player.play("spin_" + which)
+		match which:
+			"classic": back.material = material_classic
+			"quest":  back.material = material_quest
+			"": back.material = material_pick
 
 func _start_game():
 	loading.hide()

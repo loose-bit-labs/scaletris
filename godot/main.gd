@@ -17,8 +17,9 @@ var block_scene = preload("res://block.tscn")
 @onready var far_box = $Board/farrightwall/Box
 @onready var bonus_box = $Board/Info/walls/backBonus
 @onready var info_box = $Board/Info
+@onready var divider_box = $Board/bonuswall/Box
 @onready var boxes = [backBox, floorBox, leftBox, rightBox, topBox, hide_bonus]
-@onready var bonus_boxes = [far_box, bonus_box]
+@onready var bonus_boxes = [far_box, bonus_box, divider_box]
 
 @onready var label_level = $Board/Info/Level/Value
 @onready var label_kills = $Board/Info/Kills/Value
@@ -127,6 +128,8 @@ func _game_texture(txt):
 ###################################################################################################
 
 func _load_level(level_index:int=0):
+	if dev_mode:
+		print("Loading level ", level_index, " of ", Fof.world.levels.size())
 	if level_index >= Fof.world.levels.size():
 		_on_level_over(false, "You beat all the levels!")
 		return
@@ -136,7 +139,7 @@ func _load_level(level_index:int=0):
 	level = Fof.get_level(current_level)
 	
 	if _load_is_bonus():
-		_next_level(false)
+		_load_level(level_index + 1)
 		loading = false
 		return
 	
@@ -161,8 +164,6 @@ func _load_is_bonus(_level_index:int=0):
 		else:
 			label_bonus_timer.show()
 			bonus_wall.position.y = 0
-			
-			#find_children()
 	else:
 		in_bonus_zone = false
 		label_bonus_timer.hide()
@@ -195,9 +196,11 @@ func _load_blocks():
 	block_map = {}
 	_remove_blocks(true)
 	_remove_blocks(true) # FIXME: seriously... please remove *all* of them!
-	# TODO: make this nicer / make sense / fix uvs
+	var material = Fof.game_bonus_material() if is_bonus_level else level.material
+	if not material:
+		material = level.material
 	for box in boxes:
-		box.set_material(level.material)
+		box.set_material(material)
 
 func _load_has_bonus():
 	var bonus = Fof.get_bonus(current_level)
@@ -272,6 +275,10 @@ func _instantiate_block():
 
 ###################################################################################################
 
+func _current_safety():
+	current_block = current_block if current_block and is_instance_valid(current_block) else null
+	return current_block
+	
 func _process(delta):
 	if game_over or loading or pauser.is_visible_in_tree():
 		return
@@ -279,7 +286,8 @@ func _process(delta):
 		_process_bonus_level(delta)
 		return
 	_count_bonus()
-	if current_block && is_instance_valid(current_block) and current_block.sleeping:
+	_current_safety()
+	if current_block and current_block.sleeping:
 		_you_have_fallen_and_you_cant_get_up()
 	if !current_block:
 		_create_new_box()
@@ -296,7 +304,7 @@ func _process_bonus_level(delta):
 		_next_level(false)
 
 func _next_level(sweet:bool = true):
-	if Fof.has_death_bonus(level):
+	if not bonus_force and Fof.has_death_bonus(level):
 		print("DEATH BONUS!!!", bonus_count)
 		if 0 >= bonus_count:
 			lives = -33
@@ -305,17 +313,16 @@ func _next_level(sweet:bool = true):
 		if 1 == bonus_count:
 			_on_level_over(true, "You only collected one bonus item...")
 			return
-	else:
-		print("NO DEATH BONUS!!!", bonus_count)
+	if sweet and current_level >= Fof.world.levels.size() - 1:
+		_on_level_over(false, "You beat all the levels!")
+		return
 	_post_level_text(sweet)
 	explain_bonus.hide()
 	explain_normal.hide()
 	explain_levelled.show()
 	_update_status()
-	#FRQ pauser.pause()
 	pauser.show()
 	level_up_please = true
-
 
 func _post_level_text(sweet:bool):
 	var diff = score - score_before
@@ -342,7 +349,7 @@ func _post_level_text(sweet:bool):
 		lines.append("You passed Level " + level.name.replace("_", " "))
 		lines.append(collected)
 		if required_bonus_count:
-			if bonus_count < required_bonus_count:
+			if not bonus_force and bonus_count < required_bonus_count:
 				lines.append("Unfortunately, you didn't make the Bonus Layer.")
 				player.play("lost_level")
 			else:
@@ -368,15 +375,11 @@ func _in_the_bed(sweet:bool):
 		else:
 			explain_levelled.text = 'Oh, dang! No luck on ' + level.name + '...'
 		pause_title.text = "Bummer... 😭"
-		
-# cheese
+
 func _on_paused_visibility_changed():
 	if level_up_please and not pauser.is_visible_in_tree():
 		level_up_please = false
-		if not is_bonus_level and required_bonus_count and bonus_count < required_bonus_count:
-			_load_level(2 + current_level)
-		else:
-			_load_level(1 + current_level)
+		_load_level(1 + current_level)
 
 func _update_status():
 	label_level.text = level.name.replace("_", " ")
@@ -490,6 +493,7 @@ func _key_pressed(code:int):
 		KEY_I: _tmi()
 		KEY_X: _auto_match()
 		KEY_Z: _toggle_helper()
+		KEY_O: Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func _go_lose():
 	lives = 0
@@ -528,8 +532,10 @@ func _toggle_helper():
 	helpful_helper = !helpful_helper
 	print("helpful_helper is ", helpful_helper )
 
+
+
 func _handle_bonus_blocks(block):
-	if current_block:
+	if _current_safety():
 		current_block.show_particles(false)
 	last_block = current_block
 	current_block = block
@@ -538,7 +544,6 @@ func _handle_bonus_blocks(block):
 	current_block.body.apply_central_force(Vector3(0,2.1,0))
 	#body.apply_impulse(f) #frq
 	#body.apply_central_force(f)
-	#TODO: some kinda of indicator for current
 	if not last_block:
 		return
 	
@@ -548,6 +553,7 @@ func _handle_bonus_blocks(block):
 		last_block = null
 		return
 	
+	_current_safety()
 	if last_block.entity.name == current_block.entity.name:
 		if dev_mode:
 			print("nice, two ", current_block.entity.name)
@@ -591,11 +597,11 @@ func _update_audio():
 ###################################################################################################
 
 func _move(force:Vector3):
-	if current_block:
+	if _current_safety():
 		current_block.move(force * move_force)
 
 func _size(size_change:int):
-	if current_block:
+	if _current_safety():
 		current_block.update_size(size_change)
 
 # bonus levels use _drop_bonus_item instead
@@ -652,6 +658,27 @@ func _on_level_over(lost:bool = true, tmi:String = ""):
 		player.play("victory")
 		game_over = true
 		u_win.show()
+		#_silent_wolf()
+
+func _silent_wolf():
+	var player_name = "test"
+	SilentWolf.Scores.save_score(player_name, score)
+	#var sw_result: Dictionary = await SilentWolf.Scores.get_scores(200).sw_get_scores_complete
+	var sw_result: Dictionary = await SilentWolf.Scores.get_scores().sw_get_scores_complete
+	print("Scores: " + str(sw_result.scores))
+	print("Scores: " + str(sw_result.scores))
+	for score in sw_result.score:
+		print("> ", score.player_name, " has ", str(int(score.score)))
+	SilentWolf.Scores.get_score_position(score)
+	sw_result = await SilentWolf.Scores.get_top_score_by_player(player_name).sw_top_player_score_complete 
+	print("Got top player score: " + str(sw_result.score))
+	print("Does player have a top score? " + str(!sw_result.score.empty()))
+	sw_result = await SilentWolf.Scores.get_scores_around(score, 2).sw_get_scores_around_complete
+	print("scores_above: " + str(sw_result.scores_above))
+	print("scores_below: " + str(sw_result.scores_below))
+	print("position: " + str(sw_result.position))
+	
+
 
 func _add_block(block, entity, make_current:bool = true):
 	var entity_name = entity[Fof.NAME]

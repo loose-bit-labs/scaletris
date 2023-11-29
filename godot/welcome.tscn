@@ -1,9 +1,11 @@
-[gd_scene load_steps=29 format=3 uid="uid://c3m6k73bmgy0h"]
+[gd_scene load_steps=32 format=3 uid="uid://c3m6k73bmgy0h"]
 
 [ext_resource type="Script" path="res://welcome.gd" id="1_cuc1k"]
 [ext_resource type="AudioStream" uid="uid://b5vvqjq6brewx" path="res://audio/music/whip-110235.mp3" id="2_sutqe"]
 [ext_resource type="Script" path="res://welcome_small_box.gd" id="3_a5qc5"]
 [ext_resource type="Texture2D" uid="uid://b7yfo0rjc8oh8" path="res://lbl-nuts-and-bolts.png" id="3_b20fw"]
+[ext_resource type="Texture2D" uid="uid://dryje2fjwvuct" path="res://images/textures/x-pick.png" id="3_obqem"]
+[ext_resource type="Texture2D" uid="uid://do81vwu2g7eof" path="res://images/textures/x-classic.png" id="3_x6t5o"]
 [ext_resource type="AudioStream" uid="uid://bmocjvsmbobyb" path="res://audio/fx/403298__matrixxx__retro-explosion-02.mp3" id="6_2riwq"]
 [ext_resource type="AudioStream" uid="uid://0ojdo8aj6jxh" path="res://audio/fx/tonk.mp3" id="6_w4otv"]
 
@@ -14,8 +16,13 @@ ambient_light_source = 3
 ambient_light_color = Color(0.541176, 0.705882, 0.866667, 1)
 glow_enabled = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b6hck"]
+albedo_texture = ExtResource("3_x6t5o")
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8vruk"]
-albedo_color = Color(0.45098, 0.388235, 0.498039, 1)
+albedo_color = Color(0.709804, 0.709804, 0.709804, 1)
+albedo_texture = ExtResource("3_obqem")
+uv1_scale = Vector3(-1, 1, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_johjy"]
 size = Vector3(15.4731, 0.0238408, 4.12753)
@@ -306,30 +313,16 @@ omni_range = 11.6056
 [node name="NewWelcome" type="Node3D" parent="."]
 
 [node name="AngledBack" type="CSGBox3D" parent="NewWelcome"]
-transform = Transform3D(1, 0, 0, 0, 0.457036, -0.889448, 0, 0.889448, 0.457036, 0, 5.16555, -6.09507)
-size = Vector3(25.395, 0.0562761, 13.7769)
-
-[node name="Label3D" type="Label3D" parent="NewWelcome/AngledBack"]
-transform = Transform3D(1, 0, 0, 0, 0.479319, 0.87764, 0, -0.87764, 0.479319, 0, 1.87028, 1.4809)
-text = "Scaletris"
-font_size = 256
-
-[node name="Label3D" type="Label3D" parent="NewWelcome/AngledBack/Label3D"]
-transform = Transform3D(1, 0, 0, 0, 1, -1.86265e-08, 0, 1.86265e-08, 1, 0, -2.46049, 0.436587)
-text = "Match Blocks and Scale them to clear levels and score points!
-
-Use the keyboard or mouse and scroll to move and scale.
-
-Escape will pause and give instructions.
-
-Choose Classic Puzzle or Quest mode to start:"
-font_size = 64
+transform = Transform3D(1, 0, 0, 0, 0.920573, 0.39057, 0, -0.39057, 0.920573, 0, 3.74363, -5.02799)
+size = Vector3(23.0441, 14.2075, 0.425803)
+material = SubResource("StandardMaterial3D_b6hck")
 
 [node name="Floor" type="StaticBody3D" parent="NewWelcome"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.967378, -1)
 
 [node name="FloorBox" type="CSGBox3D" parent="NewWelcome/Floor"]
-size = Vector3(15.3963, 0.0270014, 4.13469)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, -0.576239)
+size = Vector3(5.4225, 0.0270014, 13.9101)
 material = SubResource("StandardMaterial3D_8vruk")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NewWelcome/Floor"]
@@ -411,6 +404,22 @@ font_size = 64
 
 [node name="Colly" type="CollisionShape3D" parent="NewWelcome/Picks/PickScaleQuest/Hot_quest"]
 shape = SubResource("BoxShape3D_48nk3")
+
+[node name="Label3D" type="Label3D" parent="NewWelcome"]
+transform = Transform3D(1, 0, 0, 0, 0.999681, -0.0252163, 0, 0.0252163, 0.999681, 0, 4.70315, -3.75473)
+text = "Scaletris"
+font_size = 256
+
+[node name="Label3D" type="Label3D" parent="NewWelcome/Label3D"]
+transform = Transform3D(1, 0, 0, 0, 1, -1.86265e-08, 0, 1.86265e-08, 1, 0, -2.46049, 0.436587)
+text = "Match Blocks and Scale them to clear levels and score points!
+
+Use the keyboard or mouse and scroll to move and scale.
+
+Escape will pause and give instructions.
+
+Choose Classic Puzzle or Quest mode to start:"
+font_size = 64
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../NewWelcome/RightBox")
