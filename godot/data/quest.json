@@ -2,7 +2,7 @@
 	"game": {
 		"level_override":false,
 		"glow": true,
-		"scale": {"minimum":1.25, "maximum": 1.8},
+		"scale": {"minimum":1.5, "maximum": 2.5},
 		"tiles": "tiles/quest",
 		"bonus": "treasure-room",
 		"info": "work_bench",
@@ -13,60 +13,71 @@
 	"levels":[
 		{
 			"name": "village",
-			"scale": {"minimum":1.25, "maximum": 1.8},
-			"sizes": 3,
-			"required":4,
+			"required":6,
 			"speed":0.33,
-			"force":100,
+			"force":120,
 			"chance": {
-				"crow":1,
-				"squirrel frog scorpion bat serpent spider":4
+				"bat-00114-1946419714 bat-00141-2129604733 bat-00148-2129604740":1,
+				"frog-00260-2043050210 frog-00267-2834885126 owl-00763-2344220048":1,
+				"rat-00044-1351715288 rat-00085-54383382 rat-00089-2452615752":1,
+				"scorpion-00020-429966925":1,
+				"snake-00207-192887193 snake-00243-798917412":1,
+				"spider-00290-3702881925 spider-00303-1892255527":1,
+				"squirrel-00312-2519028934 squirrel-00313-2519028935":1,
+
+				"dog-00334-2622494961 dog-00361-3944965462 fox-00385-1595040174 fox-00393-4034436970 eagle-00373-3217859794":1
 			},
-			"boss": "spider",
+			"boss": "spider-00303-1892255527",
 			"music":"at-the-side-of-an-rpg-village-121718.mp3",
 			"bonus":{"item":"coin_bag"}
 		},
 		{
 			"name": "woods",
-			"required":6,
+			"required":8,
 			"speed":0.70,
-			"force":95,
+			"force":110,
 			"chance": {
-				"eagle":1, 
-				"archer_r archer_w lancer_l":1,
-				"bat ":4,
-				"wolf":8,
-				"lion":2,
-				"sabertooth behemoth ghost giant":1
+				"bear-00486-3485357593 bear-00514-2005029457 boar-01707-1056320801 boar-01708-1056320804":4, 
+				"mountain-lion-00453-4195839046 mountain-lion-00464-218777566 mountain-lion-00473-218777575 panther-00545-3550666725 panther-00580-3818462919":2, 
+				"ghost-00029-931301982":1, 
+				"wolf-00374-1048381279 wolf-00377-1048381282":4, 
+				"tiger-00421-4097257445 tiger-00539-236767682":2,
+				"ogre-00601-2224858635 ogre-00605-1413699028 ogre-00611-1215510101":1,
+				"werewolf-00642-1354713726 werewolf-00649-1424256615":1,
+				"archer-00103-2460766215 lancer-01426-2036011221 woodsman-01469-590400060 woodsman-01472-2626462655":1,
+				"elf-01484-1244825950 elf-01486-1244825952 elf-01487-1244825953":1
 			},
-			"boss":"lion",
+			"boss":"werewolf-00649-1424256615",
 			"music":"secret-garden-mystically-chill-out-music-7489.mp3",
 			"bonus":{"item":"coin_bag"}
 		},
 		{
 			"name": "cave",
-			"required":8,
+			"required":10,
 			"speed":0.8,
-			"force":90,
+			"force":100,
 			"chance": {
-				"crossbowman_s short_swordsman_p swordsman_r":1,
-				"goblin_axe goblin_spear goblin_sword orc_archer orc_sword":8
+				"goblin-00822-1019243155 goblin-00831-769386726 goblin-00937-1000327150 goblin-00973-4027436640 golbin-00829-266773581":4,
+				"orc-00987-4112066532 orc-00988-4112066533 orc-00989-4112066534 orc-00994-2493615304":2,
+				"skeleton-01089-1643580068 skeleton-01111-665550436 skeleton-01112-665550437 skeleton-01116-665550441":1,
+				"rock-golem-01045-2118102806 rock-golem-01061-690239940 rock-golem-01080-2940652845":1,
+
+				"dwarf-00118-2933213240 dwarf-01501-7627205 dwarf-01508-1916377261":1
 			},
-			"boss": "octopus",
+			"boss": "rock-golem-01080-2940652845",
 			"music":"dark-mystery-trailer-taking-our-time-131566.mp3",
 			"bonus":{"item":"coin_bag"}
 		},
 		{
 			"name": "lair",
-			"required":10,
+			"required":12,
 			"speed":0.9,
-			"force":85,
+			"force":90,
 			"chance": {
-				"great_axeman_r great_swordsman_g":2,
-				"pikeman_c knight_o":1,
-				"dragon dragon_flying firedrake":12
+				"dragon-01133-3950857047 dragon-01144-3312756738 dragon-01154-2153231909 dragon-01158-2153231913 dragon-01184-1256103915 dragon-01190-1514137170 dragon-01192-3438783832 dragon-01196-3438783836 dragon-01201-1009228185 dragon-01203-1009228187 dragon-01206-1009228190 dragon-01207-1009228191 dragon-01217-1855999525 dragon-01221-3196361984 dragon-01239-342423521":2,
+				"knight-01529-121375429 knight-01530-121375430 knight-01556-2917428503 ":1
 			},
-			"boss": "dragon_transform",
+			"boss": "dragon-01158-2153231913",
 			"music": "boss-fight-143121.mp3",
 			"bonus":{"item":"coin_bag"}
 		},
@@ -74,58 +85,54 @@
 			"name": "pit",
 			"required":13,
 			"speed":1.0,
-			"force":80,
+			"force":85,
 			"chance": {
-				"pikeman_c knight_o":1,
-				"imp":12,
-				"balrog demon":8
+				"imp-00127-3940733740":4,
+				"death-knight-00996-2493615306 death-knight-01000-38916150 death-knight-01017-3379213631 demon-00099-589926348 demon-01269-3611933099 demon-01279-1517704139 demon-01296-874440032 demon-01334-399350963 demon-01347-524762270 demon-01349-524762272 demon-01354-4091764950 demon-01364-516092971 demon-01377-4124505523 demon-01397-304229112":2,
+
+				"wizard-01629-1299618611 paladin-01646-42225313 paladin-01653-2077454259 paladin-01657-2077454263":1
 			},
-			"boss":"demon_flying",
+			"boss":"death-knight-01017-3379213631",
 			"music":"horror-trailer-170637.mp3"
 		}
 	] ,
 	"bestiary": {
 		"friends": {
-				"bird":              { "level":1 },
-				"crow":              { "level":2 }, "eagle":             { "level":2 },
-				"archer_r":          { "level":3 }, "archer_w":          { "level":3 },
-				"lancer_l":          { "level":3 },
-				"raider_b":          { "level":4 }, "assassin_m":        { "level":4 },
-				"crossbowman_s":     { "level":4 }, "short_swordsman_p": { "level":4 },
-				"swordsman_r":       { "level":5 }, "great_axeman_r":    { "level":5 },
-				"great_swordsman_g": { "level":5 },
-				"pikeman_c":         { "level":6 }, "knight_o":          { "level":6 }
+				"dog-00334-2622494961 dog-00361-3944965462 fox-00385-1595040174 fox-00393-4034436970 eagle-00373-3217859794":1,
+				"archer-00103-2460766215 lancer-01426-2036011221 woodsman-01469-590400060 woodsman-01472-2626462655":2,
+				"elf-01484-1244825950 elf-01486-1244825952 elf-01487-1244825953":3,
+				"dwarf-00118-2933213240 dwarf-01501-7627205 dwarf-01508-1916377261":3,
+				"knight-01529-121375429 knight-01530-121375430 knight-01556-2917428503 ":4,
+				"wizard-01629-1299618611 paladin-01646-42225313 paladin-01653-2077454259 paladin-01657-2077454263":5
 		},
 		"foes": {
-			"bat":              { "level":1 }, "scorpion":         { "level":1 },
-			"serpent":          { "level":1 }, "spider":           { "level":1 },
-			"squirrel":         { "level":1 }, "frog":             { "level":1 }, 
+			"bat-00114-1946419714 bat-00141-2129604733 bat-00148-2129604740":1,
+			"frog-00260-2043050210 frog-00267-2834885126 owl-00763-2344220048":1,
+			"rat-00044-1351715288 rat-00085-54383382 rat-00089-2452615752":1,
+			"scorpion-00020-429966925":1,
+			"snake-00207-192887193 snake-00243-798917412":1,
+			"spider-00290-3702881925 spider-00303-1892255527":1,
+			"squirrel-00312-2519028934 squirrel-00313-2519028935":1,
 
-			"wolf":             { "level":2 }, "lion":             { "level":2 },
-			"sabertooth":       { "level":2 }, "behemoth":         { "level":2 },
+			"bear-00486-3485357593 bear-00514-2005029457 boar-01707-1056320801 boar-01708-1056320804":2, 
+			"mountain-lion-00453-4195839046 mountain-lion-00464-218777566 mountain-lion-00473-218777575 panther-00545-3550666725 panther-00580-3818462919":2, 
+			"ghost-00029-931301982":2, 
+			"wolf-00374-1048381279":2, 
+			"wolf-00377-1048381282":2, 
 
-			"ghost":            { "level":3 }, "griffon":          { "level":3 },
-			"imp":              { "level":3 },
+			"tiger-00421-4097257445 tiger-00539-236767682":3,
+			"ogre-00601-2224858635 ogre-00605-1413699028 ogre-00611-1215510101":3,
+			"werewolf-00642-1354713726 werewolf-00649-1424256615":3,
+			"goblin-00822-1019243155 goblin-00831-769386726 goblin-00937-1000327150 goblin-00973-4027436640 golbin-00829-266773581":3,
+			"orc-00987-4112066532 orc-00988-4112066533 orc-00989-4112066534 orc-00994-2493615304":3,
 
-			"goblin_axe":       { "level":4 }, "goblin_spear":     { "level":4 },
-			"goblin_sword":     { "level":4 },
+			"skeleton-01089-1643580068 skeleton-01111-665550436 skeleton-01112-665550437 skeleton-01116-665550441":4,
+			"rock-golem-01045-2118102806 rock-golem-01061-690239940 rock-golem-01080-2940652845":4,
 
-			"lizardman":        { "level":5 }, "minotaur":         { "level":5 },
-			"orc_archer":       { "level":5 }, "orc_sword":        { "level":5 },
-
-			"giant":            { "level":6 }, "octopus":          { "level":6 },
-			"swamphaunt":       { "level":6 },
-
-			"dragon":           { "level":7 }, "dragon_flying":    { "level":7 },
-			"dragon_transform": { "level":7 }, "firedrake":        { "level":7 },
-
-			"balrog":           { "level":8 }, "demon":            { "level":8 },
-			"demon_flying":     { "level":8 }
+			"imp-00127-3940733740":4,
+			"dragon-01133-3950857047 dragon-01144-3312756738 dragon-01154-2153231909 dragon-01158-2153231913 dragon-01184-1256103915 dragon-01190-1514137170 dragon-01192-3438783832 dragon-01196-3438783836 dragon-01201-1009228185 dragon-01203-1009228187 dragon-01206-1009228190 dragon-01207-1009228191 dragon-01217-1855999525 dragon-01221-3196361984 dragon-01239-342423521":5,
+			"death-knight-00996-2493615306 death-knight-01000-38916150 death-knight-01017-3379213631 demon-00099-589926348 demon-01269-3611933099 demon-01279-1517704139 demon-01296-874440032 demon-01334-399350963 demon-01347-524762270 demon-01349-524762272 demon-01354-4091764950 demon-01364-516092971 demon-01377-4124505523 demon-01397-304229112":5
 		},
-		"shelters": { "house": { "level":1 }, "inn": { "level":2 } },
-		"weapons":  { "frostgiant_axe": { "level":4 } },
-		"armor":    { "warhorse":  { "level":5 } },
-		"loot":     { "coin_bag":  { "level":2, "value":10 } },
-		"potions":   {}
+		"loot":     { "coin_bag":  { "level":2, "value":10 } }
 	}
 }
