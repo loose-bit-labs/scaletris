@@ -73,7 +73,7 @@ func _is_go(event):
 		if event.is_action_pressed(key):
 			return true
 	if is_visible_in_tree():
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or event.is_action_pressed("ui_accept"):
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or event.is_action_pressed("space"):
 			return true
 	return false
 
