@@ -259,13 +259,13 @@ func _drop_bonus_item():
 	block.entity = entity
 	if entity.name in block_map:
 		var first = block_map[entity.name][0].entity
-		if dev_mode:
-			print("second ", entity.name, " first is on ", first.right)
+		#if dev_mode:
+		#	print("second ", entity.name, " first is on ", first.right)
 		entity.right = not first.right
 	else:
 		entity.right = true if randf() < .5 else false
-		if dev_mode:
-			print("first ", entity.name, " on ", entity.right)
+		#if dev_mode:
+		#	print("first ", entity.name, " on ", entity.right)
 	_add_block(block, entity, false)
 	
 	# fixme: this is not really right anymore...
@@ -539,7 +539,7 @@ func _bonus_hack():
 func _bonus_click():
 	var hit = Fof.camera_mouse(self, camera, [front_wall])
 	var block = hit.get_parent()
-	if  hit and Fof.ENTITY in block:
+	if hit and Fof.ENTITY in block:
 		_handle_bonus_blocks(block)
 
 func _check_misses():
@@ -568,65 +568,69 @@ func _toggle_helper():
 
 func _toggle_overly_friendly():
 	overly_friendly = !overly_friendly
-	print("overly_friendly is ", overly_friendly )
+	print("overly_friendly is ", overly_friendly)
 
-func _handle_bonus_blocks(block):
-	if _current_safety():
-		current_block.show_particles(false)
-	last_block = current_block
-	current_block = block
-	current_block.show_particles(true)
-	# FIXME: this is not working
-	current_block.body.apply_central_force(Vector3(0,2.1,0))
-	#body.apply_impulse(f)
-	#body.apply_central_force(f)
-	if not last_block:
-		return
-	
-	if not _current_safety() or last_block == current_block:
-		# TODO: clear indicator 
+# frq
+func _handle_bonus_blocks(block, been_here = false):
+	if not _current_safety():
 		current_block = null
-		last_block = null
-		return
-		
-	if last_block.entity.name == current_block.entity.name:
+	if not current_block:
+		current_block = block
+		current_block.show_particles(true)
 		if dev_mode:
-			print("nice, two ", current_block.entity.name)
-		if last_block.size == current_block.size:
-			score = score + 33
-			_remove_block(current_block)
-			_remove_block(last_block)
-			var remaining = block_map.size()
+			print("SELECTED ", current_block.short_name())
+		return
+	current_block.show_particles(false)
+	if dev_mode:
+		print("COMPARE ", current_block.short_name(), " and ", block.short_name())
+	if current_block.entity.id == block.entity.id:
+		if dev_mode:
+			print("SAME BLOCK ", current_block.short_name(), " and ", block.short_name())
+		return
+	if block.entity.name != current_block.entity.name:
+		if dev_mode:
+			print("SWITCHING FROM ", current_block.short_name(), " to ", block.short_name())
+		current_block = null
+		if been_here:
 			if dev_mode:
-				print("size matched ", block.entity.name, ", bonus_index is ", bonus_index, " and ", remaining )
-			if bonus_index < 0 and !remaining:
-				if dev_mode:
-					print("DECENT!")
-				score = score + score_bonus_cleared * current_level
-				_update_status()
-				_next_level(true)
-				return
-				
-			print("FFF ", current_block.entity)
-			var sound = Fof.XF if Fof.FOES == current_block.entity.type else Fof.FX
-			if Fof.FOES == current_block.entity.type and not current_block.entity.xf:
-				sound = Fof.FX
-			_play_or(current_block, "got_item", sound)
-			score = score + current_level * 10
-			_update_status()
-			current_block = null
-			last_block = null
+				print("honestly... didn't think this could happen")
 		else:
-			#player.play("lost_item")
-			if Fof.FOES == current_block.entity.type:
-				_play_or(current_block, "lost_item")
-			else:
-				_play_sad(current_block)
+			_handle_bonus_blocks(block, true)
+		return
+	if not block.size == current_block.size:
+		if dev_mode:
+			print("SIZE MISMATCH ", current_block.short_name(), " to ", block.short_name())
+		if Fof.FOES == current_block.entity.type:
+			_play_or(current_block, "lost_item")
+		else:
+			_play_sad(current_block)
+		current_block = null
+		if been_here:
 			if dev_mode:
-				print("size no match ", current_block.entity.name, " with ", current_block.size, " and ", last_block.size )
-	else:
-		pass
-		# this is too annoying...  player.play("lost_item")
+				print("honestly... didn't think this could happen")
+		else:
+			_handle_bonus_blocks(block, true)
+		return
+		# current_block = last_block
+		
+	_matched(current_block, [block])
+	var remaining = block_map.size()
+	if dev_mode:
+		print("size matched ", block.entity.name, ", bonus_index is ", bonus_index, " and ", remaining )
+	if bonus_index < 0 and !remaining:
+		if dev_mode:
+			print("DECENT!")
+		score = score + score_bonus_cleared * current_level
+		_update_status()
+		_next_level(true)
+		return
+	var sound = Fof.XF if Fof.FOES == current_block.entity.type else Fof.FX
+	if Fof.FOES == current_block.entity.type and not current_block.entity.xf:
+		sound = Fof.FX
+	_play_or(current_block, "got_item", sound)
+	score = score + current_level * 10
+	_update_status()
+	current_block = null
 
 ###################################################################################################
 
@@ -761,7 +765,7 @@ func _check_match():
 			else:
 				missed.append(other)
 	if matched.size():
-		_matched(current_block, matched, blocks)
+		_matched(current_block, matched)
 	else:
 		if missed.size():
 			_missed(current_block, missed, blocks)
@@ -780,10 +784,10 @@ func _auto_match():
 	var pick = picks.pick_random()
 	var primary = pick.pop_front()
 	print("pick ", pick)
-	_matched(primary, pick, null)
+	_matched(primary, pick)
 
 # TODO: play the right tone for win / gain
-func _matched(primary, others, _blocks):
+func _matched(primary, others):
 	print("matched ", primary.entity, " and ", others.size(), " others")
 	matched_blocks[primary.entity.name] = true
 	if not is_bonus_level:
@@ -930,13 +934,14 @@ func _count_bonus(show_:bool = false):
 	if show_:
 		print("------------------------------------")
 	var bc = 0
-	var boo = false
+	var a_bonus = null
 	for entity_name in block_map:
 		for block in block_map[entity_name]:
 			if not block.sleeping:
 				continue
 			if block.in_bonus_zone:
 				if entity_name == Fof.BONUS:
+					a_bonus = block
 					bc = bc + 1
 					_sting(block, "got_item")
 				else:
@@ -944,19 +949,19 @@ func _count_bonus(show_:bool = false):
 					var type = block.entity.type
 					var sound = Fof.FX if Fof.FOES == type else Fof.XF
 					if not block.entity.id in non_bonus:
-						print("SSS ", type, " so ", sound, " ie ", block.entity[sound])
-					
+						if dev_mode:
+							print("SSS ", type, " so ", sound, " ie ", block.entity[sound])
 					_sting(block, "lost_item", sound)
 			else:
 				if entity_name == Fof.BONUS:
 					_sting(block, "lost_item", Fof.XF)
 			if show_:
 				print(bc, " ", block.show_me())
-	#print("bc:", block_map, " -> ", bc)
-	if boo:
-		player.play("lost_item")
 	if bonus_count < required_bonus_count and bc == required_bonus_count and required_bonus_count:
-		player.play("earned_bonus")
+		if a_bonus:
+			_play_or(a_bonus, "earned_bonus")
+		else:
+			player.play("earned_bonus")
 	bonus_count = bc
 	_update_status()
 

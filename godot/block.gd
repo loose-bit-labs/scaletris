@@ -186,6 +186,9 @@ func _on_rigid_body_3d_sleeping_state_changed():
 		show_particles(false, false)
 		main.i_was_so_tired(self)
 
+func short_name():
+	return "/".join([entity.type, entity.name, entity.id, size])
+	
 func show_me():
 	return JSON.stringify(info())
 
