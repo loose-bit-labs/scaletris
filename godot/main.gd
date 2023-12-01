@@ -15,10 +15,15 @@ var block_scene = preload("res://block.tscn")
 @onready var hide_bonus = $Board/Info/walls/hideBonus
 @onready var far_box = $Board/farrightwall/Box
 @onready var bonus_box = $Board/Info/walls/backBonus
+@onready var bonus_floor = $Board/Info/walls/floorBonus
 @onready var info_box = $Board/Info/Box
 @onready var divider_box = $Board/bonuswall/Box
+@onready var status_box = $Board/Info/StatusHolder/Status
+@onready var status_box_texture = $Board/Info/StatusHolder/Status/StatusTexture
+@onready var status_box_color = $Board/Info/StatusHolder/Status/StatusColor
+@onready var status_box_player = $Board/Info/StatusHolder/Status/Player
 @onready var boxes = [backBox, floorBox, leftBox, rightBox, topBox, hide_bonus]
-@onready var bonus_boxes = [far_box, bonus_box, divider_box]
+@onready var bonus_boxes = [far_box, bonus_box, divider_box, bonus_floor]
 
 @onready var label_level = $Board/Info/Level/Value
 @onready var label_kills = $Board/Info/Kills/Value
@@ -92,9 +97,15 @@ var mouse_button_at = null
 
 var score_bonus_cleared = 100
 
-@export var dev_mode = true
+@export var dev_mode = false
 @export var helpful_helper = false
 @export var overly_friendly = false
+
+@export var health_gradient = Gradient.new()
+
+@onready var status_ok = preload("res://images/textures/status/s-ok.png")
+@onready var status_hurt = preload("res://images/textures/status/s-hurt.png")
+@onready var status_dying = preload("res://images/textures/status/s-dying.png")
 
 ###################################################################################################
 
@@ -110,21 +121,10 @@ func _game_specific():
 	else:
 		lives = -33
 		info_lives.hide()
-	var bonus_material = _game_texture(Fof.game_bonus())
-	var info_material = _game_texture(Fof.game_info())
-	var explanation = Fof.game_explanation()
-	if explanation:
-		explain_normal.text = Fof.world.game.explanation.replace("@", "\n")
+	explain_normal.text = Fof.world.game.explanation
 	for box in bonus_boxes:
-		box.set_material(bonus_material)
-	info_box.set_material(info_material)
-
-func _game_texture(txt):
-	if txt:
-		return Fof.load_background_material(txt)
-	var material = StandardMaterial3D.new()
-	material.albedo_color = Color.WHITE
-	return material
+		box.set_material(Fof.world.game.bonus_material)
+	info_box.set_material(Fof.world.game.info_material)
 
 ###################################################################################################
 
@@ -156,6 +156,7 @@ func _load_level(level_index:int=0):
 func _load_is_bonus(_level_index:int=0):
 	is_bonus_level = Fof.is_bonus_level(level)
 	if is_bonus_level:
+		status_box.hide()
 		#bonus_count = 9001
 		if not bonus_force and bonus_count < required_bonus_count:
 			if dev_mode:
@@ -168,6 +169,7 @@ func _load_is_bonus(_level_index:int=0):
 	else:
 		in_bonus_zone = false
 		label_bonus_timer.hide()
+		status_box.show()
 		bonus_wall.position.y = 8.8
 		
 	#bonus_wall.position.y = 9001 ### hack!!!1
@@ -189,6 +191,8 @@ func _load_reset_values():
 	mainAudio.stream = level[Fof.MUSIC]
 	last_block = null
 	current_block = null
+	status_box_player.play("happy")
+	status_box_player.set_speed_scale(1)
 	pause_title.text = "PAUSED"
 	mainAudio.play()
 
@@ -196,11 +200,15 @@ func _load_blocks():
 	block_map = {}
 	_remove_blocks(true)
 	_remove_blocks(true) # FIXME: seriously... please remove *all* of them!
-	var material = Fof.game_bonus_material() if is_bonus_level else level.material
+	var material = level.material
+	if is_bonus_level and Fof.world.game.bonus:
+		material = Fof.game_bonus_material()
 	if not material:
 		material = level.material
 	for box in boxes:
 		box.set_material(material)
+	if not is_bonus_level or not Fof.game_bonus_material():
+		floorBox.set_material(level.material2)
 
 func _load_has_bonus():
 	var bonus = Fof.get_bonus(current_level)
@@ -237,6 +245,7 @@ func _load_bonus_level():
 	bonus_list2 = Fof.get_level(current_level-1).chance.keys()
 	bonus_list1.shuffle()
 	bonus_list2.shuffle()
+	hide_bonus.show()
 
 func _drop_bonus_item():
 	if not bonus_can_drop:
@@ -328,11 +337,14 @@ func _next_level(sweet:bool = true):
 	_update_status()
 	_please_level_up()
 	
-func _please_level_up():
+func _please_level_up(game_over_=false):
 	explain_bonus.hide()
 	explain_normal.hide()
 	explain_levelled.show()
-	pauser.show()
+	if game_over_:
+		pauser.show()
+	else:
+		pauser.pause()
 	level_up_please = true
 
 func _post_level_text(sweet:bool):
@@ -357,7 +369,7 @@ func _post_level_text(sweet:bool):
 	if sweet:
 		pause_title.text = "SUCCESS! 🏆"
 		var lines = []
-		lines.append("You passed Level " + level.name.replace("_", " "))
+		lines.append("You passed Level \"" + level.title + "\"")
 		lines.append(collected)
 		if required_bonus_count:
 			if not bonus_force and bonus_count < required_bonus_count:
@@ -368,7 +380,7 @@ func _post_level_text(sweet:bool):
 		explain_levelled.text = "\n".join(lines)
 	else:
 		pause_title.text = "Bummer... 😭"
-		explain_levelled.text = "You failed Level " + level.name.replace("_", " ")
+		explain_levelled.text = "You failed Level \"" + level.title + "\""
 		player.play("lost_level")
 
 func _on_paused_visibility_changed():
@@ -380,7 +392,7 @@ func _on_paused_visibility_changed():
 			_show_hide_explanations()
 
 func _update_status():
-	label_level.text = level.name.replace("_", " ")
+	label_level.text = level.title
 	label_score.text = str(score)
 	label_bonus_count.text = str(bonus_count)
 	if is_bonus_level:
@@ -397,8 +409,28 @@ func _update_status():
 			label_lives.text = ""
 			for life in range(lives):
 				label_lives.text = label_lives.text + Fof.game_life()
-			
 		label_bonus_required.text = str(required_bonus_count)
+		_update_status_box()
+
+var status_tmp = 33
+func _update_status_box():
+	var status = (possible_count - missed_count) / float(possible_count)
+	var color = health_gradient.sample(status)
+	status_box_color.material.albedo_color = color
+	if dev_mode && status_tmp != status:
+		print("STATUS IS ", status, " for ", missed_count, " of ", possible_count, " so color is ", color)
+		status_tmp = status
+	status_box_player.set_speed_scale(2 + 4 * (1 - status)**2)
+	var s = .1 + .2 + status * .8
+	#status_box.scale = Vector3(s, s, s)
+	status_box_texture.scale = Vector3(s, s, s)
+	status_box_color.scale = Vector3(s, s, s)
+	if status > .7:
+		status_box_texture.material.set_texture(StandardMaterial3D.TEXTURE_ALBEDO,status_ok)
+	elif status > .5:
+		status_box_texture.material.set_texture(StandardMaterial3D.TEXTURE_ALBEDO,status_hurt)
+	else:
+		status_box_texture.material.set_texture(StandardMaterial3D.TEXTURE_ALBEDO,status_dying)
 
 func _update_show_timer():
 	var format_this = ""
@@ -486,6 +518,7 @@ func _key_pressed(code:int):
 		KEY_9: _load_level(16) # win
 		KEY_L: _go_lose()
 		KEY_B: _bonus_hack()
+		KEY_G: gravity = gravity + 1
 		KEY_F: _toggle_overly_friendly()
 		KEY_N: _next_level(true)
 		KEY_Q: _show_blocks()
@@ -494,6 +527,7 @@ func _key_pressed(code:int):
 		KEY_Z: _toggle_helper()
 		KEY_T: bonus_timer = 999
 		KEY_O: Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		KEY_U: kills = level.required
 
 func _go_lose():
 	lives = 0
@@ -509,17 +543,23 @@ func _bonus_click():
 		_handle_bonus_blocks(block)
 
 func _check_misses():
-	missed_count =_count_misses()
+	var b4 = missed_count
+	missed_count = _count_misses()
+	if false and missed_count < b4 - 1:
+		print("\n\n\n---")
+		print("missed count went from ", b4, " to ", missed_count)
+		_count_misses(true)
+		pauser.pause()
 
 func _count_misses(debug:bool = false):
 	var c = 0
-	if debug:
-		print("\nmissed count mismatch ", c, " versus ", missed_count)
-	for ez in block_map.values():
-		ez = ez.filter(func(b): return Fof.BONUS == b.entity.name or b.sleeping).map(func(b): return b.show_me())
-		c = c + (1 if 2 == ez.size() else 0)
+	for blocks in block_map.values():
+		var baddies = blocks.filter(
+			func(block): return Fof.FOES == block.entity.type
+		).map(func(block): return block.entity.name)
+		c = c + (1 if 2 == baddies.size() else 0)
 		if debug:
-			print(c, ez)
+			print(c, baddies)
 	return c
 
 func _toggle_helper():
@@ -529,7 +569,7 @@ func _toggle_helper():
 func _toggle_overly_friendly():
 	overly_friendly = !overly_friendly
 	print("overly_friendly is ", overly_friendly )
-	
+
 func _handle_bonus_blocks(block):
 	if _current_safety():
 		current_block.show_particles(false)
@@ -566,12 +606,22 @@ func _handle_bonus_blocks(block):
 				_update_status()
 				_next_level(true)
 				return
+				
+			print("FFF ", current_block.entity)
+			var sound = Fof.XF if Fof.FOES == current_block.entity.type else Fof.FX
+			if Fof.FOES == current_block.entity.type and not current_block.entity.xf:
+				sound = Fof.FX
+			_play_or(current_block, "got_item", sound)
 			score = score + current_level * 10
 			_update_status()
 			current_block = null
 			last_block = null
 		else:
-			player.play("lost_item")
+			#player.play("lost_item")
+			if Fof.FOES == current_block.entity.type:
+				_play_or(current_block, "lost_item")
+			else:
+				_play_sad(current_block)
 			if dev_mode:
 				print("size no match ", current_block.entity.name, " with ", current_block.size, " and ", last_block.size )
 	else:
@@ -624,6 +674,7 @@ func _create_new_box():
 	return block
 
 func _on_level_over(lost:bool = true, tmi:String = ""):
+	status_box_player.stop() 
 	lose_tmi.text = tmi
 	if lost:
 		lives = lives - 1
@@ -637,7 +688,7 @@ func _on_level_over(lost:bool = true, tmi:String = ""):
 			if dev_mode:
 				print("You are still alive, so restart level")
 			pause_title.text = "Bummer... 😭"
-			explain_levelled.text = "You failed Level " + level.name.replace("_", " ") + "\n\nDon't Despair!"
+			explain_levelled.text = "You failed Level \"" + level.title + "\"\n\nDon't Despair!"
 			if 1 == lives:
 				explain_levelled.text += "\n\nBut... you only have 1 life left! Do your best!"
 			else:
@@ -746,10 +797,10 @@ func _matched(primary, others, _blocks):
 		block.wakeUp()
 	_check_misses()
 
-# TODO: play per monster sound?
 func _killed(block, count, animate = true):
 	if animate:
-		player.play("game_reward")
+		#player.play("game_reward")
+		_play_sad(block, "game_reward") # the block is a foe and so it's sad when ur happy :-P
 	kills = kills + 1
 	score += block.entity.level * count * 17
 	if dev_mode:
@@ -759,6 +810,7 @@ func _killed(block, count, animate = true):
 			print("VICTORIOUS!")
 		_next_level(true)
 	else:
+		_check_misses()
 		_update_status()
 
 func _helped(block, count):
@@ -772,11 +824,14 @@ func _helped(block, count):
 		if dev_mode:
 			print("you got help from ", count, " ", block.entity.name, "! they killed ", picked.entity.name, "!")
 		_play_or(block, "fx_attack_blocked")
-		#player.play("fx_attack_blocked")
 		_killed(picked, 1, false)
 		_remove_block(picked)
+		_check_misses()
+		_update_status()
 	else:
 		_play_or(block, "got_item")
+		_check_misses()
+		_update_status()
 		#player.play("got_item")
 		if dev_mode:
 			print(block.entity.name, " wanted to help, but you are too good!")
@@ -787,7 +842,7 @@ func _missed(primary, others, _blocks):
 	if dev_mode:
 		print("missed ", primary.entity, " and ", others.size(), " others")
 	if primary.entity.type == Fof.FRIENDS:
-		player.play("lost_item")
+		_play_sad(primary)
 	else:
 		_play_or(primary, "lost_item")
 	missed_count = missed_count + 1 # TODO: remove this: _check_misses is used now 
@@ -799,14 +854,17 @@ func _missed(primary, others, _blocks):
 
 ###################################################################################################
 
-func _play_or(block, animation_name:String):
-	if block.entity.fx:
+func _play_sad(block, animation_name:String = "lost_item"):
+	_play_or(block, animation_name, Fof.XF)
+	
+func _play_or(block, animation_name:String, sound = Fof.FX):
+	if block.entity[sound]:
 		if dev_mode:
-			print("fx ",block.entity.fx, " for ", block.entity.name)
-		player.play(block.entity.fx)
+			print(sound, " : ", block.entity[sound], " for ", block.entity.name)
+		player.play(block.entity[sound])
 	else:
 		if dev_mode:
-			print("fx ", animation_name, " even for ", block.entity.name)
+			print(sound, " : ", animation_name, " even for ", block.entity.name)
 		player.play(animation_name)
 
 ###################################################################################################
@@ -873,20 +931,25 @@ func _count_bonus(show_:bool = false):
 		print("------------------------------------")
 	var bc = 0
 	var boo = false
-	for type in block_map:
-		for block in block_map[type]:
+	for entity_name in block_map:
+		for block in block_map[entity_name]:
 			if not block.sleeping:
 				continue
 			if block.in_bonus_zone:
-				if type == Fof.BONUS:
+				if entity_name == Fof.BONUS:
 					bc = bc + 1
 					_sting(block, "got_item")
 				else:
 					bc = bc - 1
-					_sting(block)
+					var type = block.entity.type
+					var sound = Fof.FX if Fof.FOES == type else Fof.XF
+					if not block.entity.id in non_bonus:
+						print("SSS ", type, " so ", sound, " ie ", block.entity[sound])
+					
+					_sting(block, "lost_item", sound)
 			else:
-				if type == Fof.BONUS:
-					_sting(block)
+				if entity_name == Fof.BONUS:
+					_sting(block, "lost_item", Fof.XF)
 			if show_:
 				print(bc, " ", block.show_me())
 	#print("bc:", block_map, " -> ", bc)
@@ -897,10 +960,11 @@ func _count_bonus(show_:bool = false):
 	bonus_count = bc
 	_update_status()
 
-func _sting(block, animation_name:String = "lost_item"):
+func _sting(block, animation_name:String = "lost_item", sound = Fof.FX):
 	if not block.entity.id in non_bonus:
 		non_bonus[block.entity.id] = true
-		player.play(animation_name)
+		#player.play(animation_name)
+		_play_or(block, animation_name, sound)
 
 ###################################################################################################
 

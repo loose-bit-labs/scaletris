@@ -11,11 +11,13 @@
 	"levels": [
 		{
 			"name": "The_Lab_Rat",
+			"title": "The Lab Rat 🐀",
 			"required": 10,
 			"scale": {
 				"minimum": 1.0,
 				"maximum": 2.0
 			},
+			"fx": "fx_mouse",
 			"sizes": 2,
 			"speed": 0.32,
 			"force": 60,
@@ -38,6 +40,8 @@
 				"timer": 60
 			},
 			"name": "The_Lab_Rat",
+			"title": "The Lab Rat 🐀",
+			"fx": "fx_mouse",
 			"speed": 4,
 			"force": 60,
 			"scale": {
@@ -52,6 +56,7 @@
 
 		{
 			"name": "The_Ruler",
+			"title": "The Ruler 📏",
 			"required": 14,
 			"scale": {
 				"minimum": 1.2,
@@ -79,6 +84,7 @@
 				"timer": 60
 			},
 			"name": "The_Ruler",
+			"title": "The Ruler 📏",
 			"speed": 4,
 			"force": 60,
 			"scale": {
@@ -93,6 +99,9 @@
 
 		{
 			"name": "The_Speedometer",
+			"title": "The Speedometer 🏎️💨",
+			"fx": "fx_racer",
+			"xf": "fx_sputter",
 			"required": 20,
 			"scale": {
 				"minimum": 1.0,
@@ -120,6 +129,9 @@
 				"timer": 60
 			},
 			"name": "The_Speedometer",
+			"title": "The Speedometer 🏎️💨",
+			"fx": "fx_racer",
+			"xf": "fx_sputter",
 			"speed": 4,
 			"force": 60,
 			"scale": {
@@ -130,11 +142,12 @@
 			"music": "piano-atmosphere-electronic-royalty-free-music-177123.mp3"
 		},
 
-
-
 		{
 			"name": "The_Bathroom_Scale",
+			"title": "The Bathroom Scale ⏲️",
 			"required": 24,
+			"fx": "fx_fart",
+			"xf": "fx_toilet",
 			"scale": {
 				"minimum": 1.1,
 				"maximum": 1.9
@@ -161,6 +174,9 @@
 				"timer": 60
 			},
 			"name": "The_Bathroom_Scale",
+			"title": "The Bathroom Scale ⏲️",
+			"required": 24,
+			"fx": "fx_fart",
 			"speed": 4,
 			"force": 65,
 			"scale": {
@@ -175,7 +191,11 @@
 
 		{
 			"name": "This_Looks_Fishy",
+			"title": "This Looks Fishy 🐬",
+			"emojis": "🧜🏾‍♀️🐠🦀🦑🌊🐟🦈𓇼🐬🐚",
 			"required": 28,
+			"fx": "fx_dino",
+			"xf": "fx_rattle",
 			"scale": {
 				"minimum": 1.2,
 				"maximum": 1.8
@@ -202,6 +222,9 @@
 				"timer": 60
 			},
 			"name": "This_Looks_Fishy",
+			"title": "This Looks Fishy 🐬",
+			"fx": "fx_dino",
+			"xf": "fx_rattle",
 			"speed": 4,
 			"force": 70,
 			"scale": {
@@ -216,7 +239,11 @@
 
 		{
 			"name": "Musical_Scales",
+			"title": "Musical Scales ♫",
+			"emojis": "🎵♫🎶🎧💿🎙️🎹",
 			"required": 32,
+			"fx": "fx_tada",
+			"xf": "fx_sad_trombone",
 			"scale": {
 				"minimum": 1.0,
 				"maximum": 2.5
@@ -243,6 +270,9 @@
 				"timer": 60
 			},
 			"name": "Musical_Scales",
+			"title": "Musical Scales ♫",
+			"fx": "fx_tada",
+			"xf": "fx_sad_trombone",
 			"speed": 4,
 			"force": 80,
 			"scale": {
@@ -257,6 +287,7 @@
 
 		{
 			"name": "The_Thermometer",
+			"title": "The Thermometer 🌡",
 			"required": 35,
 			"scale": {
 				"minimum": 1.0,
@@ -284,6 +315,7 @@
 				"timer": 60
 			},
 			"name": "The_Thermometer",
+			"title": "The Thermometer 🌡",
 			"speed": 4,
 			"force": 90,
 			"scale": {
@@ -298,11 +330,14 @@
 
 		{
 			"name": "Justice",
+			"title": "Justice ⚖️",
 			"required": 38,
 			"scale": {
 				"minimum": 1.0,
 				"maximum": 2.5
 			},
+			"fx": "fx_gun",
+			"xf": "fx_siren",
 			"sizes": 5,
 			"speed": 0.6,
 			"force": 100,
@@ -325,6 +360,7 @@
 				"timer": 60
 			},
 			"name": "Justice",
+			"title": "Justice ⚖️",
 			"speed": 4,
 			"force": 100,
 			"scale": {

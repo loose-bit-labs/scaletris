@@ -1,7 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://7ahqkm7byqyf"]
+[gd_scene load_steps=18 format=3 uid="uid://7ahqkm7byqyf"]
 
 [ext_resource type="Script" path="res://block.gd" id="1_3u4cw"]
 [ext_resource type="AudioStream" uid="uid://d0l0i1l5je6qt" path="res://audio/fx/506545__matrixxx__pop-02.wav" id="3_c7r2v"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_1tlvt"]
+bounce = 0.11
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2w4y5"]
 
@@ -187,6 +190,7 @@ sleepyThreshold = 0.5
 glow_color = Color(0.803922, 0.635294, 0.780392, 0.54902)
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
+physics_material_override = SubResource("PhysicsMaterial_1tlvt")
 max_contacts_reported = 1
 contact_monitor = true
 

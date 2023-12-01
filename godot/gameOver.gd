@@ -11,7 +11,7 @@ func _input(event):
 
 func _on_visibility_changed():
 	if is_visible():
-		await get_tree().create_timer(2.0).timeout 
+		await get_tree().create_timer(3.3).timeout 
 		interactable = true
-		print("you can go on")
+		#print("you can go on")
 		get_tree().paused = false

@@ -13,6 +13,11 @@ var full
 var quit_count = 0
 
 func _input(event):
+	if true and event is InputEventKey and event.pressed and event.keycode == KEY_Z:
+		if is_visible_in_tree():
+			hide()
+		else:
+			show()
 	if event.is_action_pressed("quit"):
 		_quit()
 	if _is_go(event):
@@ -33,7 +38,6 @@ func _input(event):
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 		else:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-
 	if event.is_action_pressed("home"):
 		_no_quit()
 		#TODO: prompt

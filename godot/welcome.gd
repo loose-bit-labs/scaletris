@@ -85,6 +85,11 @@ func _input(event):
 	if event.is_action_pressed("quit"):
 		#TODO: prompt
 		get_tree().quit()
+	if event.is_action_pressed("fullscreen"):
+		if DisplayServer.WINDOW_MODE_FULLSCREEN == DisplayServer.window_get_mode():
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 func _selecto(dir:int = +1):
 	match selected:

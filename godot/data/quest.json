@@ -13,9 +13,10 @@
 	"levels":[
 		{
 			"name": "village",
-			"required":6,
+			"title": "The Village 🏘️",
+			"required":8,
 			"speed":0.33,
-			"force":120,
+			"force":80,
 			"chance": {
 				"bat-00114-1946419714 bat-00148-2129604740":1,
 				"frog-00260-2043050210 frog-00267-2834885126 owl-00763-2344220048":1,
@@ -36,9 +37,10 @@
 		},
 		{
 			"name": "woods",
-			"required":8,
+			"title": "The Woods 🍄🌲",
+			"required":10,
 			"speed":0.70,
-			"force":110,
+			"force":95,
 			"chance": {
 				"bear-00486-3485357593 boar-01707-1056320801 boar-01708-1056320804":4, 
 				"mountain-lion-00464-218777566 panther-00580-3818462919":2, 
@@ -60,7 +62,8 @@
 		},
 		{
 			"name": "cave",
-			"required":10,
+			"title": "The Caverns 🏔️",
+			"required":12,
 			"speed":0.8,
 			"force":100,
 			"chance": {
@@ -77,12 +80,14 @@
 		},
 		{
 			"name": "lair",
-			"required":12,
+			"title": "The Dragon's Lair 🐉",
+			"required":14,
 			"speed":0.9,
-			"force":90,
+			"force":100,
 			"chance": {
-				"dragon-01133-3950857047 dragon-01144-3312756738 dragon-01154-2153231909 dragon-01158-2153231913 dragon-01184-1256103915 dragon-01190-1514137170 dragon-01192-3438783832 dragon-01196-3438783836 dragon-01201-1009228185 dragon-01203-1009228187 dragon-01206-1009228190 dragon-01207-1009228191 dragon-01217-1855999525 dragon-01221-3196361984 dragon-01239-342423521":2,
-				"knight-01529-121375429 knight-01530-121375430 knight-01556-2917428503 ":1
+				"dragon-01133-3950857047 dragon-01144-3312756738 dragon-01154-2153231909 dragon-01158-2153231913 dragon-01184-1256103915 dragon-01190-1514137170 dragon-01192-3438783832 dragon-01196-3438783836 dragon-01201-1009228185 dragon-01203-1009228187 dragon-01206-1009228190 dragon-01207-1009228191 dragon-01217-1855999525 dragon-01221-3196361984 dragon-01239-342423521":4,
+				"knight-01529-121375429 knight-01530-121375430 knight-01556-2917428503 ":2,
+				"wizard-01629-1299618611":1
 			},
 			"boss": "dragon-01158-2153231913",
 			"music": "boss-fight-143121.mp3",
@@ -90,9 +95,10 @@
 		},
 		{
 			"name": "pit",
-			"required":13,
+			"title": "The Fiendish Pit 👹",
+			"required":17,
 			"speed":1.0,
-			"force":85,
+			"force":100,
 			"chance": {
 				"imp-00127-3940733740":4,
 				"death-knight-00996-2493615306 death-knight-01000-38916150 death-knight-01017-3379213631 demon-00099-589926348 demon-01269-3611933099 demon-01279-1517704139 demon-01296-874440032 demon-01334-399350963 demon-01347-524762270 demon-01349-524762272 demon-01354-4091764950 demon-01364-516092971 demon-01377-4124505523 demon-01397-304229112":2,
@@ -142,25 +148,33 @@
 		"loot":     { "coin_bag":  { "level":2, "value":10 } }
 	},
 	"fx": {
-		"wolf werewolf goblin dog": "fx_growl",
-		"mountain-lion tiger bear panther dragon": "fx_roar",
+		"wolf werewolf": "fx_growl",
+		"dog": "fx_bark",
+		"mountain-lion tiger panther": "fx_roar",
+		"bear": "fx_bear_roar",
 		"boar": "fx_oink",
-		"bat rat squirrel": "fx_squeak",
+		"bat rat squirrel": "fx_mouse",
 		"owl": "fx_hoot",
 		"frog": "fx_croak",
 		"eagle": "fx_eagle",
-		"archer": "fx_arrow",
+		"archer": "fx_fire_bow",
+		"spider scorpion": "fx_small_rocks",
 		"snake": "fx_hiss",
-		"spider scorpion": "fx_rattle",
-		"lancer woodsman dwarf knight paladin": "fx_fanfare",
+		"goblin": "fx_goblin_laugh",
+		"lancer": "fx_fanfare",
+		"woodsman knight": "fx_cavalry",
+		"paladin": "fx_sword",
+		"dwarf": "fx_battlecry",
 		"ogre orc": "fx_ogre",
 		"ghost": "fx_ghost",
-		"elf wizard": "fx_chimes",
+		"elf": "fx_chimes",
+		"wizard": "fx_magic",
 		"fox": "fx_fox",
 		"skeleton": "fx_bones",
 		"rock": "fx_rocks",
+		"dragon": "fx_dragon_roar",
 		"death-knight": "fx_evil_chant",
 		"imp": "fx_evil_laugh_high",
-		"demon": "fx_evil_hiss"
+		"demon": "fx_evil_laugh"
 	}
 }

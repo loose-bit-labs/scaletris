@@ -52,6 +52,8 @@ const LEVEL_OVERRIDE = "level_override"
 const GLOW = "glow"
 const BONUS_MATERIAL = "bonus_material"
 const FX = "fx"
+const XF = "xf"
+const TITLE = "title"
 
 const TILE_DEFAULT = "classic"
 const IMAGE_ROOT = "res://images/"
@@ -107,17 +109,8 @@ func load_world(filename:String = WORLD_FILE, callback:Callable = func():return)
 		callback.call()
 		return
 	world = _unspace(JSON.parse_string(FileAccess.open(filename, FileAccess.READ).get_as_text()))
-	if GAME in world:
-		for key in DEFAULT_GAME_SETTINGS:
-			if not key in world.game:
-				world.game[key] = DEFAULT_GAME_SETTINGS[key]
-				#print("SET WORLD.", key, " to ", DEFAULT_GAME_SETTINGS[key])
-	else:
-		world[GAME] = DEFAULT_GAME_SETTINGS.duplicate()
-	if game_bonus():
-		world.game[BONUS_MATERIAL] = image_to_material(load_background(game_bonus()), LEVELS)
-	else:
-		world.game[BONUS_MATERIAL] = null
+	_load_game_settings()
+
 	if BESTIARY in world:
 		bestiary = _load_bestiary(world[BESTIARY])
 	else:
@@ -136,6 +129,29 @@ func game_name():
 
 func _get_tiles():
 	return TILE_DEFAULT if not GAME in world or not TILES in world.game else world.game.tiles
+
+func _load_game_settings():
+	if GAME in world:
+		for key in DEFAULT_GAME_SETTINGS:
+			if not key in world.game:
+				world.game[key] = DEFAULT_GAME_SETTINGS[key]
+				#print("SET WORLD.", key, " to ", DEFAULT_GAME_SETTINGS[key])
+	else:
+		world[GAME] = DEFAULT_GAME_SETTINGS.duplicate()
+	if game_bonus():
+		world.game[BONUS_MATERIAL] = image_to_material(load_background(game_bonus()), LEVELS)
+	else:
+		world.game[BONUS_MATERIAL] = null
+	world.game.explanation = world.game.explanation.replace("@", "\n")
+	world.game.bonus_material = _game_texture(world.game.bonus)
+	world.game.info_material = _game_texture(world.game.info)
+
+func _game_texture(txt):
+	if txt:
+		return load_background_material(txt)
+	var material = StandardMaterial3D.new()
+	material.albedo_color = Color.WHITE
+	return material
 
 func _load_bestiary(b):
 	var lookup = {}
@@ -159,12 +175,14 @@ func _load_beastie(name_:String, type:String = FOES, lookup:Dictionary = {}, b:D
 	entity[MATERIAL] = image_to_material(entity[IMAGE], type)
 	entity[MATERIAL_COPY] = image_to_material(entity[IMAGE])
 	entity[FX] = ""
-	var fx = {} if not FX in world else world.fx
-	for pattern in fx:
-		var longest = ""
-		if name_.begins_with(pattern) and pattern.length() > longest.length():
-			longest = pattern
-			entity.fx = fx[longest]
+	entity[XF] = ""
+	for sound in [FX, XF]:
+		var source = {} if not sound in world else world[sound]
+		for pattern in source:
+			var longest = ""
+			if name_.begins_with(pattern) and pattern.length() > longest.length():
+				longest = pattern
+				entity[sound] = source[longest]
 	if not LEVEL in entity:
 		entity.level = 0
 	lookup[name_] = entity
@@ -182,6 +200,8 @@ func _load_levels(levels):
 		level[PICKER] = _entity_probability(level.chance)
 		level[IMAGE] = load_background(level[NAME]) 
 		level[MATERIAL] = image_to_material(level[IMAGE], LEVELS)
+		level[MATERIAL+"2"] = image_to_material(level[IMAGE], LEVELS)
+		level.material2.uv1_scale.y = -1
 		level[MUSIC] = load("res://audio/music/"+level[MUSIC])
 		loaded_levels.append(level)
 		if BONUS in level and  (index == count - 1 or not BONUS_LEVEL in levels[1+index]):
@@ -189,7 +209,27 @@ func _load_levels(levels):
 			bonus[BONUS_LEVEL] = {"timer":DEFAULT_BONUS_TIMER}
 			bonus[SPEED] = 2 * level.speed
 			loaded_levels.append(bonus)
+		if not TITLE in level:
+			level[TITLE] = level.name.replace("_", " ")
 	return loaded_levels
+
+func _sound_hookup(entity, level={}):
+	var need = []
+	for sound in [FX, XF]:
+		if not entity[sound]:
+			need.append(sound)
+	for sound in need:
+		# for foes, have to switch good and bad...
+		var what = sound
+		if FOES == entity.type:
+			match sound: 
+				XF: what = FX
+				FX: what = XF
+		for source in [level, world.game]:
+			if what in source and source[what]:
+				entity[sound] = source[what]
+				break
+	return entity
 
 func _level_slackness(level):
 	if not CHANCE in level:
@@ -308,6 +348,7 @@ func bonus_item_for_level(level_index:int, block_map = {}, sweeter:float = 0):
 	var r = randf()
 	if r < bonus_chance:
 		var bonus_item = entity_by_name(bonus.item, level_index).duplicate()
+		bonus_item = _sound_hookup(bonus_item, get_level(level_index))
 		bonus_item.id = ResourceUID.create_id()
 		bonus_item.type = BONUS # anything can be used as a bonus item...
 		return bonus_item
@@ -318,9 +359,10 @@ func entity_by_name(entity_name:String, level_index:int = -1):
 			print("ERROR: no beasty matches ", entity_name)
 		return null
 	var entity = bestiary[entity_name].duplicate()
+	var level = get_level(level_index)
+	entity = _sound_hookup(entity, level)
 	entity.id = ResourceUID.create_id()
 	if (world.game.level_override or !entity.level) and level_index >= 0:
-		var level = get_level(level_index)
 		if level and SIZES in level:
 			entity.level = level.sizes - 1
 		else:
@@ -345,7 +387,7 @@ func load_background(bg_name):
 func load_background_material(bg_name):
 	return image_to_material(load_background(bg_name))
 
-func _image_resource_to_material(image_resource:String, type:String=""):
+func image_resource_to_material(image_resource:String, type:String=""):
 	return image_to_material(load(image_resource), type)
 
 func image_to_material(image, type:String=""):
