@@ -58,7 +58,7 @@ func _quit():
 		pause()
 	else:
 		if 2 == quit_count:
-			get_tree().quit()
+			Fof.quit()
 	return
 
 func _no_quit():

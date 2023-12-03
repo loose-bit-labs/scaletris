@@ -1,3 +1,4 @@
+class_name Block
 extends Node3D
 
 @onready var collision : CollisionShape3D = $RigidBody3D/CollisionShape3D
@@ -12,7 +13,7 @@ var particle_override = false
 var shape : BoxShape3D = null
 var main = null
 
-var size = -1
+var size = -99
 var entity = {}
 var in_bonus_zone = false
 
@@ -185,6 +186,15 @@ func _on_rigid_body_3d_sleeping_state_changed():
 		sleeping = true
 		show_particles(false, false)
 		main.i_was_so_tired(self)
+
+func is_bonus():
+	return Fof.BONUS == entity.type
+
+func id():
+	return entity.id
+
+func hi(): # even shorter name :-P
+	return short_name()
 
 func short_name():
 	return "/".join([entity.type, entity.name, entity.id, size])

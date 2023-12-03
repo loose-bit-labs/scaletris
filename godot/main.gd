@@ -80,7 +80,7 @@ var current_block = null
 var last_block = null
 var started = false
 var block_map = {}
-var save_size = -1
+var save_size = -22
 var in_bonus_zone = false
 
 var bonus_index = 0
@@ -100,6 +100,7 @@ var score_bonus_cleared = 100
 @export var dev_mode = false
 @export var helpful_helper = false
 @export var overly_friendly = false
+@export var full_auto = false
 
 @export var health_gradient = Gradient.new()
 
@@ -140,6 +141,8 @@ func _load_level(level_index:int=0):
 	level = Fof.get_level(current_level)
 	
 	if _load_is_bonus():
+		if dev_mode:
+			print("this is a bonus level, but you didn't earn it: ", level.name, ' aka ', level_index)
 		_load_level(level_index + 1)
 		loading = false
 		return
@@ -157,7 +160,6 @@ func _load_is_bonus(_level_index:int=0):
 	is_bonus_level = Fof.is_bonus_level(level)
 	if is_bonus_level:
 		status_box.hide()
-		#bonus_count = 9001
 		if not bonus_force and bonus_count < required_bonus_count:
 			if dev_mode:
 				print("sorry, needed ", required_bonus_count, " but you only collected ", bonus_count)
@@ -171,8 +173,6 @@ func _load_is_bonus(_level_index:int=0):
 		label_bonus_timer.hide()
 		status_box.show()
 		bonus_wall.position.y = 8.8
-		
-	#bonus_wall.position.y = 9001 ### hack!!!1
 	return false
 
 func _load_reset_values():
@@ -296,15 +296,28 @@ func _current_safety():
 func _process(delta):
 	if game_over or loading or pauser.is_visible_in_tree():
 		return
+	_process_bonus_level(delta) if is_bonus_level else _process_normal_level(delta)
+	
+	#frq
+	if true:
+		return
 	if is_bonus_level:
 		_process_bonus_level(delta)
 		return
+	_process_normal_level(delta)
+
+
+func _process_normal_level(_delta):
 	_count_bonus()
 	_current_safety()
-	if current_block and current_block.sleeping:
-		_you_have_fallen_and_you_cant_get_up()
-	if !current_block:
-		_create_new_box()
+	if current_block:
+		if current_block.sleeping:
+			_automatic_for_the_people(current_block)
+			_you_have_fallen_and_you_cant_get_up()
+		else:
+			_automatic_for_the_people(current_block, .0330)
+		return
+	_create_new_box()
 
 func _process_bonus_level(delta):
 	bonus_timer -= delta
@@ -318,6 +331,7 @@ func _process_bonus_level(delta):
 		_next_level(false)
 
 func _next_level(sweet:bool = true):
+	_update_status()
 	if not bonus_force and Fof.has_death_bonus(level):
 		if 0 >= bonus_count:
 			lives = -33
@@ -337,15 +351,13 @@ func _next_level(sweet:bool = true):
 	_update_status()
 	_please_level_up()
 	
-func _please_level_up(game_over_=false):
+func _please_level_up(_game_over=false):
 	explain_bonus.hide()
 	explain_normal.hide()
 	explain_levelled.show()
-	if game_over_:
-		pauser.show()
-	else:
-		pauser.pause()
-	level_up_please = true
+	pauser.show()
+	if not _game_over:
+		level_up_please = true
 
 func _post_level_text(sweet:bool):
 	var diff = score - score_before
@@ -385,6 +397,8 @@ func _post_level_text(sweet:bool):
 
 func _on_paused_visibility_changed():
 	if level_up_please and not pauser.is_visible_in_tree():
+		if dev_mode:
+			print("LEVEL UP TO ", 1 + current_level, "; is bonus level? ", is_bonus_level)
 		level_up_please = false
 		_load_level(1 + current_level)
 	else:
@@ -505,42 +519,7 @@ func _handle_mouse_move(event):
 		_move(Vector3(0, .5 * (+1 if ydiff<0 else -1), 0))
 		mouse_button_at[1] = y
 
-func _key_pressed(code:int):
-	match code:
-		KEY_1: _load_level(0) # village
-		KEY_2: _load_level(2) # woods
-		KEY_3: _load_level(4) # cave
-		KEY_4: _load_level(6) # lair
-		KEY_5: _load_level(8) # pit
-		KEY_6: _load_level(10) # pit'
-		KEY_7: _load_level(12) # ...
-		KEY_8: _load_level(14) # ...
-		KEY_9: _load_level(16) # win
-		KEY_L: _go_lose()
-		KEY_B: _bonus_hack()
-		KEY_G: gravity = gravity + 1
-		KEY_F: _toggle_overly_friendly()
-		KEY_N: _next_level(true)
-		KEY_Q: _show_blocks()
-		KEY_I: _tmi()
-		KEY_X: _auto_match()
-		KEY_Z: _toggle_helper()
-		KEY_T: bonus_timer = 999
-		KEY_O: Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		KEY_U: kills = level.required
-
-func _go_lose():
-	lives = 0
-	_on_level_over(true, "Test losing")
-
-func _bonus_hack():
-	bonus_force = true
-
-func _bonus_click():
-	var hit = Fof.camera_mouse(self, camera, [front_wall])
-	var block = hit.get_parent()
-	if hit and Fof.ENTITY in block:
-		_handle_bonus_blocks(block)
+###################################################################################################
 
 func _check_misses():
 	var b4 = missed_count
@@ -550,6 +529,7 @@ func _check_misses():
 		print("missed count went from ", b4, " to ", missed_count)
 		_count_misses(true)
 		pauser.pause()
+
 
 func _count_misses(debug:bool = false):
 	var c = 0
@@ -562,15 +542,8 @@ func _count_misses(debug:bool = false):
 			print(c, baddies)
 	return c
 
-func _toggle_helper():
-	helpful_helper = !helpful_helper
-	print("helpful_helper is ", helpful_helper )
+###################################################################################################
 
-func _toggle_overly_friendly():
-	overly_friendly = !overly_friendly
-	print("overly_friendly is ", overly_friendly)
-
-# frq
 func _handle_bonus_blocks(block, been_here = false):
 	if not _current_safety():
 		current_block = null
@@ -631,6 +604,79 @@ func _handle_bonus_blocks(block, been_here = false):
 	score = score + current_level * 10
 	_update_status()
 	current_block = null
+
+###################################################################################################
+
+func _key_pressed(code:int):
+	match code:
+		KEY_1: _load_level(0) # village
+		KEY_2: _load_level(2) # woods
+		KEY_3: _load_level(4) # cave
+		KEY_4: _load_level(6) # lair
+		KEY_5: _load_level(8) # pit
+		KEY_6: _load_level(10) # pit'
+		KEY_7: _load_level(12) # ...
+		KEY_8: _load_level(14) # ...
+		KEY_9: _load_level(16) # win
+		KEY_L: _go_lose()
+		KEY_A: _toggle_full_auto()
+		KEY_B: _bonus_hack()
+		KEY_G: gravity = gravity + 1
+		KEY_F: _toggle_overly_friendly()
+		KEY_N: _next_level(true)
+		KEY_Q: _show_blocks()
+		KEY_I: _tmi()
+		KEY_X: _auto_match()
+		KEY_Z: _toggle_helper()
+		KEY_T: bonus_timer = 999
+		KEY_O: Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		KEY_U: kills = level.required
+
+func _go_lose():
+	lives = 0
+	_on_level_over(true, "Test losing")
+
+func _bonus_hack():
+	bonus_force = true
+
+func _bonus_click():
+	var hit = Fof.camera_mouse(self, camera, [front_wall])
+	var block = hit.get_parent()
+	if hit and Fof.ENTITY in block:
+		_handle_bonus_blocks(block)
+
+func _toggle_helper():
+	helpful_helper = !helpful_helper
+	print("helpful_helper is ", helpful_helper )
+
+func _toggle_overly_friendly():
+	overly_friendly = !overly_friendly
+	print("overly_friendly is ", overly_friendly)
+
+func _toggle_full_auto():
+	full_auto = not full_auto
+	print("full_auto is now ", full_auto)
+
+func _automatic_for_the_people(block:Block, chance:float = 1.1):
+	if block.is_bonus():
+		chance = chance * 4.4
+	if not full_auto or randf() > chance:
+		return
+	if block.is_bonus():
+		var p = 4.04
+		if block.position.x < p or randf() < .1:
+			var x = max(1, p - block.body.position.x)
+			block.move(Vector3(x * x * 42.24,0,0))
+		return
+	if not block.entity.name in block_map:
+		return
+	var sizes = block_map[block.entity.name].filter(
+		func(b):return b.id() != block.id()
+	).map(func(b):return b.size)
+	if sizes.size():
+		var size = sizes.pick_random()
+		block.set_size(size)
+		#print("what's the frequency, ", size, " x ", chance, "?")
 
 ###################################################################################################
 
@@ -718,7 +764,7 @@ func _add_block(block, entity, make_current:bool = true):
 			block_map[Fof.BONUS] = []
 		block_map[Fof.BONUS].append(block)
 		block.set_size(0)
-		save_size = -1
+		save_size = -33
 		return
 	
 	var sizes = []
@@ -727,7 +773,7 @@ func _add_block(block, entity, make_current:bool = true):
 	var size = block.random_size(sizes)
 	if entity_name in block_map:
 		if block_map[entity_name].size():
-			save_size = -1
+			save_size = -44
 		else:
 			save_size = size
 		block_map[entity_name].append(block)
@@ -844,7 +890,9 @@ func _helped(block, count):
 
 func _missed(primary, others, _blocks):
 	if dev_mode:
-		print("missed ", primary.entity, " and ", others.size(), " others")
+		print("missed ", primary.hi(), " and ", others.map(func(b):return b.hi()))
+		if full_auto:
+			pauser.pause()
 	if primary.entity.type == Fof.FRIENDS:
 		_play_sad(primary)
 	else:

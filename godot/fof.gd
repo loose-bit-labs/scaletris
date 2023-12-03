@@ -61,6 +61,8 @@ const IMAGE_EXTENSION = ".png"
 const BG_ROOT = "res://images/bg/"
 const DEFAULT_BONUS_TIMER = 90
 
+const CONFIGURATION_RESOURCE = "user://scaletris.cfg"
+
 var DEFAULT_GAME_SETTINGS = {
 	"tiles": TILE_DEFAULT,
 	"explanation": "",
@@ -84,23 +86,61 @@ var DEFAULT_BONUS_SETTINGS = {
 var world
 var bestiary
 var loaded = ""
+var configuration : ConfigFile = null
 
 #################################################################################################
 
 func _init():
+	load_config()
 	load_world()
+
+func load_config():
+	configuration = ConfigFile.new()
+	var err = configuration.load(CONFIGURATION_RESOURCE)
+	if err:
+		return
+	set_mute(configuration.get_value(GLOBAL, MUTE, false))
+	
+	#variantget_value ( String section, String key, Variant default=null ) const
+
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		quit()
+
+func quit():
+	if configuration:
+		var err = configuration.save(CONFIGURATION_RESOURCE)
+		print("saved configuration to ", CONFIGURATION_RESOURCE, ", err is ", err )
+	get_tree().quit() 
 
 #################################################################################################
 
+const MAIN_AUDIO_BUS = "Master"
+const GLOBAL = "global"
+const MUTE = "mute"
+
 func toggle_mute():
-	var bus_idx = AudioServer.get_bus_index("Master")
-	var current = AudioServer.is_bus_mute(bus_idx)
-	AudioServer.set_bus_mute(bus_idx, not current)
-	return not current
+	var bus_idx = _sound_bus()
+	var current = not get_mute(bus_idx)
+	set_mute(current, bus_idx)
+	AudioServer.set_bus_mute(bus_idx, current)
+	configuration.set_value(GLOBAL, MUTE, current)
+	return current
+
+func _sound_bus(bus_idx:int = -99, which = MAIN_AUDIO_BUS):
+	return bus_idx if bus_idx >= 0 else AudioServer.get_bus_index(which)
+
+func get_mute(bus_idx:int = -99, which = MAIN_AUDIO_BUS):
+	return AudioServer.is_bus_mute(_sound_bus(bus_idx, which)) 
+
+func set_mute(value, bus_idx:int = -99, which = MAIN_AUDIO_BUS):
+	bus_idx = _sound_bus(bus_idx, which)
+	AudioServer.set_bus_mute(bus_idx, value)
+	configuration.set_value(GLOBAL, MUTE, value)
+	return value
 
 func is_muted():
-	var bus_idx = AudioServer.get_bus_index("Master")
-	return AudioServer.is_bus_mute(bus_idx)
+	return get_mute()
 	
 ##########################################################
 
