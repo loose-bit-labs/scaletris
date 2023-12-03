@@ -1,16 +1,17 @@
-# scaletris
-scale-tastic!
+# Scaletris
 
-A 2D game similar to Tetris where different objects are falling down onto the playfield (ground). The objects are different types of "scales", and you quickly have to click on them and pair them with the identical object on the ground. If the object isn't a scale in any which way, you have to click it and pair it with a trash bin. The scales fall down faster while you go, and you lose ones the stuff on the ground reaches the sky.
-Alternatively, any object can fall down from the sky, not related to scales, and you have to scale the objects up or down while they are falling, to match an object already on the ground in size. 2D or 3D objects. If the size is matching at impact, the objects disappear, making room for more objects on the ground.
+Scaletris is a classic single player reaction game where you advance levels and earn points by scaling objects to match them with their pair. Loosely inspired by Tetris, Scaletris, instead of rotating and positioning the objects, you scale them up or down to match identical pairs. The levels progress in difficulty by requiring more matched pairs, faster-falling objects, and having an increased number of sizes available (from two up to five sizes in the Classic style).
 
+Scaletris comes in two play styles: Classic and Quest!
 
-Something that is easy to play, a reaction-type game. You can learn the rules within a minute, and can play it in between even if you have only a few minutes. We can spend more time to develop the story further, and possibly spend less time in the actual programming.
+Classic mode focuses on the core mechanics and each level is based on a different concept of "Scale", as outlined in the game challenge. Each level has a special bonus object which matches the level background. These bonus objects must be collected in a special area on the right hand side of the play field, underneath the score board. Collect enough of them and earn a bonus level. Collecting only one costs you a life and you get to replay the level. Don't collect any and the game is over!
 
-resize the object as it falls to match the scale of somthing on the ground
+Quest mode introduces red enemy blocks and green ally blocks. Matching allies will remove one enemy block from the play area. The bonus item is always a yellow block with a pouch full of jingly coins! Collect 3 of them and earn a bonus level, there is no penalty for not collecting them.
 
+In both modes, successfully clearing a bonus level will earn you an extra life (up to 5) which lets you replay failed levels.
 
-a casual game. easy to scale levels by falling speed and number of items
+Beware! If you run out of lives, the game is over!
 
-[![quick starting point](quickstart-scaletris.mp4)](quickstart-scaletris.mp4)
+Check out the [YouTube Video](https://www.youtube.com/watch?v=kdW7b2cVJ74) for play instuctions
 
+The game has been released on [itch.io](https://loose-bit-labs.itch.io/scaletris) as part of the Github Game Off 2023!
